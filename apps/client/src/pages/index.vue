@@ -21,7 +21,9 @@ definePage({
         </UiButton>
       </div>
 
-      <Client />
+      <div class="grid place-items-center">
+        <Client />
+      </div>
     </section>
   </main>
 </template>

@@ -16,7 +16,7 @@ useResizeObserver(header, entries => {
   <div class="default-layout">
     <header class="container px-7" style="--container-size: var(--size-xl)" ref="header">
       <h1>
-        <RouterLink :to="{ name: 'Home' }">Idle Game</RouterLink>
+        <RouterLink :to="{ name: 'Home' }">Dungeon Crawler</RouterLink>
       </h1>
       <DarkModeToggle />
 

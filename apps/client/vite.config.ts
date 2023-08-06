@@ -7,6 +7,9 @@ import VueRouter from 'unplugin-vue-router/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ArkUiResolver } from './tools/ark-ui-resolver';
 import { compilerOptions, transformAssetUrls } from 'vue3-pixi';
+import path from 'path';
+
+const BUILD_OUTPUT_DIR = path.resolve(process.cwd(), '../server/public');
 
 export default defineConfig({
   plugins: [
@@ -63,5 +66,10 @@ export default defineConfig({
 
   server: {
     port: 3000
+  },
+
+  build: {
+    outDir: BUILD_OUTPUT_DIR,
+    emptyOutDir: true
   }
 });

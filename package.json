@@ -13,7 +13,6 @@
     "db:sync": "yarn server db:sync",
     "db:ui": "yarn server db:ui",
     "build": "turbo run build",
-    "postbuild": "rimraf ./apps/server/public && shx cp -r ./apps/client/dist ./apps/server/public",
     "start": "yarn server start",
     "cli:run": "yarn cli start"
   },
