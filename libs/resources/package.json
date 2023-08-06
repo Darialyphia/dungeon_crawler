@@ -1,0 +1,17 @@
+{
+  "name": "@dungeon-crawler/resources",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "devDependencies": {
+    "tsup": "^6.4.0",
+    "typescript": "~5.0.0"
+  },
+  "dependencies": {
+    "@dungeon-crawler/shared": "*",
+    "@workadventure/tiled-map-type-guard": "^2.1.1",
+    "zod": "^3.21.4"
+  },
+  "scripts": {
+    "dev": "echo 1"
+  }
+}

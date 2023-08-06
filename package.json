@@ -1,0 +1,29 @@
+{
+  "name": "root",
+  "private": true,
+  "scripts": {
+    "dev": "turbo run dev",
+    "game-engine": "yarn workspace @dungeon-crawler/game-engine",
+    "game-client": "yarn workspace @dungeon-crawler/game-client",
+    "client": "yarn workspace @dungeon-crawler/client",
+    "server": "yarn workspace @dungeon-crawler/server",
+    "cli": "yarn workspace @dungeon-crawler/cli",
+    "db:start": "yarn server db:start",
+    "db:stop": "yarn server db:stop",
+    "db:sync": "yarn server db:sync",
+    "db:ui": "yarn server db:ui",
+    "build": "turbo run build && shx cp -r ./apps/client/dist ./apps/server/public/",
+    "start": "yarn server start",
+    "cli:run": "yarn cli start"
+  },
+  "workspaces": {
+    "packages": [
+      "libs/*",
+      "apps/*",
+      "configs/*"
+    ]
+  },
+  "dependencies": {
+    "turbo": "^1.7.0"
+  }
+}

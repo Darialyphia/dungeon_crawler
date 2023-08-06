@@ -1,0 +1,22 @@
+{
+  "name": "@dungeon-crawler/game-engine",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "devDependencies": {
+    "eslint-config-dungeon-crawler": "*",
+    "tsup": "^6.4.0",
+    "typescript": "~5.0.0"
+  },
+  "dependencies": {
+    "@dungeon-crawler/shared": "*",
+    "@types/rbush": "^3.0.0",
+    "fp-ts": "^2.16.1",
+    "mitt": "^3.0.1",
+    "nanoid": "^4.0.2",
+    "rbush": "^3.0.1",
+    "zod": "^3.21.4"
+  },
+  "scripts": {
+    "dev": "echo 1"
+  }
+}

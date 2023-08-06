@@ -1,0 +1,21 @@
+{
+  "cssvar.files": [
+    "./node_modules/open-props/open-props.min.css",
+    "./apps/client/src/styles/theme.css"
+  ],
+
+  "cssvar.ignore": [],
+
+  "cssvar.extensions": ["css", "postcss", "vue"],
+
+  "editor.codeActionsOnSave": {
+    "source.fixAll.stylelint": true,
+    "source.fixAll.eslint": true
+  },
+  "stylelint.validate": ["css", "scss", "vue", "html"],
+
+  "css.validate": true,
+  "scss.validate": false,
+
+  "typescript.preferences.autoImportFileExcludePatterns": ["vue-router"]
+}

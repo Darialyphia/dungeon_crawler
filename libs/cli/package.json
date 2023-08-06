@@ -1,0 +1,37 @@
+{
+  "name": "@drungeon-crawler/cli",
+  "license": "MIT",
+  "version": "1.0.0",
+  "main": "./src/index.ts",
+  "devDependencies": {
+    "eslint-config-dungeon-crawler": "*",
+    "typescript": "^5.0.4"
+  },
+  "dependencies": {
+    "@ts-rest/core": "^3.25.1",
+    "@types/chalk": "^2.2.0",
+    "@types/figlet": "^1.5.6",
+    "@types/fs-extra": "^11.0.1",
+    "@types/gradient-string": "^1.1.2",
+    "@types/lodash": "^4.14.195",
+    "awilix": "^8.0.1",
+    "chalk": "^5.3.0",
+    "commander": "^11.0.0",
+    "dedent": "^1.0.1",
+    "figlet": "^1.6.0",
+    "fs-extra": "^11.1.1",
+    "gradient-string": "^2.0.2",
+    "inquirer": "^9.2.7",
+    "lodash": "^4.17.21",
+    "prettier": "^3.0.0",
+    "ts-node": "^10.9.1",
+    "tsx": "^3.12.7",
+    "type-fest": "^3.13.0",
+    "vitest": "^0.31.4",
+    "zod": "^3.21.4"
+  },
+  "scripts": {
+    "start": "tsx src/index.ts",
+    "test": "vitest"
+  }
+}

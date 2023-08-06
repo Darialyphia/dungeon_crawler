@@ -1,0 +1,21 @@
+version: '3.7'
+services:
+  db:
+    image: mysql:5.7
+    platform: linux/x86_64
+    restart: always
+    environment:
+      MYSQL_DATABASE: ${DATABASE_NAME}
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+    ports:
+      - ${DATABASE_PORT}:${DATABASE_PORT}
+    volumes:
+      - idle-game:/var/lib/mysql
+
+  maildev:
+    image: maildev/maildev
+    ports:
+      - ${MAILDEV_PORT}:${MAILDEV_PORT}
+
+volumes:
+  idle-game:
