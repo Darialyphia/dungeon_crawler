@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Nullable } from 'utils/types';
+import { isString, type Nullable } from '@dungeon-crawler/shared';
+
 const modelValue = defineModel<Nullable<boolean>>({ required: true });
 
 defineSlots<{
@@ -20,12 +21,7 @@ const vModel = computed({
 });
 </script>
 <template>
-  <ArkCheckbox
-    :id="id"
-    v-slot="{ inputProps }"
-    v-model="vModel"
-    class="ui-checkbox"
-  >
+  <ArkCheckbox :id="id" v-slot="{ inputProps }" v-model="vModel" class="ui-checkbox">
     <input v-bind="inputProps" />
     <ArkCheckboxControl>
       <div

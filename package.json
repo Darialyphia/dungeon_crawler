@@ -12,7 +12,8 @@
     "db:stop": "yarn server db:stop",
     "db:sync": "yarn server db:sync",
     "db:ui": "yarn server db:ui",
-    "build": "turbo run build && shx cp -r ./apps/client/dist ./apps/server/public/",
+    "build": "turbo run build",
+    "postbuild": "rimraf ./apps/server/public && shx cp -r ./apps/client/dist ./apps/server/public",
     "start": "yarn server start",
     "cli:run": "yarn cli start"
   },
@@ -24,6 +25,8 @@
     ]
   },
   "dependencies": {
+    "rimraf": "^5.0.1",
+    "shx": "^0.3.4",
     "turbo": "^1.7.0"
   }
 }

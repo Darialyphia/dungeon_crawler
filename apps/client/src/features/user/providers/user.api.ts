@@ -1,7 +1,7 @@
-import type { AuthApi } from '@/features/auth/api/auth.api';
+import type { AuthApi } from '@/features/auth/providers/auth.api';
 import { authKeys } from '@/features/auth/utils/auth.keys';
 import { updateSession } from '@/features/auth/utils/cache-utils';
-import type { ApiClient } from '@/features/core/apiClient';
+import type { ApiClient } from '@/features/core/providers/apiClient';
 import { apiHandler } from '@/utils/api-helpers';
 import type { UserContract, UserResponse } from '@dungeon-crawler/contract';
 import type { QueryClient } from '@tanstack/vue-query';

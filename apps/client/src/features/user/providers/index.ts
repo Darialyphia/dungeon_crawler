@@ -1,5 +1,5 @@
 import { asFunction } from 'awilix';
-import { userApi } from './api/user.api';
+import { userApi } from './user.api';
 
 export const userProviders = {
   userApi: asFunction(userApi)

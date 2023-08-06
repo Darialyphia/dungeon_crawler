@@ -1,8 +1,8 @@
 import jwtDecode from 'jwt-decode';
 import type { ClientInferRequest, ClientInferResponses } from '@ts-rest/core';
 import { queryKeys } from '@/features/core/queryKeys';
-import type { HttpService } from '@/features/core/api/http.service';
-import type { ApiClient } from '@/features/core/apiClient';
+import type { HttpService } from '@/features/core/providers/http.service';
+import type { ApiClient } from '@/features/core/providers/apiClient';
 import { apiHandler } from '@/utils/api-helpers';
 import { type AnyObject, type Nullable, ONE_MINUTE_IN_MS } from '@dungeon-crawler/shared';
 import {

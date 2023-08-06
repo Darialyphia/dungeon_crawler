@@ -2,7 +2,7 @@ import { asValue, asFunction, Lifetime } from 'awilix';
 import { apiClient } from './apiClient';
 import { queryClient } from './queryClient';
 import { createSocket } from './socket';
-import { httpService } from './api/http.service';
+import { httpService } from './http.service';
 
 export const coreProviders = {
   apiClient: asFunction(apiClient, { lifetime: Lifetime.SINGLETON }),

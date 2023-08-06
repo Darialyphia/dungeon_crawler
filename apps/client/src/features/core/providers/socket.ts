@@ -1,6 +1,6 @@
+import type { AuthApi } from '@/features/auth/providers/auth.api';
 import { type IoEvents } from '@dungeon-crawler/contract';
 import { io, type Socket } from 'socket.io-client';
-import type { AuthApi } from '../auth/api/auth.api';
 
 export type AppSocket = Socket<IoEvents['SERVER'], IoEvents['CLIENT']>;
 

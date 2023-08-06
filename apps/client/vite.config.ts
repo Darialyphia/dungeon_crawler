@@ -5,7 +5,6 @@ import { fileURLToPath, URL } from 'node:url';
 import AutoImport from 'unplugin-auto-import/vite';
 import VueRouter from 'unplugin-vue-router/vite';
 import Components from 'unplugin-vue-components/vite';
-import UnoCSS from 'unocss/vite';
 import { ArkUiResolver } from './tools/ark-ui-resolver';
 
 export default defineConfig({
@@ -21,8 +20,6 @@ export default defineConfig({
         defineModel: true
       }
     }),
-
-    UnoCSS(),
 
     AutoImport({
       include: [/\.[tj]sx?$/, /\.vue$/, /\.vue\?vue/, /\.md$/],

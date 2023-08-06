@@ -4,10 +4,9 @@
  */
 import { createTypedContainer } from '@dungeon-crawler/shared';
 
-import { authProviders } from './features/auth/auth.providers';
-import { coreProviders } from './features/core/core.providers';
-
-import { userProviders } from './features/user/user.providers';
+import { authProviders } from './features/auth/providers';
+import { coreProviders } from './features/core/providers';
+import { userProviders } from './features/user/providers';
 
 const dependencies = {
   ...authProviders,

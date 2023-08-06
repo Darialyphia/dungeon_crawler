@@ -1,6 +1,6 @@
 import type { UseApiMutationOptions } from '@/features/core/composables/useApiQuery';
 import { contract, type Contract } from '@dungeon-crawler/contract';
-import type { UserApi } from '../api/user.api';
+import type { UserApi } from '../providers/user.api';
 
 export const useSignup = (
   options: UseApiMutationOptions<Contract['user']['signup'], UserApi['signup']> = {}

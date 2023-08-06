@@ -4,8 +4,8 @@ import type {
 } from '@/features/core/composables/useApiQuery';
 import { type Nullable } from '@dungeon-crawler/shared';
 import { contract, type Contract } from '@dungeon-crawler/contract';
-import type { AuthApi, LoginResponse } from '../api/auth.api';
 import { queryKeys, type QueryKeys } from '@/features/core/queryKeys';
+import type { AuthApi, LoginResponse } from '../providers/auth.api';
 
 export const useLogin = (
   options: UseApiMutationOptions<Contract['auth']['login'], AuthApi['login']> = {}

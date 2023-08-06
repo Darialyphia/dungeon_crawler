@@ -8,11 +8,11 @@ import {
 import { UserRepository } from '../../user/user.repository';
 import { UseCase } from '../../../utils/helpers';
 import { isLeft, left, right } from 'fp-ts/Either';
-import { compare } from 'bcrypt';
+import { compare } from 'bcryptjs';
 import { AccessToken, RefreshToken, TokenService } from '../token.service';
 import { RefreshTokenRepository } from '../refreshToken.repository';
 import { Response } from 'express';
-import { Config } from '../../../config';
+import { config } from '../../../config';
 import { REFRESH_TOKEN_COOKIE } from '../../../utils/constants';
 
 export type LoginInput = ServerInferRequest<typeof authContract.login>['body'];
@@ -29,17 +29,10 @@ type Dependencies = {
   tokenService: TokenService;
   refreshTokenRepo: RefreshTokenRepository;
   res: Response;
-  config: Config;
 };
 
 export const loginUsecase =
-  ({
-    userRepo,
-    tokenService,
-    refreshTokenRepo,
-    res,
-    config
-  }: Dependencies): LoginUseCase =>
+  ({ userRepo, tokenService, refreshTokenRepo, res }: Dependencies): LoginUseCase =>
   async input => {
     const user = await userRepo.findByEmail(input.email);
 

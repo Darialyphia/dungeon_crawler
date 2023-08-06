@@ -3,7 +3,7 @@ import { ServerInferRequest } from '@ts-rest/core';
 import { BadRequestError, UnexpectedError } from '../../../utils/errorFactory';
 import { User } from '../user.entity';
 import { UserRepository } from '../user.repository';
-import { hash } from 'bcrypt';
+import { hash } from 'bcryptjs';
 import { UseCase } from '../../../utils/helpers';
 
 export type SignupInput = ServerInferRequest<typeof userContract.signup>['body'];

@@ -1,6 +1,6 @@
 import { contract, type Contract } from '@dungeon-crawler/contract';
 import { initClient, type InitClientArgs } from '@ts-rest/core';
-import type { HttpService } from './api/http.service';
+import type { HttpService } from './http.service';
 import { FetchError } from 'ofetch';
 
 export type ApiClient = ReturnType<typeof initClient<Contract, InitClientArgs>>;

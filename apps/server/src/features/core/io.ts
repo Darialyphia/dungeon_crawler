@@ -1,6 +1,7 @@
-import { AnyFunction, IoEvents, Nullable, isString } from '@dungeon-crawler/shared';
+import { AnyFunction, Nullable, isString } from '@dungeon-crawler/shared';
+import { IoEvents } from '@dungeon-crawler/contract';
 import { config } from '../../config';
-import { Server } from './server';
+import { Server } from 'http';
 import { Server as IoServer, Socket } from 'socket.io';
 import { AuthenticateUseCase } from '../auth/usecases/authenticate.usecase';
 import { errorFactory } from '../../utils/errorFactory';

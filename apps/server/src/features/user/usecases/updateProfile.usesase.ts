@@ -1,6 +1,7 @@
 import { ServerInferRequest } from '@ts-rest/core';
 import { User, UserId } from '../user.entity';
-import { Nullable, UserContract, userContract } from '@dungeon-crawler/shared';
+import { Nullable } from '@dungeon-crawler/shared';
+import { UserContract } from '@dungeon-crawler/contract';
 import {
   ForbiddenError,
   NotFoundError,

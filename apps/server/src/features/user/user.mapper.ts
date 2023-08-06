@@ -1,4 +1,5 @@
-import { Nullable, UserResponse } from '@dungeon-crawler/shared';
+import { Nullable } from '@dungeon-crawler/shared';
+import { UserResponse } from '@dungeon-crawler/contract';
 import { User } from './user.entity';
 import { UserAbility, UserAbilityBuilder } from './user.ability';
 import { subject } from '@casl/ability';

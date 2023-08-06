@@ -14,7 +14,7 @@ useResizeObserver(header, entries => {
 
 <template>
   <div class="default-layout">
-    <header class="container" style="--container-size: var(--size-xl)" ref="header">
+    <header class="container px-7" style="--container-size: var(--size-xl)" ref="header">
       <h1>
         <RouterLink :to="{ name: 'Home' }">Idle Game</RouterLink>
       </h1>
