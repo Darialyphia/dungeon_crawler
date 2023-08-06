@@ -1,21 +1,3 @@
-@import './medias.css';
-
-.md-n-above {
-  @media (--md-n-below) {
-    display: none !important;
-  }
-}
-.lg-n-above {
-  @media (--lg-n-below) {
-    display: none !important;
-  }
-}
-.lg-n-below {
-  @media (--lg-n-above) {
-    display: none !important;
-  }
-}
-
 .sr-only {
   position: absolute !important;
   width: 1px !important;

@@ -5,6 +5,7 @@ const { mutate: logout, isLoading } = useLogout();
 
 const header = ref();
 const headerHeight = useCssVar('--header-height');
+
 useResizeObserver(header, entries => {
   const entry = entries[0];
   const { height } = entry.contentRect;
@@ -18,13 +19,18 @@ useResizeObserver(header, entries => {
       <h1>
         <RouterLink :to="{ name: 'Home' }">Dungeon Crawler</RouterLink>
       </h1>
-      <DarkModeToggle />
+      <div class="ml-auto">
+        <DarkModeToggle />
+      </div>
 
       <template v-if="session">
         Welcome back, {{ session.name }}
         <UiLinkButton @click="logout(undefined)" :is-loading="isLoading">
           Logout
         </UiLinkButton>
+        <RouterLink v-slot="{ href, navigate }" :to="{ name: 'Play' }" custom>
+          <UiLinkButton :href="href" @click="navigate">Play</UiLinkButton>
+        </RouterLink>
       </template>
       <UiLinkButton v-else :to="{ name: 'Login' }">Login</UiLinkButton>
     </header>
@@ -43,6 +49,10 @@ header {
   display: flex;
   gap: var(--size-5);
   align-items: center;
+}
+
+h1 {
+  font-size: var(--font-size-5);
 }
 
 h1 :is(a, a:hover, a:visited) {

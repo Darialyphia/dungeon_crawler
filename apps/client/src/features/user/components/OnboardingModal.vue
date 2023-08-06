@@ -11,7 +11,7 @@ const username = ref('');
 <template>
   <UiModal id="tos" v-model:is-opened="isOpened" :is-closable="false">
     <template #content>
-      <UiModalHeader>Welcome to Idle Game !</UiModalHeader>
+      <UiModalHeader>Welcome to Dungeon Crawler !</UiModalHeader>
       <form @submit="mutate({ name: username })">
         <UiModalContent>
           <p class="mbe-6">

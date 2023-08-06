@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { definePage } from 'vue-router/auto';
-import { Client } from '@dungeon-crawler/game-client';
 
 definePage({
   name: 'Home'
@@ -19,10 +18,6 @@ definePage({
         <UiButton :to="{ name: 'Register' }" style="--button-size: var(--font-size-4)">
           Play for free
         </UiButton>
-      </div>
-
-      <div class="grid place-items-center">
-        <Client />
       </div>
     </section>
   </main>
