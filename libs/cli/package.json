@@ -1,5 +1,5 @@
 {
-  "name": "@drungeon-crawler/cli",
+  "name": "@dungeon-crawler/cli",
   "license": "MIT",
   "version": "1.0.0",
   "main": "./src/index.ts",
