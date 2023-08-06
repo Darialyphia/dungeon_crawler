@@ -6,6 +6,7 @@ import AutoImport from 'unplugin-auto-import/vite';
 import VueRouter from 'unplugin-vue-router/vite';
 import Components from 'unplugin-vue-components/vite';
 import { ArkUiResolver } from './tools/ark-ui-resolver';
+import { compilerOptions, transformAssetUrls } from 'vue3-pixi';
 
 export default defineConfig({
   plugins: [
@@ -16,6 +17,10 @@ export default defineConfig({
 
     vue({
       reactivityTransform: true,
+      template: {
+        compilerOptions,
+        transformAssetUrls
+      },
       script: {
         defineModel: true
       }

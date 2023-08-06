@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { definePage } from 'vue-router/auto';
+import { Client } from '@dungeon-crawler/game-client';
 
 definePage({
   name: 'Home'
@@ -19,6 +20,8 @@ definePage({
           Play for free
         </UiButton>
       </div>
+
+      <Client />
     </section>
   </main>
 </template>
