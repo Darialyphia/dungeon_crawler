@@ -90,9 +90,10 @@ There are two ways to get started with the project locally
 yarn dev
 ```
 
-2. Open your browser and visit <http://localhost:3000> to see the application running.
-3. Visit <http://localhost:5000/api-docs> to see the generated back end API documentation
-4. Visit <http://localhost:1080> to see the mail server and inspect all the sent e-mails.
+2. Open your browser and visit <http://localhost:3000> to see the front end webapp running.
+3. Open your browser and visit <http://localhost:3001> to see a standalone of the game client running.
+4. Visit <http://localhost:5000/api-docs> to see the generated back end API documentation
+5. Visit <http://localhost:1080> to see the mail server and inspect all sent e-mails.
 
 ## Working on New Features
 
