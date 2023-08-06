@@ -10,11 +10,20 @@ definePage({
 });
 
 const { data: session } = useSession();
+
+const player = computed(() =>
+  session.value
+    ? {
+        id: session.value?.id,
+        name: session.value.name ?? 'Anonymous'
+      }
+    : null
+);
 </script>
 
 <template>
   <main class="container grid place-items-center">
-    <GameClient :height="600" :width="800" v-if="session" :player="session" />
+    <GameClient :height="600" :width="800" v-if="player" :player="player" />
   </main>
 </template>
 

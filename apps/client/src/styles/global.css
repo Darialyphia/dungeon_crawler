@@ -1,14 +1,13 @@
-@layer base, components, utilities, overrides;
+@layer base, components, utilities;
 
-@import url('open-props/postcss/normalize') layer(reset);
+@import url('open-props/postcss/normalize') layer(base);
 @import 'open-props/postcss/style';
 @import 'open-props/colors-hsl';
-@import 'open-props/media';
-@import url('./reset.css') layer(reset);
+@import url('./reset.css') layer(base);
 @import url('./utils.css') layer(utilities);
 @import './theme.css';
 
-@layer reset {
+@layer base {
   @unocss preflights;
 }
 
