@@ -3,13 +3,19 @@ import { createEmitter } from './emitter';
 import { EventMap } from './events';
 import { z } from 'zod';
 import { TICK_RATE } from './constants';
+import { Position, PositionBrand } from './components/position';
+
+export type SerializedGameState = {
+  map: GameState['map'];
+  entities: Position[];
+};
 
 export type Game = {
   dispatch: <T extends keyof EventMap>(
     type: T,
     payload: z.infer<EventMap[T]['input']>
   ) => void;
-  subscribe: (cb: (state: GameState) => void) => () => void;
+  subscribe: (cb: (state: SerializedGameState) => void) => () => void;
   start: () => void;
   stop: () => void;
 };
@@ -44,14 +50,24 @@ export const createGame: GameFactory = () => {
     }
   };
 
+  const serializeState = (state: GameState): SerializedGameState => {
+    return {
+      map: state.map,
+      entities: state.world.entitiesByComponent<[Position]>([PositionBrand])
+    };
+  };
+
   return {
     dispatch: emitter.emit,
 
     subscribe(cb) {
-      emitter.on('tick', cb);
+      const _cb = (state: GameState) => {
+        cb(serializeState(state));
+      };
+      emitter.on('tick', _cb);
 
       return () => {
-        emitter.off('tick', cb);
+        emitter.off('tick', _cb);
       };
     },
 
