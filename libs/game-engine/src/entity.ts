@@ -6,11 +6,9 @@ export type EntityId = z.infer<typeof EntityId>;
 
 export type Entity = AnyObject & { id: string };
 
-export const createEntityManager = () => {
+export const createEntity = () => {
   const entities = createIndexedArray<Entity>([]).addIndex(
     'id',
     entity => entity.id
   );
-
-  const entitiesByComponent = new Map<string, Set<Entity>>();
 };

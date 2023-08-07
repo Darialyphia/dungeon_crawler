@@ -10,7 +10,6 @@ definePage({
 });
 
 const { data: session } = useSession();
-
 const player = computed(() =>
   session.value
     ? {
@@ -19,11 +18,15 @@ const player = computed(() =>
       }
     : null
 );
+
+const root = ref<HTMLElement>();
+
+const { width, height } = useElementBounding(root);
 </script>
 
 <template>
-  <main class="container grid place-items-center">
-    <GameClient :height="600" :width="800" v-if="player" :player="player" />
+  <main ref="root">
+    <GameClient :height="height" :width="width" v-if="player" :player="player" />
   </main>
 </template>
 

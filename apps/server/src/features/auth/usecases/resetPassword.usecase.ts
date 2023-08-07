@@ -44,7 +44,6 @@ export const resetPasswordUsecase =
   async input => {
     try {
       const token = await passwordResetTokenRepo.getByUserEmail(input.email);
-
       if (E.isLeft(token)) return token;
 
       const isTokenValid = await compare(input.token, token.right.value);
