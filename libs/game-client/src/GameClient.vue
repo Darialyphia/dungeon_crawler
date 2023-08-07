@@ -1,23 +1,37 @@
 <script setup lang="ts">
 import { Application } from "vue3-pixi";
+import { SerializedGameState } from "../../game-engine/src";
 
-const { player, height, width } = defineProps<{
+const { state, height, width } = defineProps<{
   width: number;
   height: number;
   player: { id: string; name: string };
+  state: SerializedGameState;
 }>();
-const text = computed(() => `hello ${player.name} from game Client`);
+
+const getPosition = (pos: { x: number; y: number }) => {
+  return {
+    x: (pos.x * width) / state.map.width,
+    y: (pos.y * height) / state.map.height,
+  };
+};
 </script>
 
 <template>
-  <Application :width="width" :height="height">
-    <text
-      :anchor="0.5"
-      :x="width / 2"
-      :y="height / 2"
-      :style="{ fill: 'white' }"
-    >
-      {{ text }}
-    </text>
-  </Application>
+  <div class="game-client-wrapper" @keydown.stop @keyup.stop @click.stop>
+    <Application :width="width" :height="height">
+      <graphics
+        v-bind="getPosition(entity.position)"
+        v-for="entity in state.entities"
+        @render="
+          (graphics) => {
+            graphics.clear();
+            graphics.beginFill(0xde3249);
+            graphics.drawCircle(0, 0, 50);
+            graphics.endFill();
+          }
+        "
+      />
+    </Application>
+  </div>
 </template>

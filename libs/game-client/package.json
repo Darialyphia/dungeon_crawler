@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "pixi.js": "^7.2.4",
+    "@dungeon-crawler/game-engine": "*",
     "unplugin-auto-import": "^0.16.6",
     "vue": "^3.3.4",
     "vue3-pixi": "^0.7.8"

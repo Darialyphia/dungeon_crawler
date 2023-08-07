@@ -8,10 +8,6 @@ export type GameEventHandler<T extends AnyZodObject> = {
   handler: (arg: { input: z.infer<T>; state: GameState }) => void;
 };
 
-export const defineEventHandler = <T extends AnyZodObject>(
-  handler: GameEventHandler<T>
-) => handler;
-
 export type Events = EventMap & {
   tick: GameState;
 };

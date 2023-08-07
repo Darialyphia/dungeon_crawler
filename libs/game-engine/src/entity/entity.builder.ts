@@ -20,7 +20,7 @@ export type ECSEntityBuilder<T extends ECSEntity> = {
   build(): T;
 };
 
-function entityBuilder<T extends ECSEntity>(
+export function entityBuilder<T extends ECSEntity>(
   internals: ECSInternals,
   builder = pipeBuilder<ECSEntity, T>((e: ECSEntity) => e as T)
 ): ECSEntityBuilder<T> {

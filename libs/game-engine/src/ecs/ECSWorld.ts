@@ -5,7 +5,7 @@ import type { ECSComponent } from './ECSComponent';
 import { type Intersect, pipeBuilder } from '@dungeon-crawler/shared';
 import type { BrandsFromComponents } from './types';
 import type { ECSSystem, ECSSystemProps } from './ECSSystem';
-import { ECSEntityBuilder } from '../entity/entity.builder';
+import { ECSEntityBuilder, entityBuilder } from '../entity/entity.builder';
 
 export interface ECSWorld {
   createEntity(): ECSEntityBuilder<ECSEntity>;
@@ -177,7 +177,4 @@ export function createWorld(): ECSWorld {
   };
 
   return world;
-}
-function entityBuilder(internals: ECSInternals): ECSEntityBuilder<ECSEntity> {
-  throw new Error('Function not implemented.');
 }

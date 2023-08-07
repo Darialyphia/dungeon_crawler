@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { defineEventHandler } from '../emitter';
+import { defineEventHandler } from '../utils';
 
 export const moveEvent = defineEventHandler({
   input: z.object({ x: z.number(), y: z.number() }),
