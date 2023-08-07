@@ -5,11 +5,9 @@ import GameClient from "./GameClient.vue";
 const root = ref();
 const { width, height } = useElementBounding(root);
 
-const player = { id: "player", name: "Player" };
+const state = ref<SerializedGameState>();
 
 const engine = createGame();
-
-const state = ref<SerializedGameState>();
 engine.subscribe((newState) => {
   state.value = newState;
 });
@@ -22,7 +20,7 @@ engine.start();
     <GameClient
       v-if="state"
       :width="width"
-      :player="player"
+      :player="{ id: 'player', name: 'Player' }"
       :height="height"
       :state="state"
     />

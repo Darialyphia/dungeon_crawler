@@ -43,7 +43,7 @@ const onSubmit = handleSubmit(values => mutate(values));
 
       <p>
         You can now
-        <RouterLink :to="{ name: 'Register' }" class="underline">
+        <RouterLink :to="{ name: 'Login' }" class="underline">
           sign in with your new password.
         </RouterLink>
       </p>

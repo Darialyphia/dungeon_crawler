@@ -15,7 +15,6 @@ declare module 'vue-router/auto' {
 const app = createApp(App);
 
 app.use(VueQueryPlugin, { queryClient: container.resolve('queryClient') });
-
 app.use(
   createRouter({
     history: createWebHistory()
