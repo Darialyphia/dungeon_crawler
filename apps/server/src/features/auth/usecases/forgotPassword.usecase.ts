@@ -45,7 +45,7 @@ export const forgotPasswordUsecase =
         template: 'askForPasswordReset',
         head: { to: email!, subject: 'Password reset' },
         variables: {
-          link: `${origin}/reset-password?email=${email}&token=${token.right.value}`
+          link: `${origin}/reset-password?email=${email}&token=${value}`
         }
       });
     } catch (err) {

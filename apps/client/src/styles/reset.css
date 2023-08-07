@@ -17,7 +17,7 @@ p {
   max-inline-size: 100%;
 }
 
-:where(a[href]) {
+:is(a[href], a[href]:hover, a[href]:visited) {
   color: inherit;
   text-decoration: none;
 }

@@ -46,14 +46,15 @@ export const createAppError =
     message,
     kind,
     cause
-  }: { meta?: AnyObject; message?: string; kind?: ErrorKind; cause?: Error } = {}): T =>
-    new AppError(
+  }: { meta?: AnyObject; message?: string; kind?: ErrorKind; cause?: Error } = {}): T => {
+    return new AppError(
       message ?? defaultMessage,
       statusCode,
       kind ?? defaultKind,
       meta,
       cause
     ) as T;
+  };
 
 export type UnprocessableError = AppError & {
   statusCode: 422;

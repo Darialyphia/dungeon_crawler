@@ -5,6 +5,7 @@ import handlebars from 'handlebars';
 import { UnexpectedError, errorFactory } from '../../utils/errorFactory';
 import { AnyObject, isDefined, isString } from '@dungeon-crawler/shared';
 import { resolve } from 'path';
+import { readFile } from 'fs/promises';
 import { config } from '../../config';
 
 export type EmailOptions = {
@@ -25,13 +26,12 @@ export const emailService = (): EmailService => {
       throw errorFactory.unexpected({ message: `Unknown email template: ${name}` });
     }
 
-    return path;
+    return readFile(path, { encoding: 'utf-8' });
   };
 
   const getTransport = () => {
     const useMaildev =
       isDefined(config.MAILING.MAILDEV.HOST) && isDefined(config.MAILING.MAILDEV.PORT);
-
     if (useMaildev) {
       return nodemailer.createTransport({
         // @ts-ignore
@@ -66,6 +66,7 @@ export const emailService = (): EmailService => {
 
         return E.right(null);
       } catch (err) {
+        console.log(err);
         return E.left(errorFactory.unexpected({ cause: new Error(String(err)) }));
       }
     }

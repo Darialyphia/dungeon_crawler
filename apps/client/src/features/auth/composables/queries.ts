@@ -6,6 +6,7 @@ import { type Nullable } from '@dungeon-crawler/shared';
 import { contract, type Contract } from '@dungeon-crawler/contract';
 import { queryKeys, type QueryKeys } from '@/features/core/queryKeys';
 import type { AuthApi, LoginResponse } from '../providers/auth.api';
+import type { PasswordResetApi } from '../providers/passwordReset.api';
 
 export const useLogin = (
   options: UseApiMutationOptions<Contract['auth']['login'], AuthApi['login']> = {}
@@ -54,4 +55,30 @@ export const useSession = (
     enabled: isAuthenticated,
     route: contract.auth.session
   });
+};
+
+export const useForgotPassword = (
+  options: UseApiMutationOptions<
+    Contract['auth']['forgotPassword'],
+    PasswordResetApi['forgotPassword']
+  > = {}
+) => {
+  const { passwordResetApi } = useContainer();
+
+  return useApiMutation(
+    contract.auth.forgotPassword,
+    passwordResetApi.forgotPassword,
+    options
+  );
+};
+
+export const useResetPassword = (
+  options: UseApiMutationOptions<
+    Contract['auth']['resetPassword'],
+    PasswordResetApi['reset']
+  > = {}
+) => {
+  const { passwordResetApi } = useContainer();
+
+  return useApiMutation(contract.auth.resetPassword, passwordResetApi.reset, options);
 };

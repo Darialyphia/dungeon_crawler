@@ -92,7 +92,7 @@ export const config = configSchema.parse({
   MAILING: {
     MAILDEV: {
       HOST: process.env.MAILDEV_HOST,
-      PORT: process.env.MAILDEV_PORT
+      PORT: process.env.MAILDEV_SMTP_PORT
     },
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY
   }

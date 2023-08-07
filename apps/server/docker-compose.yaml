@@ -15,7 +15,8 @@ services:
   maildev:
     image: maildev/maildev
     ports:
-      - ${MAILDEV_PORT}:${MAILDEV_PORT}
+      - ${MAILDEV_HTTP_PORT}:${MAILDEV_HTTP_PORT}
+      - ${MAILDEV_SMTP_PORT}:${MAILDEV_SMTP_PORT}
 
 volumes:
   idle-game:

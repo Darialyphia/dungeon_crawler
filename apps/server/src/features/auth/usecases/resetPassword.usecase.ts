@@ -49,7 +49,9 @@ export const resetPasswordUsecase =
 
       const isTokenValid = await compare(input.token, token.right.value);
       if (!isTokenValid) {
-        return E.left(errorFactory.unauthorized());
+        return E.left(
+          errorFactory.unauthorized({ message: 'invalid password reset token' })
+        );
       }
 
       const decoded = await tokenService.verifyPasswordResetToken(input.token);

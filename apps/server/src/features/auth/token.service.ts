@@ -25,7 +25,7 @@ export const tokenService = (): TokenService => {
     try {
       return right(jwt.verify(token, secret) as jwt.JwtPayload);
     } catch (err) {
-      return left(errorFactory.unauthorized());
+      return left(errorFactory.unauthorized({ cause: new Error(String(err)) }));
     }
   };
 
