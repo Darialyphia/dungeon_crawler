@@ -29,6 +29,11 @@ const configSchema = z.object({
     SECURE: z.boolean()
   }),
 
+  PASSWORD_RESET: z.object({
+    SECRET: z.string(),
+    EXPIRES_IN_SECONDS: z.number()
+  }),
+
   MAILING: z.union([
     z.object({
       MAILDEV: z.object({
@@ -77,6 +82,11 @@ export const config = configSchema.parse({
     HTTPONLY: true,
     SECURE: process.env.NODE_ENV === 'production',
     SAMESITE: 'lax'
+  },
+
+  PASSWORD_RESET: {
+    SECRET: 'todo',
+    EXPIRES_IN_SECONDS: ONE_MINUTE_IN_SECONDS * 30
   },
 
   MAILING: {

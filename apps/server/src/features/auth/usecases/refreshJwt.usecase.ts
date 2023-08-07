@@ -8,7 +8,7 @@ import { UserRepository } from '../../user/user.repository';
 import { UseCase } from '../../../utils/helpers';
 import { isLeft, left, right } from 'fp-ts/Either';
 import { AccessToken, RefreshToken, TokenService } from '../token.service';
-import { RefreshTokenRepository } from '../refreshToken.repository';
+import { RefreshTokenRepository } from '../repositories/refreshToken.repository';
 import { Response, Request } from 'express';
 import { config } from '../../../config';
 import { REFRESH_TOKEN_COOKIE } from '../../../utils/constants';

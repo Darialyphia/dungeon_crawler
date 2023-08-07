@@ -2,7 +2,7 @@ import { initContract } from '@ts-rest/core';
 import { DefaultResponse, ErrorResponse } from '../core';
 import { z } from 'zod';
 import { TokenResponse } from './auth.schemas';
-import { UserResponse } from '../user/user.schemas';
+import { UserPassword, UserResponse } from '../user/user.schemas';
 
 const c = initContract();
 
@@ -50,6 +50,33 @@ export const authContract = c.router(
         401: ErrorResponse,
         500: ErrorResponse
       }
+    },
+    forgotPassword: {
+      method: 'POST',
+      path: '/forgot-password',
+      responses: {
+        200: DefaultResponse,
+        404: ErrorResponse,
+        500: ErrorResponse
+      },
+      body: z.object({
+        email: z.string()
+      })
+    },
+    resetPassword: {
+      method: 'POST',
+      path: '/reset-password',
+      responses: {
+        200: DefaultResponse,
+        404: ErrorResponse,
+        401: ErrorResponse,
+        500: ErrorResponse
+      },
+      body: z.object({
+        password: UserPassword,
+        token: z.string(),
+        email: z.string()
+      })
     }
   },
   {

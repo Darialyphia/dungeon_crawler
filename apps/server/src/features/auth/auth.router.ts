@@ -4,6 +4,7 @@ import { HTTP_STATUS_CODES, errorFactory } from '../../utils/errorFactory';
 import { pipe } from 'fp-ts/function';
 import * as E from 'fp-ts/Either';
 import { makeSuccess } from '../../utils/helpers';
+import { errorMapper } from '../core/mappers/error.mapper';
 
 const s = initServer();
 
@@ -83,6 +84,46 @@ export const authRouter = s.router(contract.auth, {
         result => ({
           status: HTTP_STATUS_CODES.OK,
           body: userMapper.toResponse(result)
+        })
+      )
+    );
+  },
+
+  async forgotPassword({ body, req: { container } }) {
+    const { errorMapper, forgotPasswordUseCase } = container.cradle;
+
+    return pipe(
+      await forgotPasswordUseCase(body.email),
+      E.matchW(
+        err => {
+          return {
+            status: err.statusCode,
+            body: errorMapper.toResponse(err)
+          };
+        },
+        () => ({
+          status: HTTP_STATUS_CODES.OK,
+          body: makeSuccess()
+        })
+      )
+    );
+  },
+
+  async resetPassword({ body, req: { container } }) {
+    const { errorMapper, resetPasswordUseCase } = container.cradle;
+
+    return pipe(
+      await resetPasswordUseCase(body),
+      E.matchW(
+        err => {
+          return {
+            status: err.statusCode,
+            body: errorMapper.toResponse(err)
+          };
+        },
+        () => ({
+          status: HTTP_STATUS_CODES.OK,
+          body: makeSuccess()
         })
       )
     );

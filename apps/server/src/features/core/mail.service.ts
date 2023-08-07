@@ -1,7 +1,8 @@
 import * as nodemailer from 'nodemailer';
 import sendgridTransport from 'nodemailer-sendgrid';
+import * as E from 'fp-ts/Either';
 import handlebars from 'handlebars';
-import { errorFactory } from '../../utils/errorFactory';
+import { UnexpectedError, errorFactory } from '../../utils/errorFactory';
 import { AnyObject, isDefined, isString } from '@dungeon-crawler/shared';
 import { resolve } from 'path';
 import { config } from '../../config';
@@ -13,7 +14,7 @@ export type EmailOptions = {
 };
 
 export type EmailService = {
-  send(options: EmailOptions): Promise<void>;
+  send(options: EmailOptions): Promise<E.Either<UnexpectedError, null>>;
 };
 
 export const emailService = (): EmailService => {
@@ -26,6 +27,7 @@ export const emailService = (): EmailService => {
 
     return path;
   };
+
   const getTransport = () => {
     const useMaildev =
       isDefined(config.MAILING.MAILDEV.HOST) && isDefined(config.MAILING.MAILDEV.PORT);
@@ -51,15 +53,21 @@ export const emailService = (): EmailService => {
 
   return {
     async send(options: EmailOptions) {
-      const compileSource = handlebars.compile(await getTemplatePath(options.template));
+      try {
+        const compileSource = handlebars.compile(await getTemplatePath(options.template));
 
-      const transporter = getTransport();
-      await transporter.sendMail({
-        from: 'Dungeon Crawler <ceo-of-based@gmail.com>',
-        to: options.head.to,
-        subject: options.head.subject,
-        html: compileSource(options.variables)
-      });
+        const transporter = getTransport();
+        await transporter.sendMail({
+          from: 'Dungeon Crawler <ceo-of-based@gmail.com>',
+          to: options.head.to,
+          subject: options.head.subject,
+          html: compileSource(options.variables)
+        });
+
+        return E.right(null);
+      } catch (err) {
+        return E.left(errorFactory.unexpected({ cause: new Error(String(err)) }));
+      }
     }
   };
 };

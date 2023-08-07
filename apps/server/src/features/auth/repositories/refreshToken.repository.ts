@@ -1,10 +1,10 @@
 import { PrismaClient } from '@prisma/client';
 import * as E from 'fp-ts/Either';
-import { handlePrismaError, prismaNotFoundMatchers } from '../../utils/prisma';
-import { NotFoundError, UnexpectedError } from '../../utils/errorFactory';
+import { handlePrismaError, prismaNotFoundMatchers } from '../../../utils/prisma';
+import { NotFoundError, UnexpectedError } from '../../../utils/errorFactory';
 import { UUID } from '@dungeon-crawler/contract';
-import { RefreshToken } from './refreshToken.entity';
-import { TokenService } from './token.service';
+import { RefreshToken } from '../entities/refreshToken.entity';
+import { TokenService } from '../token.service';
 
 export type HashedRefreshToken = string;
 

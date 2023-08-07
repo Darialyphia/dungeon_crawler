@@ -1,7 +1,7 @@
 import { UnexpectedError } from '../../../utils/errorFactory';
 import { UseCase } from '../../../utils/helpers';
 import { left, right } from 'fp-ts/Either';
-import { RefreshTokenRepository } from '../refreshToken.repository';
+import { RefreshTokenRepository } from '../repositories/refreshToken.repository';
 import { Response, Request } from 'express';
 import { REFRESH_TOKEN_COOKIE } from '../../../utils/constants';
 import { handlePrismaError } from '../../../utils/prisma';

@@ -33,6 +33,10 @@ export type UserRepository = {
     id: UUID,
     profile: UpdateProfileInput
   ): Promise<E.Either<UnexpectedError | NotFoundError, User>>;
+  resetPasswordByEmail(
+    email: string,
+    password: string
+  ): Promise<E.Either<UnexpectedError | NotFoundError, User>>;
 };
 
 export const userRepository = ({ prisma }: { prisma: PrismaClient }): UserRepository => {
@@ -86,6 +90,24 @@ export const userRepository = ({ prisma }: { prisma: PrismaClient }): UserReposi
         const user = await prisma.user.update({
           where: { id },
           data: profile
+        });
+
+        return E.right(user);
+      } catch (err) {
+        return E.left(handlePrismaError(prismaNotFoundMatchers)(err));
+      }
+    },
+
+    async resetPasswordByEmail(email, passwordHash) {
+      try {
+        const user = await prisma.user.update({
+          where: { email },
+          data: {
+            passwordHash,
+            passwordResetToken: {
+              delete: true
+            }
+          }
         });
 
         return E.right(user);

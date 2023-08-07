@@ -8,16 +8,25 @@ datasource db {
 }
 
 model User {
-  id           String        @id @unique @default(cuid())
-  email        String        @unique
-  name         String?
-  passwordHash String
-  createdAt    DateTime      @default(now())
-  updatedAt    DateTime?     @updatedAt
-  refreshToken RefreshToken?
+  id                 String              @id @unique @default(cuid())
+  email              String              @unique
+  name               String?
+  passwordHash       String
+  createdAt          DateTime            @default(now())
+  updatedAt          DateTime?           @updatedAt
+  refreshToken       RefreshToken?
+  passwordResetToken PasswordResetToken?
 }
 
 model RefreshToken {
+  id        String   @id @unique @default(cuid())
+  createdAt DateTime @default(now())
+  value     String   @unique @db.VarChar(200)
+  userId    String   @unique
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model PasswordResetToken {
   id        String   @id @unique @default(cuid())
   createdAt DateTime @default(now())
   value     String   @unique @db.VarChar(200)
