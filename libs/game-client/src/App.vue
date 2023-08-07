@@ -23,6 +23,7 @@ engine.start();
       :player="{ id: 'player', name: 'Player' }"
       :height="height"
       :state="state"
+      @move="engine.dispatch('move', { ...$event, playerId: 'player' })"
     />
   </div>
 </template>
@@ -37,6 +38,7 @@ body,
   height: 100vh;
   overflow: hidden;
 }
+
 div {
   height: 100%;
 }

@@ -5,6 +5,7 @@ import { z } from 'zod';
 import { TICK_RATE } from './constants';
 import { Position, PositionBrand } from './components/position';
 
+export type { EventMap };
 export type SerializedGameState = {
   map: GameState['map'];
   entities: Position[];
