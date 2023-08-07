@@ -1,7 +1,9 @@
 <script setup lang="ts">
-import Client from "./Client.vue";
+import GameClient from "./GameClient.vue";
+
+const player = { id: "player", name: "Player" };
 </script>
 
 <template>
-  <Client />
+  <GameClient :width="800" :player="player" :height="600" />
 </template>

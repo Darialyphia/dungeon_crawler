@@ -20,6 +20,7 @@ declare module 'vue' {
     OnboardingModal: typeof import('./src/features/user/components/OnboardingModal.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    ServiceWorkerPrompt: typeof import('./src/features/core/components/ServiceWorkerPrompt.vue')['default']
     SignupForm: typeof import('./src/features/user/components/SignupForm.vue')['default']
     UiButton: typeof import('./src/features/ui/components/buttons/UiButton.vue')['default']
     UiButtonBase: typeof import('./src/features/ui/components/buttons/UiButtonBase.vue')['default']

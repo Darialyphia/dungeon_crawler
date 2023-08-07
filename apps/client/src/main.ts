@@ -23,6 +23,9 @@ app.use(
 );
 app.provide(CONTAINER_INJECTION_KEY, container.cradle);
 
-container.cradle.authApi.init().finally(() => {
-  app.mount('#app');
-});
+container
+  .resolve('authApi')
+  .init()
+  .finally(() => {
+    app.mount('#app');
+  });
