@@ -27,7 +27,24 @@ const configSchema = z.object({
     HTTPONLY: z.boolean(),
     SAMESITE: z.enum(['none', 'lax', 'strict']),
     SECURE: z.boolean()
-  })
+  }),
+
+  MAILING: z.union([
+    z.object({
+      MAILDEV: z.object({
+        HOST: z.undefined(),
+        PORT: z.undefined()
+      }),
+      SENDGRID_API_KEY: z.string()
+    }),
+    z.object({
+      MAILDEV: z.object({
+        HOST: z.string(),
+        PORT: z.string()
+      }),
+      SENDGRID_API_KEY: z.undefined()
+    })
+  ])
 });
 
 export const config = configSchema.parse({
@@ -60,6 +77,14 @@ export const config = configSchema.parse({
     HTTPONLY: true,
     SECURE: process.env.NODE_ENV === 'production',
     SAMESITE: 'lax'
+  },
+
+  MAILING: {
+    MAILDEV: {
+      HOST: process.env.MAILDEV_HOST,
+      PORT: process.env.MAILDEV_PORT
+    },
+    SENDGRID_API_KEY: process.env.SENDGRID_API_KEY
   }
 });
 
