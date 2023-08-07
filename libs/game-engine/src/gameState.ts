@@ -1,15 +1,15 @@
 import { IndexedArray, createIndexedArray } from '@dungeon-crawler/shared';
-import { Entity } from './entity';
+import { ECSWorld, createWorld } from './ecs/ECSWorld';
 
 export type GameState = {
   isRunning: boolean;
-  entities: IndexedArray<Entity, 'id'>;
+  world: ECSWorld;
 };
 
 export const createGameState = (): GameState => {
   const state: GameState = {
     isRunning: false,
-    entities: createIndexedArray<Entity>([]).addIndex('id', entity => entity.id)
+    world: createWorld()
   };
 
   return state;

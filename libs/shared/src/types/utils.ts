@@ -22,6 +22,13 @@ export type Defined<T> = Exclude<T, undefined | null>;
 export type Prettify<T> = {
   [K in keyof T]: T[K];
 } & {};
+export type Intersect<X extends any[]> = X extends []
+  ? never
+  : X extends [head: infer A]
+  ? A
+  : X extends [head: infer A, ...tail: infer B]
+  ? A & Intersect<[...B]>
+  : never;
 
 export type ApiError = {
   message: string;
@@ -36,7 +43,6 @@ type Cast<X, Y> = X extends Y ? X : Y;
 type FromEntries<T> = T extends [infer Key, any][]
   ? { [K in Cast<Key, string>]: Extract<ArrayElement<T>, [K, any]>[1] }
   : { [key in string]: any };
-
 export type FromEntriesWithReadOnly<T> = FromEntries<DeepWriteable<T>>;
 
 export type ToString<T extends PropertyKey> =

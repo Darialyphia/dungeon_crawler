@@ -6,3 +6,4 @@ export * from './math';
 export * from './vectors';
 export * from './awilix';
 export * from './constants';
+export * from './pipe-builder';

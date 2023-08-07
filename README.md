@@ -53,3 +53,7 @@ yarn start
 ```
 
 The server will run on port 5000
+
+## License
+
+[MIT](./LICENSE)
