@@ -2,12 +2,15 @@ import { AnyZodObject } from 'zod';
 import { GameEventHandler } from './emitter';
 import { Intersect } from '@dungeon-crawler/shared';
 import * as O from 'fp-ts/Option';
-import type { ECSComponent, ECSComponentBuilder } from './ecs/ECSComponent';
+import type {
+  ECSComponent,
+  ECSComponentBuilder
+} from './features/ecs/ECSComponent';
 
-import { ecsComponent, has } from './ecs/ECSComponent';
-import { BrandFromComponent, BrandsFromComponents } from './ecs/types';
-import { ECSWorld } from './ecs/ECSWorld';
-import { ECSEntity } from './ecs/ECSEntity';
+import { ecsComponent, has } from './features/ecs/ECSComponent';
+import { BrandFromComponent, BrandsFromComponents } from './features/ecs/types';
+import { ECSWorld } from './features/ecs/ECSWorld';
+import { ECSEntity } from './features/ecs/ECSEntity';
 
 export const defineEventHandler = <T extends AnyZodObject>(
   handler: GameEventHandler<T>

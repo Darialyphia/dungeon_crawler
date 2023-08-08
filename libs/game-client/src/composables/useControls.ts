@@ -1,4 +1,5 @@
-import { Dispatcher, GameClientEmitter } from "./useDispatch";
+import { Dispatcher } from "./useDispatch";
+import { useKeydownOnce } from "./useKeydownOnce";
 
 export const useControls = (dispatch: Dispatcher) => {
   const pressedKeys = {
@@ -38,6 +39,6 @@ export const useControls = (dispatch: Dispatcher) => {
   const onKeydown = keyboardHandler(true);
   const onKeyup = keyboardHandler(false);
 
-  useEventListener(window, "keydown", onKeydown);
-  useEventListener(window, "keydown", onKeyup);
+  useKeydownOnce(onKeydown);
+  useEventListener(window, "keyup", onKeyup);
 };

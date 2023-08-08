@@ -1,9 +1,38 @@
 import { z } from 'zod';
 import { defineEventHandler } from '../utils';
-import { Player, getPlayerById } from '../components/player';
-import { position, Position } from '../components/position';
-import { addVector } from '@dungeon-crawler/shared';
+import { Point, addVector, setMagnitude } from '@dungeon-crawler/shared';
 import { isNone } from 'fp-ts/Option';
+import { getPlayerById } from '../features/player/player.components';
+import {
+  type BBox,
+  type Velocity,
+  bbox,
+  velocity
+} from '../features/physics/physics.components';
+
+type Directions = {
+  up: boolean;
+  down: boolean;
+  left: boolean;
+  right: boolean;
+};
+
+export function computeVelocity(directions: Directions): Point {
+  const vel = { x: 0, y: 0 };
+  if (directions.right) {
+    vel.x += 1;
+  }
+  if (directions.left) {
+    vel.x -= 1;
+  }
+  if (directions.up) {
+    vel.y -= 1;
+  }
+  if (directions.down) {
+    vel.y += 1;
+  }
+  return vel;
+}
 
 export const moveEvent = defineEventHandler({
   input: z.object({
@@ -14,22 +43,16 @@ export const moveEvent = defineEventHandler({
     right: z.boolean()
   }),
   handler: ({ input, state }) => {
-    const playerOption = getPlayerById<[Position]>(input.playerId)(
+    const optionPlayer = getPlayerById<[BBox, Velocity]>(input.playerId)(
       state.world,
-      [position.brand]
+      [bbox.brand, velocity.brand]
     );
-    if (isNone(playerOption)) return;
 
-    const player = playerOption.value;
+    if (isNone(optionPlayer)) return;
+
+    const player = optionPlayer.value;
     if (player.player.id !== input.playerId) return;
 
-    let diff = { x: 0, y: 0 };
-
-    if (input.up) diff.y--;
-    if (input.down) diff.y++;
-    if (input.left) diff.x--;
-    if (input.right) diff.x++;
-
-    player.position = addVector(player.position, diff);
+    player.velocity.target = computeVelocity(input);
   }
 });

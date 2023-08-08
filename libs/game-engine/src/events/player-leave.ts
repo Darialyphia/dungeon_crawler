@@ -1,6 +1,6 @@
 import { z } from 'zod';
 import { defineEventHandler } from '../utils';
-import { Player, player } from '../components/player';
+import { player } from '../features/player/player.components';
 
 export const playerLeaveEvent = defineEventHandler({
   input: z.object({ id: z.string() }),

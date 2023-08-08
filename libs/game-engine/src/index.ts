@@ -1,27 +1,26 @@
 import { GameState, createGameState } from './gameState';
 import { createEmitter } from './emitter';
-import { EventMap } from './events';
-import { z } from 'zod';
+import { EventMap, inferEventInput } from './events';
 import { TICK_RATE } from './constants';
-import { Position, PositionBrand } from './components/position';
+import { BBox, bbox } from './features/physics/physics.components';
 
 export type { EventMap };
 export type SerializedGameState = {
   map: GameState['map'];
-  entities: Position[];
+  entities: BBox[];
 };
 
 export type Game = {
   dispatch: <T extends keyof EventMap>(
     type: T,
-    payload: z.infer<EventMap[T]['input']>
+    payload: inferEventInput<T>
   ) => void;
   subscribe: (cb: (state: SerializedGameState) => void) => () => void;
   start: () => void;
   stop: () => void;
 };
 
-export type GameFactory = () => Game;
+export type GameFactory = (opts: { debug?: boolean }) => Game;
 
 const tickDuration = 1000 / TICK_RATE;
 const perfWarning = (elapsed: number) => {
@@ -32,18 +31,27 @@ const perfWarning = (elapsed: number) => {
   );
 };
 
-export const createGame: GameFactory = () => {
+export const createGame: GameFactory = ({ debug = false }) => {
   const state = createGameState();
   const emitter = createEmitter(state);
 
+  if (debug) {
+    emitter.on('*', (e, payload) => {
+      if (e === 'tick') return;
+      console.log(e, payload);
+    });
+  }
   let interval: ReturnType<typeof setInterval> | null;
+  let lastTick = performance.now();
 
   const tick = () => {
     const now = performance.now();
 
-    // TODO Gameloop
+    const delta = now - lastTick;
+    state.world.runSystems({ delta });
 
     emitter.emit('tick', state);
+    lastTick = now;
 
     const elapsed = performance.now() - now;
     if (elapsed > tickDuration) {
@@ -54,7 +62,7 @@ export const createGame: GameFactory = () => {
   const serializeState = (state: GameState): SerializedGameState => {
     return {
       map: state.map,
-      entities: state.world.entitiesByComponent<[Position]>([PositionBrand])
+      entities: bbox.findAll(state.world)
     };
   };
 

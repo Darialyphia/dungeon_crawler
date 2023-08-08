@@ -1,7 +1,7 @@
 import { pipeBuilder } from '@dungeon-crawler/shared';
-import { ECSComponent } from '../ecs/ECSComponent';
-import { ECSEntity } from '../ecs/ECSEntity';
-import { ECSInternals } from '../ecs/ECSWorld';
+import { ECSComponent } from './features/ecs/ECSComponent';
+import { ECSEntity } from './features/ecs/ECSEntity';
+import { ECSInternals } from './features/ecs/ECSWorld';
 
 /**
  * Mutably changes the entity by adding the component to it

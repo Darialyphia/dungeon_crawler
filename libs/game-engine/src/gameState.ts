@@ -1,4 +1,5 @@
-import { ECSWorld, createWorld } from './ecs/ECSWorld';
+import { ECSWorld, createWorld } from './features/ecs/ECSWorld';
+import { physicsSystem } from './features/physics/physics.system';
 
 export type GameState = {
   isRunning: boolean;
@@ -13,7 +14,7 @@ export const createGameState = (): GameState => {
       width: 100,
       height: 100
     },
-    world: createWorld()
+    world: createWorld().addSystem('physics', physicsSystem())
   };
 
   return state;

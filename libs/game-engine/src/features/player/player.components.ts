@@ -1,5 +1,5 @@
+import { defineECSComponent, inferComponent } from '../../utils';
 import { ECSComponent } from '../ecs/ECSComponent';
-import { defineECSComponent, inferComponent } from '../utils';
 
 export type PlayerId = string;
 

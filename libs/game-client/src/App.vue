@@ -7,7 +7,7 @@ const { width, height } = useElementBounding(root);
 
 const state = ref<SerializedGameState>();
 
-const engine = createGame();
+const engine = createGame({ debug: true });
 engine.subscribe((newState) => {
   state.value = newState;
 });

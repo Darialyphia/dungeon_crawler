@@ -5,7 +5,7 @@ import type { ECSComponent } from './ECSComponent';
 import { type Intersect, pipeBuilder } from '@dungeon-crawler/shared';
 import type { BrandsFromComponents } from './types';
 import type { ECSSystem, ECSSystemProps } from './ECSSystem';
-import { ECSEntityBuilder, entityBuilder } from '../entity/entity.builder';
+import { ECSEntityBuilder, entityBuilder } from '../../entity';
 
 export interface ECSWorld {
   createEntity(): ECSEntityBuilder<ECSEntity>;
@@ -33,7 +33,7 @@ export interface ECSWorld {
   addSystem<T extends ECSComponent<string>[]>(
     name: string,
     system: ECSSystem<T>
-  ): void;
+  ): ECSWorld;
 
   removeSystem(name: string): void;
 
@@ -157,6 +157,8 @@ export function createWorld(): ECSWorld {
         name,
         new Set([...targets].map(e => e.entity_id))
       );
+
+      return world;
     },
 
     removeSystem(name: string): void {
