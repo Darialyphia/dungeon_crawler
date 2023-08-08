@@ -20,12 +20,21 @@ useDispatchProvider(emit);
 useControls(emit);
 
 const getPosition = (entityId: number) => {
-  const pos = props.state.entities[entityId].bbox;
+  const { bbox } = props.state.entities[entityId];
 
   return {
-    x: (pos.x * props.width) / props.state.map.width,
-    y: (pos.y * props.height) / props.state.map.height,
+    x: (bbox.x * props.width) / props.state.map.width,
+    y: (bbox.y * props.height) / props.state.map.height,
   };
+};
+
+const getSize = (entityId: number) => {
+  const { bbox } = props.state.entities[entityId];
+
+  return [
+    (bbox.w * props.width) / props.state.map.width,
+    (bbox.h * props.height) / props.state.map.height,
+  ] as const;
 };
 </script>
 
@@ -39,7 +48,7 @@ const getPosition = (entityId: number) => {
         (graphics) => {
           graphics.clear();
           graphics.beginFill(0xde3249);
-          graphics.drawCircle(0, 0, 25);
+          graphics.drawEllipse(0, 0, ...getSize(entity));
           graphics.endFill();
         }
       "

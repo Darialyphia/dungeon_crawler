@@ -14,8 +14,9 @@ export const createGameState = (): GameState => {
       width: 100,
       height: 100
     },
-    world: createWorld().addSystem('physics', physicsSystem())
+    world: createWorld()
   };
 
+  state.world.addSystem('physics', physicsSystem(state));
   return state;
 };
