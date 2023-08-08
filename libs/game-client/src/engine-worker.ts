@@ -6,7 +6,7 @@ const engine = createGame({ debug: false });
 engine.start();
 
 self.addEventListener("message", ({ data }) => {
-  engine.dispatch(data.name, data.payload);
+  engine.dispatch(data.type, data.payload);
 });
 
 engine.subscribe((state) => {

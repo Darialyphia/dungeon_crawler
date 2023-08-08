@@ -1,33 +1,20 @@
-import { EventMap, Game } from "@dungeon-crawler/game-engine";
-import { z } from "zod";
+import { GameEngine } from "@dungeon-crawler/game-engine";
+import { useSafeInject } from "./useSafeInject";
 
-export type GameClientEvents = Omit<EventMap, "tick" | "join" | "leave">;
-
-type GameClientEventArg<T extends keyof GameClientEvents> = Omit<
-  z.infer<GameClientEvents[T]["input"]>,
-  "playerId"
->;
-
-export type GameClientEmitter = {
-  move: [GameClientEventArg<"move">];
+export type DispatcherArg = {
+  type: Parameters<GameEngine["dispatch"]>[0];
+  payload: Parameters<GameEngine["dispatch"]>[1];
 };
-
-export type Dispatcher = <T extends keyof GameClientEvents>(
-  name: T,
-  arg: GameClientEventArg<T>
-) => void;
+export type Dispatcher = (arg: DispatcherArg) => void;
 
 export const DISPATCHER_INJECTION_KEY = Symbol(
   "dispatcher"
 ) as InjectionKey<Dispatcher>;
 
-export const useDispatchProvider = (
-  emit: <T extends keyof GameClientEvents>(
-    name: T,
-    arg: GameClientEventArg<T>
-  ) => void
-) => {
-  provide(DISPATCHER_INJECTION_KEY, emit);
+export const useDispatchProvider = (dispatcher: Dispatcher) => {
+  provide(DISPATCHER_INJECTION_KEY, dispatcher);
+
+  return dispatcher;
 };
 
-export const useDispatch = () => inject(DISPATCHER_INJECTION_KEY)!;
+export const useDispatch = () => useSafeInject(DISPATCHER_INJECTION_KEY)!;

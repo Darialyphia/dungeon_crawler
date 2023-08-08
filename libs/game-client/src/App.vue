@@ -14,7 +14,7 @@ worker.addEventListener("message", ({ data }) => {
   state.value = data;
 });
 worker.postMessage({
-  name: "join",
+  type: "join",
   payload: { id: "player" },
 });
 </script>
@@ -27,12 +27,7 @@ worker.postMessage({
       :player="{ id: 'player', name: 'Player' }"
       :height="height"
       :state="state"
-      @move="
-        worker.postMessage({
-          name: 'move',
-          payload: { ...$event, playerId: 'player' },
-        })
-      "
+      @game:event="worker.postMessage($event)"
     />
   </div>
 </template>

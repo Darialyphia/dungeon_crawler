@@ -4,12 +4,12 @@ import { EventMap, inferEventInput } from './events';
 import { TICK_RATE } from './constants';
 import { BBox, bbox } from './features/physics/physics.components';
 import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
+import { Player, player } from './features/player/player.components';
 
 export type { EventMap };
 export type SerializedGameState = {
   map: GameState['map'];
-  entityIds: number[];
-  entities: Record<ECSEntityId, ECSEntity & BBox>;
+  players: Record<ECSEntityId, ECSEntity & BBox & Player>;
   t: number;
 };
 
@@ -66,12 +66,11 @@ export const createGame: GameFactory = ({ debug = false }) => {
     state: GameState,
     timestamp: number
   ): SerializedGameState => {
-    const entities = bbox.findAll(state.world);
+    const players = player.findAll<[BBox]>(state.world, [bbox.brand]);
 
     return {
       map: state.map,
-      entityIds: entities.map(e => e.entity_id),
-      entities: Object.fromEntries(entities.map(e => [e.entity_id, e])),
+      players: Object.fromEntries(players.map(e => [e.entity_id, e])),
       t: timestamp
     };
   };

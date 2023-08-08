@@ -1,7 +1,7 @@
-import { Dispatcher } from "./useDispatch";
+import { Dispatcher, useDispatch } from "./useDispatch";
 import { useKeydownOnce } from "./useKeydownOnce";
 
-export const useControls = (dispatch: Dispatcher) => {
+export const useControls = (dispatch: Dispatcher, playerId: string) => {
   const pressedKeys = {
     up: false,
     down: false,
@@ -30,7 +30,10 @@ export const useControls = (dispatch: Dispatcher) => {
       case "KeyA":
       case "KeyW":
       case "KeyS":
-        return dispatch("move", pressedKeys);
+        return dispatch({
+          type: "move",
+          payload: { ...pressedKeys, playerId },
+        });
       default:
         return;
     }
