@@ -10,7 +10,6 @@ export type { EventMap };
 export type SerializedGameState = {
   map: GameState['map'];
   players: Record<ECSEntityId, ECSEntity & BBox & Player>;
-  t: number;
 };
 
 export type GameEngine = {
@@ -62,16 +61,12 @@ export const createGame: GameFactory = ({ debug = false }) => {
     }
   };
 
-  const serializeState = (
-    state: GameState,
-    timestamp: number
-  ): SerializedGameState => {
+  const serializeState = (state: GameState): SerializedGameState => {
     const players = player.findAll<[BBox]>(state.world, [bbox.brand]);
 
     return {
       map: state.map,
-      players: Object.fromEntries(players.map(e => [e.entity_id, e])),
-      t: timestamp
+      players: Object.fromEntries(players.map(e => [e.entity_id, e]))
     };
   };
 
@@ -80,7 +75,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
     subscribe(cb) {
       const _cb = (state: GameState) => {
-        cb(serializeState(state, lastTick));
+        cb(serializeState(state));
       };
       emitter.on('tick', _cb);
 

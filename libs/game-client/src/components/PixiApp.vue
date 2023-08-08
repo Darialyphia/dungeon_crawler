@@ -7,7 +7,7 @@ const { state } = useGameState();
 
 <template>
   <Player
-    v-for="player in state.players"
+    v-for="player in state.snapshot.players"
     :key="player.entity_id"
     :player="player"
   />
