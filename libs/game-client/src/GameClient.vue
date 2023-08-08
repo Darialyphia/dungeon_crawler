@@ -6,9 +6,8 @@ import {
   useDispatchProvider,
 } from "./composables/useDispatch";
 import { useControls } from "./composables/useControls";
-import { Point } from "@dungeon-crawler/shared";
 
-const { state, height, width } = defineProps<{
+const props = defineProps<{
   width: number;
   height: number;
   player: { id: string; name: string };
@@ -19,10 +18,13 @@ const emit = defineEmits<GameClientEmitter>();
 
 useDispatchProvider(emit);
 useControls(emit);
-const getPosition = (pos: Point) => {
+
+const getPosition = (entityId: number) => {
+  const pos = props.state.entities[entityId].bbox;
+
   return {
-    x: (pos.x * width) / state.map.width,
-    y: (pos.y * height) / state.map.height,
+    x: (pos.x * props.width) / props.state.map.width,
+    y: (pos.y * props.height) / props.state.map.height,
   };
 };
 </script>
@@ -30,8 +32,9 @@ const getPosition = (pos: Point) => {
 <template>
   <Application :width="width" :height="height">
     <graphics
-      v-bind="getPosition(entity.bbox)"
-      v-for="entity in state.entities"
+      v-for="entity in state.entityIds"
+      :key="entity"
+      v-bind="getPosition(entity)"
       @render="
         (graphics) => {
           graphics.clear();

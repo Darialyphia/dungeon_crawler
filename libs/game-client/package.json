@@ -8,9 +8,11 @@
     "dev": "vite"
   },
   "dependencies": {
-    "pixi.js": "^7.2.4",
     "@dungeon-crawler/game-engine": "*",
+    "comlink": "^4.4.1",
+    "pixi.js": "^7.2.4",
     "unplugin-auto-import": "^0.16.6",
+    "vite-plugin-comlink": "^3.0.5",
     "vue": "^3.3.4",
     "vue3-pixi": "^0.7.8"
   },

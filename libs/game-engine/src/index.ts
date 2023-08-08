@@ -3,14 +3,17 @@ import { createEmitter } from './emitter';
 import { EventMap, inferEventInput } from './events';
 import { TICK_RATE } from './constants';
 import { BBox, bbox } from './features/physics/physics.components';
+import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
 
 export type { EventMap };
 export type SerializedGameState = {
   map: GameState['map'];
-  entities: BBox[];
+  entityIds: number[];
+  entities: Record<ECSEntityId, ECSEntity & BBox>;
+  t: number;
 };
 
-export type Game = {
+export type GameEngine = {
   dispatch: <T extends keyof EventMap>(
     type: T,
     payload: inferEventInput<T>
@@ -20,7 +23,7 @@ export type Game = {
   stop: () => void;
 };
 
-export type GameFactory = (opts: { debug?: boolean }) => Game;
+export type GameFactory = (opts: { debug?: boolean }) => GameEngine;
 
 const tickDuration = 1000 / TICK_RATE;
 const perfWarning = (elapsed: number) => {
@@ -50,8 +53,8 @@ export const createGame: GameFactory = ({ debug = false }) => {
     const delta = now - lastTick;
     state.world.runSystems({ delta });
 
-    emitter.emit('tick', state);
     lastTick = now;
+    emitter.emit('tick', state);
 
     const elapsed = performance.now() - now;
     if (elapsed > tickDuration) {
@@ -59,10 +62,17 @@ export const createGame: GameFactory = ({ debug = false }) => {
     }
   };
 
-  const serializeState = (state: GameState): SerializedGameState => {
+  const serializeState = (
+    state: GameState,
+    timestamp: number
+  ): SerializedGameState => {
+    const entities = bbox.findAll(state.world);
+
     return {
       map: state.map,
-      entities: bbox.findAll(state.world)
+      entityIds: entities.map(e => e.entity_id),
+      entities: Object.fromEntries(entities.map(e => [e.entity_id, e])),
+      t: timestamp
     };
   };
 
@@ -71,7 +81,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
     subscribe(cb) {
       const _cb = (state: GameState) => {
-        cb(serializeState(state));
+        cb(serializeState(state, lastTick));
       };
       emitter.on('tick', _cb);
 

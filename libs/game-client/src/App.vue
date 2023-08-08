@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createGame, SerializedGameState } from "@dungeon-crawler/game-engine";
+import { SerializedGameState } from "@dungeon-crawler/game-engine";
 import GameClient from "./GameClient.vue";
 
 const root = ref();
@@ -7,12 +7,16 @@ const { width, height } = useElementBounding(root);
 
 const state = ref<SerializedGameState>();
 
-const engine = createGame({ debug: true });
-engine.subscribe((newState) => {
-  state.value = newState;
+const worker = new Worker(new URL("./engine-worker.ts", import.meta.url), {
+  type: "module",
 });
-engine.dispatch("join", { id: "player" });
-engine.start();
+worker.addEventListener("message", ({ data }) => {
+  state.value = data;
+});
+worker.postMessage({
+  name: "join",
+  payload: { id: "player" },
+});
 </script>
 
 <template>
@@ -23,7 +27,12 @@ engine.start();
       :player="{ id: 'player', name: 'Player' }"
       :height="height"
       :state="state"
-      @move="engine.dispatch('move', { ...$event, playerId: 'player' })"
+      @move="
+        worker.postMessage({
+          name: 'move',
+          payload: { ...$event, playerId: 'player' },
+        })
+      "
     />
   </div>
 </template>
