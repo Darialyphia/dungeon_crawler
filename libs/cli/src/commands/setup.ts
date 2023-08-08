@@ -40,7 +40,7 @@ export const setup = () => {
   }
 
   logger.info('Setting up database...');
-  execSync(`yarn  --cwd ${PROJECT_ROOT} db:sync`);
+  execSync(`yarn  --cwd ${PROJECT_ROOT} db:sync --accept-data-loss`);
 
   logger.success(
     'Project setup successfully. You can run yarn dev to start the project locally.'

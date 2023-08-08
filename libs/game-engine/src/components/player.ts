@@ -1,12 +1,11 @@
-import { Point } from '@dungeon-crawler/shared';
-import type { ECSComponent } from '../ecs/ECSComponent';
-
-import { ecsComponent, has } from '../ecs/ECSComponent';
+import { ECSComponent } from '../ecs/ECSComponent';
+import { defineECSComponent, inferComponent } from '../utils';
 
 export type PlayerId = string;
-export const PlayerBrand = 'player';
-type PlayerBrand = typeof PlayerBrand;
-export type Player = ECSComponent<PlayerBrand, { id: PlayerId }>;
 
-export const hasPlayer = has<Player>(PlayerBrand);
-export const playerComponent = ecsComponent<Player>(PlayerBrand);
+export const player = defineECSComponent<'player', { id: PlayerId }>('player');
+export type Player = inferComponent<typeof player>;
+
+export const getPlayerById = <T extends ECSComponent<string>[] = []>(
+  id: PlayerId
+) => player.findFirst<T>(entity => entity.player.id === id);

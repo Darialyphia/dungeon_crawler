@@ -1,6 +1,6 @@
 import { randomInt } from '@dungeon-crawler/shared';
-import { Player, PlayerId, playerComponent } from '../components/player';
-import { positionComponent, Position } from '../components/position';
+import { Player, PlayerId, player } from '../components/player';
+import { position, Position } from '../components/position';
 import { ECSEntity } from '../ecs/ECSEntity';
 import { GameState } from '../gameState';
 
@@ -14,16 +14,16 @@ export const createPlayer = (
   state: GameState,
   { id }: CreatePlayerOptions
 ): PlayerEntity => {
-  const player = state.world
+  const entity = state.world
     .createEntity()
     .with(
-      positionComponent({
+      position.component({
         x: randomInt(state.map.width),
         y: randomInt(state.map.height)
       })
     )
-    .with(playerComponent({ id }))
+    .with(player.component({ id }))
     .build();
 
-  return player;
+  return entity;
 };

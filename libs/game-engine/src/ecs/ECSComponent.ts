@@ -1,4 +1,4 @@
-import type { BrandFromComponent, ECSComponentPros } from './types';
+import type { BrandFromComponent, ECSComponentProps } from './types';
 import type { ECSEntity } from './ECSEntity';
 
 /**
@@ -47,10 +47,10 @@ export const has =
   <E extends ECSEntity = ECSEntity>(e: E): e is E & C =>
     brand in e;
 
-type ECSComponentBuilder<C extends ECSComponent<string>> =
-  ECSComponentPros<C> extends Record<string, never>
+export type ECSComponentBuilder<C extends ECSComponent<string>> =
+  ECSComponentProps<C> extends Record<string, never>
     ? () => C
-    : (props: ECSComponentPros<C>) => () => C;
+    : (props: ECSComponentProps<C>) => () => C;
 
 /**
  * Generates a ECSComponent constructor for a specific component
@@ -64,7 +64,7 @@ type ECSComponentBuilder<C extends ECSComponent<string>> =
 export const ecsComponent = <C extends ECSComponent<string>>(
   brand: BrandFromComponent<C>
 ): ECSComponentBuilder<C> =>
-  ((props?: ECSComponentPros<C>) => {
+  ((props?: ECSComponentProps<C>) => {
     if (props === undefined) return { [brand]: {} };
     return () => ({ [brand]: props });
   }) as ECSComponentBuilder<C>;

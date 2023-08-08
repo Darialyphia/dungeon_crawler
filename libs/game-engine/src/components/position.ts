@@ -1,11 +1,5 @@
 import { Point } from '@dungeon-crawler/shared';
-import type { ECSComponent } from '../ecs/ECSComponent';
+import { defineECSComponent, inferComponent } from '../utils';
 
-import { ecsComponent, has } from '../ecs/ECSComponent';
-
-export const PositionBrand = 'position';
-type PositionBrand = typeof PositionBrand;
-export type Position = ECSComponent<PositionBrand, Point>;
-
-export const hasPosition = has<Position>('position');
-export const positionComponent = ecsComponent<Position>('position');
+export const position = defineECSComponent<'position', Point>('position');
+export type Position = inferComponent<typeof position>;
