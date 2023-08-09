@@ -3,6 +3,7 @@ import { useGameState } from "../composables/useGameState";
 import Player from "./Player.vue";
 import Camera from "./Camera.vue";
 import MapTile from "./MapTile.vue";
+import Debug from "./Debug.vue";
 
 const { state } = useGameState();
 </script>
@@ -23,4 +24,6 @@ const { state } = useGameState();
       :player="player"
     />
   </Camera>
+
+  <Debug />
 </template>

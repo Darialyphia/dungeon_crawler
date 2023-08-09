@@ -11,12 +11,13 @@ export type SerializedGameState = {
   map: GameState['map'];
   players: Record<ECSEntityId, ECSEntity & BBox & Player>;
 };
+export type DispatchFunction = <T extends keyof EventMap>(
+  type: T,
+  payload: inferEventInput<T>
+) => void;
 
 export type GameEngine = {
-  dispatch: <T extends keyof EventMap>(
-    type: T,
-    payload: inferEventInput<T>
-  ) => void;
+  dispatch: DispatchFunction;
   subscribe: (cb: (state: SerializedGameState) => void) => () => void;
   start: () => void;
   stop: () => void;
@@ -36,6 +37,7 @@ const perfWarning = (elapsed: number) => {
 export const createGame: GameFactory = ({ debug = false }) => {
   const state = createGameState();
   const emitter = createEmitter(state);
+  const eventQueue: Set<{ type: keyof EventMap; payload: any }> = new Set();
 
   if (debug) {
     emitter.on('*', (e, payload) => {
@@ -48,8 +50,13 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
   const tick = () => {
     const now = performance.now();
-
     const delta = now - lastTick;
+
+    eventQueue.forEach(event => {
+      emitter.emit(event.type, event.payload);
+    });
+    eventQueue.clear();
+
     state.world.runSystems({ delta });
 
     lastTick = now;
@@ -71,7 +78,9 @@ export const createGame: GameFactory = ({ debug = false }) => {
   };
 
   return {
-    dispatch: emitter.emit,
+    dispatch(type, payload) {
+      eventQueue.add({ type, payload });
+    },
 
     subscribe(cb) {
       const _cb = (state: GameState) => {
