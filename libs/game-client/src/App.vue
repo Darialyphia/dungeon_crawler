@@ -17,6 +17,19 @@ worker.postMessage({
   type: "join",
   payload: { id: "player" },
 });
+worker.postMessage({ type: "start" });
+
+document.addEventListener("visibilitychange", () => {
+  if (document.visibilityState === "visible") {
+    worker.postMessage({
+      type: "start",
+    });
+  } else {
+    worker.postMessage({
+      type: "stop",
+    });
+  }
+});
 </script>
 
 <template>

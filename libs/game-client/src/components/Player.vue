@@ -3,10 +3,10 @@ import { SerializedGameState } from "@dungeon-crawler/game-engine";
 import { useGameState } from "../composables/useGameState";
 import { onTick } from "vue3-pixi";
 import { interpolatePosition } from "../utils/interpolate";
-import { Point, mulVector } from "@dungeon-crawler/shared";
 import { CELL_SIZE } from "../utils/constants";
 import { useCamera } from "../composables/useCamera";
 import { useCurrentPlayer } from "../composables/useCurrentPlayer";
+import { toScreenCoords } from "../utils/helpers";
 
 const props = defineProps<{
   player: SerializedGameState["players"][number];
@@ -14,31 +14,30 @@ const props = defineProps<{
 
 const { state, prevState } = useGameState();
 
-const gameCoordToScreenCoord = (point: Point) => mulVector(point, CELL_SIZE);
-const position = ref(gameCoordToScreenCoord(props.player.bbox));
+const position = ref(toScreenCoords(props.player.bbox));
 
 const currentPlayer = useCurrentPlayer();
 const camera = useCamera();
 
 onTick(() => {
-  if (!prevState.value) {
-    position.value = gameCoordToScreenCoord(props.player.bbox);
-  } else {
-    const interpolated = interpolatePosition(
-      {
-        position: props.player.bbox,
-        t: state.value.timestamp,
-      },
-      {
-        position: prevState.value.snapshot.players[props.player.entity_id].bbox,
-        t: prevState.value.timestamp,
-      }
-    );
-    position.value = gameCoordToScreenCoord(interpolated);
+  const newPos = prevState.value
+    ? interpolatePosition(
+        {
+          position: props.player.bbox,
+          t: state.value.timestamp,
+        },
+        {
+          position:
+            prevState.value.snapshot.players[props.player.entity_id].bbox,
+          t: prevState.value.timestamp,
+        }
+      )
+    : props.player.bbox;
 
-    if (currentPlayer.id === props.player.player.id) {
-      camera.centerOn(position.value);
-    }
+  position.value = toScreenCoords(newPos);
+
+  if (currentPlayer.id === props.player.player.id) {
+    camera.centerOn(position.value);
   }
 });
 </script>

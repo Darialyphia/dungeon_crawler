@@ -3,10 +3,15 @@ declare const self: DedicatedWorkerGlobalScope;
 
 import { createGame } from "@dungeon-crawler/game-engine";
 const engine = createGame({ debug: false });
-engine.start();
 
 self.addEventListener("message", ({ data }) => {
-  engine.dispatch(data.type, data.payload);
+  if (data.type === "start") {
+    engine.start();
+  } else if (data.type === "stop") {
+    engine.stop();
+  } else {
+    engine.dispatch(data.type, data.payload);
+  }
 });
 
 engine.subscribe((state) => {
