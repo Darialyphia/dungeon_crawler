@@ -14,6 +14,10 @@ import {
 import { useControls } from "./composables/useControls";
 import { throttle } from "lodash-es";
 import PixiApp from "./components/PixiApp.vue";
+import {
+  CURRENT_PLAYER_INJECTION_KEY,
+  useCurrentPlayerProvider,
+} from "./composables/useCurrentPlayer";
 
 const props = defineProps<{
   width: number;
@@ -28,12 +32,14 @@ const emit = defineEmits<{
 
 const state = useGameStateProvider(toRef(props, "state"));
 const dispatch = useDispatchProvider((arg) => emit("game:event", arg));
+useCurrentPlayerProvider(props.player);
 useControls(dispatch, props.player.id);
 
 const canvas = ref<HTMLCanvasElement>();
 onMounted(() => {
   // We create the pixi app manually instead ofusing vue3-pixi's <Application /> component
-  // because we want to be able to provide the game state so we need access to the underlying vue app
+  // because we want to be able to provide a bunch of stuff so we need access to the underlying vue app
+  // and we can forward the providers to it
   const pixiApp = new Application({
     view: canvas.value,
     width: props.width,
@@ -45,6 +51,7 @@ onMounted(() => {
   app.provide(appInjectKey, pixiApp);
   app.provide(GAME_STATE_INJECTION_KEY, state);
   app.provide(DISPATCHER_INJECTION_KEY, dispatch);
+  app.provide(CURRENT_PLAYER_INJECTION_KEY, props.player);
   app.mount(pixiApp.stage);
 
   watch(

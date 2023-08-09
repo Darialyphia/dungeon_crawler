@@ -1,24 +1,24 @@
 <script setup lang="ts">
 import { SerializedGameState } from "@dungeon-crawler/game-engine";
 import { useGameState } from "../composables/useGameState";
-import { useScreen, onTick } from "vue3-pixi";
+import { onTick } from "vue3-pixi";
 import { interpolatePosition } from "../utils/interpolate";
-import { Point } from "@dungeon-crawler/shared";
+import { Point, mulVector } from "@dungeon-crawler/shared";
+import { CELL_SIZE } from "../utils/constants";
+import { useCamera } from "../composables/useCamera";
+import { useCurrentPlayer } from "../composables/useCurrentPlayer";
 
 const props = defineProps<{
   player: SerializedGameState["players"][number];
 }>();
 
 const { state, prevState } = useGameState();
-const screen = useScreen();
 
-const gameCoordToScreenCoord = ({ x, y }: Point) => {
-  return {
-    x: (x * screen.value.width) / state.value.snapshot.map.width,
-    y: (y * screen.value.height) / state.value.snapshot.map.height,
-  };
-};
+const gameCoordToScreenCoord = (point: Point) => mulVector(point, CELL_SIZE);
 const position = ref(gameCoordToScreenCoord(props.player.bbox));
+
+const currentPlayer = useCurrentPlayer();
+const camera = useCamera();
 
 onTick(() => {
   if (!prevState.value) {
@@ -35,18 +35,22 @@ onTick(() => {
       }
     );
     position.value = gameCoordToScreenCoord(interpolated);
+
+    if (currentPlayer.id === props.player.player.id) {
+      camera.centerOn(position.value);
+    }
   }
 });
 </script>
 
 <template>
   <graphics
-    v-bind="position"
+    :position="position"
     @render="
       (graphics) => {
         graphics.clear();
         graphics.beginFill(0xde3249);
-        graphics.drawEllipse(0, 0, 15, 15);
+        graphics.drawCircle(0, 0, CELL_SIZE / 2);
         graphics.endFill();
       }
     "

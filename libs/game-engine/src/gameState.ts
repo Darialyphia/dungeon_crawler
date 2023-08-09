@@ -11,8 +11,8 @@ export const createGameState = (): GameState => {
   const state: GameState = {
     isRunning: false,
     map: {
-      width: 100,
-      height: 100
+      width: 50,
+      height: 50
     },
     world: createWorld()
   };

@@ -20,8 +20,8 @@ export const createPlayer = (
       bbox.component({
         x: randomInt(state.map.width),
         y: randomInt(state.map.height),
-        w: 5,
-        h: 5
+        w: 1,
+        h: 1
       })
     )
     .with(
