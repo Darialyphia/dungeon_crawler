@@ -21,7 +21,7 @@ export const gameContract = c.router(
       path: '/',
       responses: {
         201: GameResponse,
-        500: GameResponse,
+        500: ErrorResponse,
         400: ErrorResponse,
         401: ErrorResponse
       },
@@ -46,7 +46,7 @@ export const gameContract = c.router(
     },
     leave: {
       method: 'POST',
-      path: '/:gameId/join',
+      path: '/:gameId/leave',
       responses: {
         200: GameResponse,
         500: ErrorResponse,

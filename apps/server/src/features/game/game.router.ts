@@ -20,9 +20,70 @@ export const gameRouter = s.router(contract.game, {
             body: errorMapper.toResponse(err)
           };
         },
-        result => ({
+        async result => ({
           status: HTTP_STATUS_CODES.OK,
-          body: gameMapper.toResponseArray(result)
+          body: await gameMapper.toResponseArray(result)
+        })
+      )
+    );
+  },
+  async create({ body, req: { container } }) {
+    const { errorMapper, gameMapper, createGameUseCase } = container.cradle;
+
+    return pipe(
+      await createGameUseCase(body),
+
+      E.matchW(
+        err => {
+          return {
+            status: err.statusCode,
+            body: errorMapper.toResponse(err)
+          };
+        },
+        async result => ({
+          status: HTTP_STATUS_CODES.CREATED,
+          body: await gameMapper.toResponse(result)
+        })
+      )
+    );
+  },
+  async join({ params, req: { container } }) {
+    const { errorMapper, gameMapper, joinGameUseCase } = container.cradle;
+
+    return pipe(
+      await joinGameUseCase(params),
+
+      E.matchW(
+        err => {
+          return {
+            status: err.statusCode,
+            body: errorMapper.toResponse(err)
+          };
+        },
+        async result => ({
+          status: HTTP_STATUS_CODES.OK,
+          body: await gameMapper.toResponse(result)
+        })
+      )
+    );
+  },
+
+  async leave({ params, req: { container } }) {
+    const { errorMapper, gameMapper, leaveGameUseCase } = container.cradle;
+
+    return pipe(
+      await leaveGameUseCase(params),
+
+      E.matchW(
+        err => {
+          return {
+            status: err.statusCode,
+            body: errorMapper.toResponse(err)
+          };
+        },
+        async result => ({
+          status: HTTP_STATUS_CODES.OK,
+          body: await gameMapper.toResponse(result)
         })
       )
     );

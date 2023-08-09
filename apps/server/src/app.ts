@@ -21,7 +21,7 @@ export const createApp = () => {
     contract,
     {
       info: {
-        title: 'Idle game API',
+        title: 'Dungeon Crawler API',
         version: '1.0.0'
       }
     },

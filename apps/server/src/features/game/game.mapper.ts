@@ -3,8 +3,8 @@ import { Game } from './game.entity';
 import { UserMapper } from '../user/user.mapper';
 
 export type GameMapper = {
-  toResponse(game: Game): GameResponse;
-  toResponseArray(games: Game[]): GameResponse[];
+  toResponse(game: Game): Promise<GameResponse>;
+  toResponseArray(games: Game[]): Promise<GameResponse[]>;
 };
 
 type Dependencies = {
@@ -12,14 +12,14 @@ type Dependencies = {
 };
 
 export const gameMapper = ({ userMapper }: Dependencies): GameMapper => {
-  const mapGame = (game: Game): GameResponse => {
+  const mapGame = async (game: Game): Promise<GameResponse> => {
     return {
       id: game.id,
       name: game.name,
-      author: userMapper.toResponse(game.author),
+      author: await userMapper.toResponse(game.author),
       createdAt: game.createdAt,
       capacity: game.capacity,
-      players: userMapper.toResponseArray(game.players)
+      players: await userMapper.toResponseArray(game.players)
     };
   };
 
@@ -29,7 +29,7 @@ export const gameMapper = ({ userMapper }: Dependencies): GameMapper => {
     },
 
     toResponseArray(games) {
-      return games.map(game => mapGame(game));
+      return Promise.all(games.map(game => mapGame(game)));
     }
   };
 };

@@ -1,4 +1,4 @@
-import { asFunction } from 'awilix';
+import { Lifetime, asFunction } from 'awilix';
 import { userRepository } from './user.repository';
 import { signupUseCase } from './usecases/signup.usecase';
 import { userMapper } from './user.mapper';
@@ -8,7 +8,7 @@ import { updateProfileUnseCase } from './usecases/updateProfile.usesase';
 export const userProviders = {
   userRepo: asFunction(userRepository),
   userMapper: asFunction(userMapper),
-  userAbilityBuilder: asFunction(userAbilityBuilder),
+  userAbilityBuilder: asFunction(userAbilityBuilder, { lifetime: Lifetime.SCOPED }),
 
   signupUseCase: asFunction(signupUseCase),
   updateProfileUseCase: asFunction(updateProfileUnseCase)

@@ -81,9 +81,9 @@ export const authRouter = s.router(contract.auth, {
             body: errorMapper.toResponse(err)
           };
         },
-        result => ({
+        async result => ({
           status: HTTP_STATUS_CODES.OK,
-          body: userMapper.toResponse(result)
+          body: await userMapper.toResponse(result)
         })
       )
     );

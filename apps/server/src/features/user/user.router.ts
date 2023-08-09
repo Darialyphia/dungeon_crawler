@@ -20,9 +20,9 @@ export const userRouter = s.router(contract.user, {
             body: errorMapper.toResponse(err)
           };
         },
-        result => ({
+        async result => ({
           status: HTTP_STATUS_CODES.CREATED,
-          body: userMapper.toResponse(result)
+          body: await userMapper.toResponse(result)
         })
       )
     );
@@ -40,9 +40,9 @@ export const userRouter = s.router(contract.user, {
             body: errorMapper.toResponse(err)
           };
         },
-        result => ({
+        async result => ({
           status: HTTP_STATUS_CODES.OK,
-          body: userMapper.toResponse(result)
+          body: await userMapper.toResponse(result)
         })
       )
     );

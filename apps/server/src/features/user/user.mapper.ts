@@ -6,8 +6,8 @@ import { subject } from '@casl/ability';
 import { User as PrismaUser } from '@prisma/client';
 
 export type UserMapper = {
-  toResponse(user: User): UserResponse;
-  toResponseArray(user: User[]): UserResponse[];
+  toResponse(user: User): Promise<UserResponse>;
+  toResponseArray(user: User[]): Promise<UserResponse[]>;
   toDomain(user: PrismaUser): User;
 };
 
@@ -23,12 +23,12 @@ export const userMapper = ({ userAbilityBuilder, session }: Dependencies): UserM
   };
 
   return {
-    toResponse(user) {
-      return mapuser(user, userAbilityBuilder.buildFor(session));
+    async toResponse(user) {
+      return mapuser(user, await userAbilityBuilder.buildFor(session));
     },
 
-    toResponseArray(users) {
-      const ability = userAbilityBuilder.buildFor(session);
+    async toResponseArray(users) {
+      const ability = await userAbilityBuilder.buildFor(session);
       return users.map(user => mapuser(user, ability));
     },
 
@@ -37,6 +37,7 @@ export const userMapper = ({ userAbilityBuilder, session }: Dependencies): UserM
         id: user.id,
         email: user.email,
         name: user.name,
+        createdAt: user.createdAt,
         passwordHash: user.passwordHash
       };
     }
