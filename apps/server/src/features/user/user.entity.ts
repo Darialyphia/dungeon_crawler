@@ -6,5 +6,6 @@ export type User = {
   id: UserId;
   email: string;
   name: string | null;
+  createdAt: Date;
   passwordHash: string;
 };

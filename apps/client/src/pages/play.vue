@@ -28,11 +28,8 @@ const mockState = {
     width: 100,
     height: 100
   },
-  entities: [
-    {
-      position: { x: 50, y: 50 }
-    }
-  ]
+  players: {},
+  timestamp: Date.now()
 };
 </script>
 

@@ -6,7 +6,7 @@ import bodyParser from 'body-parser';
 import { createExpressEndpoints } from '@ts-rest/express';
 import { ERROR_KINDS, contract } from '@dungeon-crawler/contract';
 import { errorFactory } from '../../utils/errorFactory';
-import { router } from './router';
+import { router } from '../../router';
 import cookieParser from 'cookie-parser';
 import { generateOpenApi } from '@ts-rest/open-api';
 import { config } from '../../config';

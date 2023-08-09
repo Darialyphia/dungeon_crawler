@@ -18,14 +18,14 @@ See the [contributing guide](./CONTRIBUTING.md)
 
 the project is a monorepo using the [Turborepo](https://turbo.build/). It is divided in multiple packages with relationship between each other to promote code reuse and decoupling. Here is a summary of the different packages
 
-- `apps/server` is the REST API that provides the data from the project database, as well as the websockets. In production, it also serves the front end client.
-- `apps/client` is the front end Vue application that allows you to login and play the game
+- `apps/server` is the REST API that provides the data from the project database, as well as the websockets. In production, it also serves the front end client. [see the README](apps/server/README.md)
+- `apps/client` is the front end Vue application that allows you to login and play the game. [see the README](apps/client/README.md)
 - `configs/eslint-config` is the [ESLint](https://eslint.org/) config shared by all packages
-- `libs/game-engine` is the library containing the code to run the logic that orchestrates the game's state such as player position, handling player input, AI behavior, and so on. It is designed to be able to run in a node environment or the browser to allow for offline play.
-- `libs/game-client` is the code containing the rendering logic of the game, such as sprites positios, animations, visual effects. It also emits events that can be forwarded to the game engine, like player keyboard input. the library uses [Vue3-pixi](https://vue3-pixi.vercel.app/) to allow an easy integration between Pixi and vueJS.
-- `libs/contract` contains the contract definition for the operations related to the web app. Both the serva dn the client implements and / or consume the contract to enable a lot of code sharing, such as types and validators, as well as easier type safety across the wire.
-- `libs/resources` contains all of the game assets such as tile maps, sprites, sounds effects...it also contains description and stats for all game objects (items, characters, monsters, skills...). It can be consumed by any other package in a node environment or the browser
-- `lib/shared` contains utilities like helpers and mapped types
+- `libs/game-engine` is the library containing the code to run the logic that orchestrates the game's state such as player position, handling player input, AI behavior, and so on. It is designed to be able to run in a node environment or the browser to allow for offline play. [see the README](libs/game-engine/README.md)
+- `libs/game-client` is the code containing the rendering logic of the game, such as sprites positios, animations, visual effects. It also emits events that can be forwarded to the game engine, like player keyboard input. the library uses [Vue3-pixi](https://vue3-pixi.vercel.app/) to allow an easy integration between Pixi and vueJS. [see the README](libs/game-client/README.md)
+- `libs/contract` contains the contract definition for the operations related to the web app. Both the serva dn the client implements and / or consume the contract to enable a lot of code sharing, such as types and validators, as well as easier type safety across the wire. [see the README](libs/contract/README.md)
+- `libs/resources` contains all of the game assets such as tile maps, sprites, sounds effects...it also contains description and stats for all game objects (items, characters, monsters, skills...). It can be consumed by any other package in a node environment or the browser [see the README](libs/resources/README.md)
+- `lib/shared` contains utilities like helpers and mapped types [see the README](libs/shared/README.md)
 
 ## High level Architecture
 
