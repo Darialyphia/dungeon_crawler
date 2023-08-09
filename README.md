@@ -23,7 +23,13 @@ the project is a monorepo using the [Turborepo](https://turbo.build/). It is div
 - `libs/resources` contains all of the game assets such as tile maps, sprites, sounds effects...it also contains description and stats for all game objects (items, characters, monsters, skills...). It can be consumed by any other package in a node environment or the browser
 - `lib/shared` contains utilities like helpers and mapped types
 
-### Local development
+## High level Architecture
+
+<div align="center" >
+  <img src="./docs/workflow.png" alt="">
+</div>
+
+## Local development
 
 1. Follow the steps in the [contributing guide](./CONTRIBUTING.md) to setup the project
 
@@ -38,7 +44,7 @@ yarn dev
 5. Visit <http://localhost:5000/api-docs> to see the generated back end API documentation
 6. Visit <http://localhost:1080> to see the mail server and inspect all sent e-mails.
 
-### Running a production build locally
+## Running a production build locally
 
 1. run the following command
 

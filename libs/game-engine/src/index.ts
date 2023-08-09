@@ -10,6 +10,7 @@ export type { EventMap };
 export type SerializedGameState = {
   map: GameState['map'];
   players: Record<ECSEntityId, ECSEntity & BBox & Player>;
+  timestamp: number;
 };
 export type DispatchFunction = <T extends keyof EventMap>(
   type: T,
@@ -72,6 +73,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
     const players = player.findAll<[BBox]>(state.world, [bbox.brand]);
 
     return {
+      timestamp: Date.now(),
       map: state.map,
       players: Object.fromEntries(players.map(e => [e.entity_id, e]))
     };
