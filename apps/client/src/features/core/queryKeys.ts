@@ -4,6 +4,7 @@
  */
 import { mergeQueryKeys, type inferQueryKeyStore } from '@lukemorales/query-key-factory';
 import { authKeys } from '../auth/utils/auth.keys';
+import { lobbyKeys } from '../lobby/utils/lobby.keys';
 
-export const queryKeys = mergeQueryKeys(authKeys);
+export const queryKeys = mergeQueryKeys(authKeys, lobbyKeys);
 export type QueryKeys = inferQueryKeyStore<typeof queryKeys>;
