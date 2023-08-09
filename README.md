@@ -2,6 +2,10 @@
 
 This is the repository for a multiplayer dungeon crawler type game running in the browser. The project is built using [Vue.js](https://vuejs.org/), [PixiJS](https://pixijs.com/), [Express](https://expressjs.com/), [Ts-rest](https://ts-rest.com/) and [Socket.IO](https://socket.io/)
 
+## Game concept
+
+Seethe [Game concept page](docs/game-concept.md)
+
 ## Project setup
 
 See the [contributing guide](./CONTRIBUTING.md)
