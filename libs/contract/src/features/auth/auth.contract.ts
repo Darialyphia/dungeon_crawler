@@ -19,8 +19,7 @@ export const authContract = c.router(
       body: z.object({
         email: z.string(),
         password: z.string()
-      }),
-      metadata: { public: true }
+      })
     },
     logout: {
       method: 'POST',
@@ -39,8 +38,7 @@ export const authContract = c.router(
         401: ErrorResponse,
         500: ErrorResponse
       },
-      body: null,
-      metadata: { public: true }
+      body: null
     },
     session: {
       method: 'GET',
@@ -49,7 +47,8 @@ export const authContract = c.router(
         200: UserResponse,
         401: ErrorResponse,
         500: ErrorResponse
-      }
+      },
+      metadata: { needsAuth: true }
     },
     forgotPassword: {
       method: 'POST',

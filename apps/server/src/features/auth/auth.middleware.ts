@@ -25,7 +25,7 @@ export const authMiddleware: Exclude<
   if ('metadata' in req.tsRestRoute) {
     const { session, errorMapper } = req.container.cradle;
     const meta = req.tsRestRoute.metadata;
-    if (!meta.public && !session) {
+    if (meta.needsAuth && !session) {
       return res.status(401).json(errorMapper.toResponse(errorFactory.unauthorized()));
     }
   }

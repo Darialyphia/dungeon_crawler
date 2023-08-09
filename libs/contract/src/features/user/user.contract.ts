@@ -32,7 +32,8 @@ export const userContract = c.router(
         404: ErrorResponse,
         403: ErrorResponse,
         500: ErrorResponse
-      }
+      },
+      metadata: { needsAuth: true }
     }
   },
   {
