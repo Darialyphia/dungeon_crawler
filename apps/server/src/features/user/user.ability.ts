@@ -10,8 +10,6 @@ export type UserAbilityBuilder = {
   buildFor(user: Nullable<User>): Promise<UserAbility>;
 };
 
-export const fieldMatcher: FieldMatcher = fields => field => fields.includes(field);
-
 export const userAbilityBuilder = (): UserAbilityBuilder => {
   const cache = new Map<UserId, UserAbility>();
 

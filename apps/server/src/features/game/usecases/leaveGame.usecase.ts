@@ -10,6 +10,8 @@ import { Game, GameId } from '../game.entity';
 import { GameRepository } from '../game.repository';
 import { User } from '../../user/user.entity';
 import * as E from 'fp-ts/Either';
+import { GameAbilityBuilder } from '../game.ability';
+import { subject } from '@casl/ability';
 
 export type LeaveGameUseCase = UseCase<
   { gameId: GameId },
@@ -19,11 +21,12 @@ export type LeaveGameUseCase = UseCase<
 
 type Dependencies = {
   gameRepo: GameRepository;
+  gameAbilityBuilder: GameAbilityBuilder;
   session: User;
 };
 
 export const leaveGameUsecase =
-  ({ gameRepo, session }: Dependencies): LeaveGameUseCase =>
+  ({ gameRepo, gameAbilityBuilder, session }: Dependencies): LeaveGameUseCase =>
   async ({ gameId }) => {
     const gameEither = await gameRepo.findById(gameId);
 
@@ -31,9 +34,9 @@ export const leaveGameUsecase =
       return gameEither;
     }
 
-    const isInGame = gameEither.right.players.some(p => p.id === session.id);
-    if (!isInGame) {
-      return E.left(errorFactory.badRequest({ message: 'User is not in this game' }));
+    const ability = await gameAbilityBuilder.buildForUser(session);
+    if (ability.cannot('leave', subject('Game', gameEither.right))) {
+      return E.left(errorFactory.badRequest());
     }
 
     return gameRepo.leave({

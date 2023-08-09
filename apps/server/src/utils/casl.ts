@@ -5,9 +5,9 @@ import {
   AbilityBuilder
 } from '@casl/ability';
 
-export const fieldMatcher: FieldMatcher = fields => field => fields.includes(field);
+const fieldMatcher: FieldMatcher = fields => field => fields.includes(field);
 
-export const conditionsMatcher = (matchConditions: unknown) =>
+const conditionsMatcher = (matchConditions: unknown) =>
   matchConditions as MatchConditions;
 
 export const buildOptions = { fieldMatcher, conditionsMatcher };

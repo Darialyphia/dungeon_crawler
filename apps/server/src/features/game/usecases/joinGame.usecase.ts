@@ -10,6 +10,8 @@ import { Game, GameId } from '../game.entity';
 import { GameRepository } from '../game.repository';
 import { User } from '../../user/user.entity';
 import * as E from 'fp-ts/Either';
+import { GameAbilityBuilder } from '../game.ability';
+import { subject } from '@casl/ability';
 
 export type JoinGameUseCase = UseCase<
   { gameId: GameId },
@@ -19,11 +21,12 @@ export type JoinGameUseCase = UseCase<
 
 type Dependencies = {
   gameRepo: GameRepository;
+  gameAbilityBuilder: GameAbilityBuilder;
   session: User;
 };
 
 export const joinGameUsecase =
-  ({ gameRepo, session }: Dependencies): JoinGameUseCase =>
+  ({ gameRepo, gameAbilityBuilder, session }: Dependencies): JoinGameUseCase =>
   async ({ gameId }) => {
     const gameEither = await gameRepo.findById(gameId);
 
@@ -31,17 +34,9 @@ export const joinGameUsecase =
       return gameEither;
     }
 
-    const isAlreadyInGame = E.isRight(await gameRepo.findByPlayerId(session.id));
-    if (isAlreadyInGame) {
-      return E.left(
-        errorFactory.badRequest({ message: 'User is already in another game.' })
-      );
-    }
-    const hasAlreadyJoined = gameEither.right.players.some(p => p.id === session.id);
-    if (hasAlreadyJoined) {
-      return E.left(
-        errorFactory.badRequest({ message: 'User is already in this game.' })
-      );
+    const ability = await gameAbilityBuilder.buildForUser(session);
+    if (ability.cannot('join', subject('Game', gameEither.right))) {
+      return E.left(errorFactory.badRequest());
     }
 
     return gameRepo.join({
