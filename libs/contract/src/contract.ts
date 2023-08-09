@@ -1,7 +1,7 @@
 import { initContract } from '@ts-rest/core';
 import { authContract } from './features/auth';
 import { userContract } from './features/user';
-import { lobbyContract } from './features/lobby';
+import { gameContract } from './features/game';
 
 const c = initContract();
 
@@ -9,7 +9,7 @@ export const contract = c.router(
   {
     auth: authContract,
     user: userContract,
-    lobby: lobbyContract
+    game: gameContract
   },
   {
     strictStatusCodes: true,

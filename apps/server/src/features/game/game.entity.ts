@@ -1,13 +1,13 @@
 import { UUID } from '@dungeon-crawler/contract';
 import { User } from '../user/user.entity';
 
-export type LobbyId = UUID;
+export type GameId = UUID;
 
-export type Lobby = {
-  id: LobbyId;
+export type Game = {
+  id: GameId;
   name: string;
   createdAt: Date;
   author: User;
   capacity: number;
-  participants: User[];
+  players: User[];
 };

@@ -3,26 +3,22 @@ import * as E from 'fp-ts/Either';
 import { handlePrismaError, prismaNotFoundMatchers } from '../../utils/prisma';
 import { NotFoundError, UnexpectedError } from '../../utils/errorFactory';
 import { UUID } from '@dungeon-crawler/contract';
-import { Lobby } from './lobby.entity';
+import { Game } from './game.entity';
 
-export type LobbyRepository = {
-  findAll(): Promise<E.Either<UnexpectedError, Lobby[]>>;
-  findById(id: UUID): Promise<E.Either<UnexpectedError | NotFoundError, Lobby>>;
+export type GameRepository = {
+  findAll(): Promise<E.Either<UnexpectedError, Game[]>>;
+  findById(id: UUID): Promise<E.Either<UnexpectedError | NotFoundError, Game>>;
 };
 
-export const lobbyRepository = ({
-  prisma
-}: {
-  prisma: PrismaClient;
-}): LobbyRepository => {
+export const gameRepository = ({ prisma }: { prisma: PrismaClient }): GameRepository => {
   return {
     async findAll() {
       try {
-        const lobbies = await prisma.lobby.findMany({
-          include: { participants: true, author: true }
+        const games = await prisma.game.findMany({
+          include: { players: true, author: true }
         });
 
-        return E.right(lobbies);
+        return E.right(games);
       } catch (err) {
         return E.left(handlePrismaError()(err));
       }
@@ -30,12 +26,12 @@ export const lobbyRepository = ({
 
     async findById(id) {
       try {
-        const lobby = await prisma.lobby.findUniqueOrThrow({
+        const game = await prisma.game.findUniqueOrThrow({
           where: { id },
-          include: { participants: true, author: true }
+          include: { players: true, author: true }
         });
 
-        return E.right(lobby);
+        return E.right(game);
       } catch (err) {
         return E.left(handlePrismaError(prismaNotFoundMatchers)(err));
       }

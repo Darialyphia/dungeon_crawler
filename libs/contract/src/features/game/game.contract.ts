@@ -1,24 +1,24 @@
 import { initContract } from '@ts-rest/core';
 import { ErrorResponse } from '../core';
-import { LobbyResponse } from './lobby.schemas';
+import { GameResponse } from './game.schemas';
 
 const c = initContract();
 
-export const lobbyContract = c.router(
+export const gameContract = c.router(
   {
     getAll: {
       method: 'GET',
       path: '/',
       responses: {
-        200: LobbyResponse.array(),
+        200: GameResponse.array(),
         500: ErrorResponse
       }
     }
   },
   {
     strictStatusCodes: true,
-    pathPrefix: '/lobbies'
+    pathPrefix: '/games'
   }
 );
 
-export type LobbyContract = typeof lobbyContract;
+export type GameContract = typeof gameContract;

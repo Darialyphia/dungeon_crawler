@@ -9,7 +9,7 @@ import { User } from './features/user/user.entity';
 import { authProviders } from './features/auth/auth.providers';
 import { coreProviders } from './features/core/core.providers';
 import { userProviders } from './features/user/user.providers';
-import { lobbyProviders } from './features/lobby/lobby.providers';
+import { gameProviders } from './features/game/game.providers';
 
 const dependencies = {
   req: asValue(null),
@@ -18,7 +18,7 @@ const dependencies = {
   ...authProviders,
   ...coreProviders,
   ...userProviders,
-  ...lobbyProviders
+  ...gameProviders
 };
 
 export const container = createTypedContainer(dependencies);

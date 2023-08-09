@@ -6,12 +6,12 @@ import * as E from 'fp-ts/Either';
 
 const s = initServer();
 
-export const lobbyRouter = s.router(contract.lobby, {
+export const gameRouter = s.router(contract.game, {
   async getAll({ req: { container } }) {
-    const { errorMapper, lobbyMapper, getAllLobbiesUseCase } = container.cradle;
+    const { errorMapper, gameMapper, getAllGamesUseCase } = container.cradle;
 
     return pipe(
-      await getAllLobbiesUseCase(),
+      await getAllGamesUseCase(),
 
       E.matchW(
         err => {
@@ -22,7 +22,7 @@ export const lobbyRouter = s.router(contract.lobby, {
         },
         result => ({
           status: HTTP_STATUS_CODES.OK,
-          body: lobbyMapper.toResponseArray(result)
+          body: gameMapper.toResponseArray(result)
         })
       )
     );

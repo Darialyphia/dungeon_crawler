@@ -1,11 +1,11 @@
 import { AnyFunction, Nullable, isString } from '@dungeon-crawler/shared';
 import { IoEvents } from '@dungeon-crawler/contract';
-import { config } from '../../config';
+import { config } from './config';
 import { Server } from 'http';
 import { Server as IoServer, Socket } from 'socket.io';
-import { AuthenticateUseCase } from '../auth/usecases/authenticate.usecase';
-import { errorFactory } from '../../utils/errorFactory';
-import { UserId } from '../user/user.entity';
+import { AuthenticateUseCase } from './features/auth/usecases/authenticate.usecase';
+import { errorFactory } from './utils/errorFactory';
+import { UserId } from './features/user/user.entity';
 import { isLeft } from 'fp-ts/lib/Either';
 import * as O from 'fp-ts/Option';
 

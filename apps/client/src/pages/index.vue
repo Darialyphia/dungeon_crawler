@@ -4,6 +4,8 @@ import { definePage } from 'vue-router/auto';
 definePage({
   name: 'Home'
 });
+
+const isAuthenticated = useIsAuthenticated();
 </script>
 
 <template>
@@ -15,8 +17,11 @@ definePage({
           crawler roguelike AAA survival roguelite MMO Battle Royale ARPG game of the year
         </p>
 
-        <UiButton :to="{ name: 'Register' }" style="--button-size: var(--font-size-4)">
-          Play for free
+        <UiButton
+          :to="{ name: isAuthenticated ? 'Games' : 'Register' }"
+          style="--button-size: var(--font-size-4)"
+        >
+          Play now
         </UiButton>
       </div>
     </section>

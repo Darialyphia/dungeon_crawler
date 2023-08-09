@@ -32,7 +32,7 @@ useResizeObserver(header, entries => {
         <UiLinkButton @click="logout(undefined)" :is-loading="isLoading">
           Logout
         </UiLinkButton>
-        <RouterLink v-slot="{ href, navigate }" :to="{ name: 'Lobbies' }" custom>
+        <RouterLink v-slot="{ href, navigate }" :to="{ name: 'Games' }" custom>
           <UiLinkButton :href="href" @click="navigate">Play</UiLinkButton>
         </RouterLink>
       </template>

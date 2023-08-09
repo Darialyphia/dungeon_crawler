@@ -2,16 +2,16 @@
 import { definePage } from 'vue-router/auto';
 
 definePage({
-  name: 'Lobbies'
+  name: 'Games'
 });
 
-const { data: lobbies } = useLobbies();
+const { data: games } = useGames();
 </script>
 
 <template>
   <main class="container surface">
     <h2>Lobbies</h2>
-    <pre>{{ lobbies }}</pre>
+    <pre>{{ games }}</pre>
   </main>
 </template>
 

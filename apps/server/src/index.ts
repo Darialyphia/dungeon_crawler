@@ -1,8 +1,8 @@
 import http from 'http';
 import { config } from './config';
 import { container } from './container';
-import { createApp } from './features/core/app';
-import { createIo } from './features/core/io';
+import { createApp } from './app';
+import { createIo } from './io';
 
 const main = () => {
   const server = http.createServer(createApp());
