@@ -1,6 +1,8 @@
 import * as E from 'fp-ts/Either';
 import { AppError } from './errorFactory';
 import crypto from 'crypto';
+import { DomainEvents, Emitter } from '../features/core/providers/event-emitter';
+import { pipe } from 'fp-ts/function';
 
 export const execute = <T extends () => any>(fn: T): ReturnType<T> => fn();
 

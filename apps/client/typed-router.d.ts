@@ -43,7 +43,7 @@ declare module 'vue-router/auto/routes' {
     'ForgotPassword': RouteRecordInfo<'ForgotPassword', '/forgot-password', Record<never, never>, Record<never, never>>,
     'Games': RouteRecordInfo<'Games', '/games', Record<never, never>, Record<never, never>>,
     'Login': RouteRecordInfo<'Login', '/login', Record<never, never>, Record<never, never>>,
-    'Play': RouteRecordInfo<'Play', '/play', Record<never, never>, Record<never, never>>,
+    'Play': RouteRecordInfo<'Play', '/play/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     'Register': RouteRecordInfo<'Register', '/register', Record<never, never>, Record<never, never>>,
     'ResetPassword': RouteRecordInfo<'ResetPassword', '/reset-password', Record<never, never>, Record<never, never>>,
   }

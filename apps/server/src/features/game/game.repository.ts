@@ -40,10 +40,10 @@ export const gameRepository = ({ prisma }: { prisma: PrismaClient }): GameReposi
       }
     },
 
-    async findById(authorId) {
+    async findById(id) {
       try {
         const game = await prisma.game.findUniqueOrThrow({
-          where: { authorId },
+          where: { id },
           include: { players: true, author: true }
         });
 
@@ -53,10 +53,10 @@ export const gameRepository = ({ prisma }: { prisma: PrismaClient }): GameReposi
       }
     },
 
-    async findByAuthorId(id) {
+    async findByAuthorId(authorId) {
       try {
         const game = await prisma.game.findUniqueOrThrow({
-          where: { id },
+          where: { authorId },
           include: { players: true, author: true }
         });
 

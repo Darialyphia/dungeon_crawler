@@ -33,7 +33,6 @@ export const gameAbilityBuilder = ({ gameRepo }: Dependencies): GameAbilityBuild
   return {
     async buildForUser(user) {
       if (!user) return unAuthenticatedAbility;
-
       if (!cache.has(user.id)) {
         const [createdGame, joinedGame] = await Promise.all([
           gameRepo.findByAuthorId(user.id),
@@ -47,24 +46,23 @@ export const gameAbilityBuilder = ({ gameRepo }: Dependencies): GameAbilityBuild
             can('create', 'Game');
           }
 
-          if (E.isLeft(joinedGame)) {
-            can('join', 'Game');
-            cannot(
-              'join',
-              'Game',
-              (subject: Game) => subject.players.length >= subject.capacity
-            );
-            cannot('join', 'Game', (subject: Game) =>
-              subject.players.some(p => p.id === user.id)
-            );
+          can('join', 'Game');
+          cannot('join', 'Game', () => E.isRight(joinedGame));
+          cannot(
+            'join',
+            'Game',
+            (subject: Game) => subject.players.length >= subject.capacity
+          );
+          cannot('join', 'Game', (subject: Game) =>
+            subject.players.some(p => p.id === user.id)
+          );
 
-            can('leave', 'Game');
-            cannot(
-              'leave',
-              'Game',
-              (subject: Game) => !subject.players.some(p => p.id === user.id)
-            );
-          }
+          can('leave', 'Game');
+          cannot(
+            'leave',
+            'Game',
+            (subject: Game) => !subject.players.some(p => p.id === user.id)
+          );
         });
 
         cache.set(user.id, ability);

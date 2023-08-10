@@ -8,6 +8,7 @@ export type ErrorMapper = {
 export const errorMapper = (): ErrorMapper => {
   return {
     toResponse(err) {
+      console.error(err);
       return {
         kind: err.kind,
         message: err.message,

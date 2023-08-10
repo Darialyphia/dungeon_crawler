@@ -11,7 +11,8 @@ import { GameContract } from '@dungeon-crawler/contract';
 import { User } from '../../user/user.entity';
 import * as E from 'fp-ts/Either';
 import { GameAbilityBuilder } from '../game.ability';
-import { GameInstancePool } from '../gameInstance.pool';
+import { Emitter } from '../../core/providers/event-emitter';
+import { pipe } from 'fp-ts/function';
 
 export type CreateGameUseCase = UseCase<
   ServerInferRequest<GameContract['create']>['body'],
@@ -23,40 +24,23 @@ type Dependencies = {
   gameRepo: GameRepository;
   session: User;
   gameAbilityBuilder: GameAbilityBuilder;
-  gameInstancePool: GameInstancePool;
+  emitter: Emitter;
 };
 
 export const createGameUsecase =
-  ({
-    gameRepo,
-    gameAbilityBuilder,
-    gameInstancePool,
-    session
-  }: Dependencies): CreateGameUseCase =>
+  ({ gameRepo, gameAbilityBuilder, session, emitter }: Dependencies): CreateGameUseCase =>
   async data => {
-    if (gameInstancePool.isFull()) {
-      return E.left(errorFactory.badRequest({ message: 'game instance pool is full' }));
-    }
-
     const ability = await gameAbilityBuilder.buildForUser(session);
-
     if (ability.cannot('create', 'Game')) {
       return E.left(errorFactory.badRequest());
     }
 
-    const game = await gameRepo.create({
-      ...data,
-      authorId: session.id
-    });
+    return pipe(
+      await gameRepo.create({
+        ...data,
+        authorId: session.id
+      }),
 
-    if (E.isLeft(game)) return game;
-    const worker = gameInstancePool.spawn(game.right.id);
-
-    if (E.isLeft(worker)) {
-      await gameRepo.delete(game.right.id);
-
-      return E.left(errorFactory.unexpected());
-    }
-
-    return game;
+      E.tap(game => E.right(emitter.emit('GAME_CREATED', game)))
+    );
   };

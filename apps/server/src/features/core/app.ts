@@ -13,6 +13,7 @@ import { config } from '../../config';
 import { corsMiddleware } from './middlewares/cors.middleware';
 import { requestScopeMiddleware } from './middlewares/requestScope.middleware';
 import { authMiddleware } from '../auth/auth.middleware';
+import { GameSubscribers } from '../game/game.subscribers';
 
 export const createApp = () => {
   const app = express();
@@ -38,7 +39,16 @@ export const createApp = () => {
   app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(openApiDocument));
 
   createExpressEndpoints(contract, router, app, {
-    globalMiddleware: [requestScopeMiddleware, authMiddleware],
+    globalMiddleware: [
+      requestScopeMiddleware,
+      authMiddleware,
+      (req, res, next) => {
+        console.log('=============================================');
+        console.log(req.tsRestRoute.path);
+        console.log('=============================================');
+        next();
+      }
+    ],
     requestValidationErrorHandler: (err, req, res) => {
       res
         .status(400)

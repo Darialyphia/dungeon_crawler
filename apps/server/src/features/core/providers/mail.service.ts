@@ -2,11 +2,12 @@ import * as nodemailer from 'nodemailer';
 import sendgridTransport from 'nodemailer-sendgrid';
 import * as E from 'fp-ts/Either';
 import handlebars from 'handlebars';
-import { UnexpectedError, errorFactory } from '../../utils/errorFactory';
 import { AnyObject, isDefined, isString } from '@dungeon-crawler/shared';
 import { resolve } from 'path';
 import { readFile } from 'fs/promises';
-import { config } from '../../config';
+import { UnexpectedError, errorFactory } from '../../../utils/errorFactory';
+import { config } from '../../../config';
+import { TransportOptions } from 'nodemailer';
 
 export type EmailOptions = {
   template: string;
@@ -32,23 +33,22 @@ export const emailService = (): EmailService => {
   const getTransport = () => {
     const useMaildev =
       isDefined(config.MAILING.MAILDEV.HOST) && isDefined(config.MAILING.MAILDEV.PORT);
-    if (useMaildev) {
-      return nodemailer.createTransport({
-        // @ts-ignore
-        host: config.MAILING.MAILDEV.HOST,
-        port: config.MAILING.MAILDEV.PORT,
-        secure: false,
-        tls: {
-          rejectUnauthorized: false
-        }
-      });
-    }
 
-    return nodemailer.createTransport(
-      sendgridTransport({
-        apiKey: config.MAILING.SENDGRID_API_KEY!
-      })
-    );
+    const options = useMaildev
+      ? ({
+          // @ts-ignore
+          host: config.MAILING.MAILDEV.HOST,
+          port: config.MAILING.MAILDEV.PORT,
+          secure: false,
+          tls: {
+            rejectUnauthorized: false
+          }
+        } as TransportOptions)
+      : sendgridTransport({
+          apiKey: config.MAILING.SENDGRID_API_KEY!
+        });
+
+    return nodemailer.createTransport(options);
   };
 
   return {

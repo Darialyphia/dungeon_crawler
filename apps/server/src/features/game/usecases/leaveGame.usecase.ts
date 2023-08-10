@@ -13,6 +13,8 @@ import * as E from 'fp-ts/Either';
 import { GameAbilityBuilder } from '../game.ability';
 import { subject } from '@casl/ability';
 import { GameInstancePool } from '../gameInstance.pool';
+import { pipe } from 'fp-ts/function';
+import { Emitter } from '../../core/providers/event-emitter';
 
 export type LeaveGameUseCase = UseCase<
   { gameId: GameId },
@@ -24,16 +26,11 @@ type Dependencies = {
   gameRepo: GameRepository;
   gameAbilityBuilder: GameAbilityBuilder;
   session: User;
-  gameInstancePool: GameInstancePool;
+  emitter: Emitter;
 };
 
 export const leaveGameUsecase =
-  ({
-    gameRepo,
-    gameAbilityBuilder,
-    gameInstancePool,
-    session
-  }: Dependencies): LeaveGameUseCase =>
+  ({ gameRepo, gameAbilityBuilder, emitter, session }: Dependencies): LeaveGameUseCase =>
   async ({ gameId }) => {
     const gameEither = await gameRepo.findById(gameId);
 
@@ -46,14 +43,12 @@ export const leaveGameUsecase =
       return E.left(errorFactory.badRequest());
     }
 
-    const updatedGameEither = await gameRepo.leave({
-      gameId: gameId,
-      playerId: session.id
-    });
+    return pipe(
+      await gameRepo.leave({
+        gameId: gameId,
+        playerId: session.id
+      }),
 
-    const isEmpty =
-      E.isRight(updatedGameEither) && !updatedGameEither.right.players.length;
-    if (isEmpty) gameInstancePool.terminate(gameId);
-
-    return updatedGameEither;
+      E.tap(game => E.right(emitter.emit('USER_LEFT_GAME', { game, user: session })))
+    );
   };

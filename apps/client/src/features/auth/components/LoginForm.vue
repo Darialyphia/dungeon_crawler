@@ -29,11 +29,6 @@ const onSubmit = form.handleSubmit(values => signup(values));
         type="email"
         left-icon="mdi-email-outline"
       />
-      <div class="flex justify-end">
-        <RouterLink :to="{ name: 'ForgotPassword' }" class="underline">
-          I forgot my password
-        </RouterLink>
-      </div>
       <UiFormError :error="error" />
     </UiFormControl>
 
@@ -44,6 +39,11 @@ const onSubmit = form.handleSubmit(values => signup(values));
         v-bind="inputProps"
         left-icon="mdi:lock-outline"
       />
+      <div class="flex justify-end">
+        <RouterLink :to="{ name: 'ForgotPassword' }" class="underline">
+          I forgot my password
+        </RouterLink>
+      </div>
       <UiFormError :error="error" />
     </UiFormControl>
 

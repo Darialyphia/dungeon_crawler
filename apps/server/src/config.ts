@@ -1,4 +1,8 @@
-import { ONE_MINUTE_IN_SECONDS, ONE_WEEK_IN_SECONDS } from '@dungeon-crawler/shared';
+import {
+  ONE_MINUTE_IN_MS,
+  ONE_MINUTE_IN_SECONDS,
+  ONE_WEEK_IN_SECONDS
+} from '@dungeon-crawler/shared';
 import z from 'zod';
 
 const configSchema = z.object({
@@ -52,7 +56,8 @@ const configSchema = z.object({
   ]),
 
   ENGINE_WORKERS: z.object({
-    MAX_INSTANCES: z.number()
+    MAX_INSTANCES: z.number(),
+    SHUTDOWN_TIMEOUT: z.number()
   })
 });
 
@@ -102,7 +107,8 @@ export const config = configSchema.parse({
   },
 
   ENGINE_WORKERS: {
-    MAX_INSTANCES: 10
+    MAX_INSTANCES: 10,
+    SHUTDOWN_TIMEOUT: 5000
   }
 });
 

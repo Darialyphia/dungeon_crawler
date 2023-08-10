@@ -8,6 +8,14 @@ import { UserId } from '../user/user.entity';
 import { AuthenticateUseCase } from '../auth/usecases/authenticate.usecase';
 import { config } from '../../config';
 import { errorFactory } from '../../utils/errorFactory';
+import { GameIo } from '../game/game.io';
+
+export type AppSocket = Socket<
+  IoEvents['CLIENT'],
+  IoEvents['SERVER'],
+  {},
+  { userId: UserId }
+>;
 
 export type Io = IoServer<
   IoEvents['CLIENT'],
@@ -15,17 +23,17 @@ export type Io = IoServer<
   {},
   { userId: UserId }
 > & {
-  getSocketFromUserId: (
-    userId: UserId
-  ) => O.Option<Socket<IoEvents['CLIENT'], IoEvents['SERVER'], {}, { userId: UserId }>>;
+  getSocketFromUserId: (userId: UserId) => O.Option<AppSocket>;
 };
 
 export const createIo = ({
   server,
-  authenticateUseCase
+  authenticateUseCase,
+  gameIo
 }: {
   server: Server;
   authenticateUseCase: AuthenticateUseCase;
+  gameIo: GameIo;
 }) => {
   const socketsByUserId = new Map<
     string,
@@ -78,9 +86,12 @@ export const createIo = ({
     socket.on('LEAVE_ROOM', roomId => {
       socket.leave(roomId);
     });
+
     socket.on('disconnect', () => {
       socketsByUserId.delete(socket.data.userId);
     });
+
+    gameIo(socket);
   });
 
   return io;
