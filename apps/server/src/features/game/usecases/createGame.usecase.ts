@@ -44,8 +44,19 @@ export const createGameUsecase =
       return E.left(errorFactory.badRequest());
     }
 
-    return gameRepo.create({
+    const game = await gameRepo.create({
       ...data,
       authorId: session.id
     });
+
+    if (E.isLeft(game)) return game;
+    const worker = gameInstancePool.spawn(game.right.id);
+
+    if (E.isLeft(worker)) {
+      await gameRepo.delete(game.right.id);
+
+      return E.left(errorFactory.unexpected());
+    }
+
+    return game;
   };

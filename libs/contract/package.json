@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@dungeon-crawler/shared": "*",
+    "@dungeon-crawler/game-engine": "*",
     "@ts-rest/core": "^3.25.1",
     "awilix": "^8.0.1",
     "vitest": "^0.31.4",

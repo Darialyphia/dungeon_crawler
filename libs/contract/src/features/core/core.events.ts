@@ -1,5 +1,6 @@
 import type { UserResponse } from '../user/user.schemas';
 import type { UUID } from './core.types';
+import type { SerializedGameState } from '@dungeon-crawler/game-engine';
 
 export type IoEvents = {
   CLIENT: {
@@ -8,6 +9,7 @@ export type IoEvents = {
   };
   SERVER: {
     USER_JOINED_ROOM(payload: { user: UserResponse; roomId: string }): void;
-    USER_LEFT_ARENA(payload: { user: UserResponse; roomId: string }): void;
+    USER_LEFT_ROOM(payload: { user: UserResponse; roomId: string }): void;
+    GAME_STATE_UPDATE(payload: { gameId: UUID; state: SerializedGameState }): void;
   };
 };

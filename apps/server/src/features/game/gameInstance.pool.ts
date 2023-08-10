@@ -19,43 +19,40 @@ type Dependencies = {
 };
 
 export const gameInstancePool = ({ gameRepo, io }: Dependencies): GameInstancePool => {
-  const engines = new Map<GameId, Worker>();
+  const instances = new Map<GameId, Worker>();
 
   return {
     isFull() {
-      return engines.size >= config.ENGINE_WORKERS.MAX_INSTANCES;
+      return instances.size >= config.ENGINE_WORKERS.MAX_INSTANCES;
     },
 
     spawn(id) {
-      if (engines.size === config.ENGINE_WORKERS.MAX_INSTANCES) {
-        return E.left(errorFactory.unexpected({ message: 'max engine instances' }));
+      if (instances.size === config.ENGINE_WORKERS.MAX_INSTANCES) {
+        return E.left(
+          errorFactory.unexpected({ message: 'Game worker instances capacity exceeded' })
+        );
       }
 
       const worker = new Worker(resolve(process.cwd(), 'src/engine-worker.ts'), {});
-      worker.on('message', function (data) {
-        console.log(data);
+      worker.on('message', data => {
+        io.in(id).emit('GAME_STATE_UPDATE', data);
       });
 
       worker.on('error', async error => {
         console.log(error);
-        io.in(id).socketsLeave(id);
-        gameRepo.delete(id);
-
         worker.terminate();
       });
 
-      worker.on('exit', code => {
+      worker.on('exit', () => {
         io.in(id).socketsLeave(id);
         gameRepo.delete(id);
-
-        if (code !== 0) worker.terminate();
       });
 
       return E.right(worker);
     },
 
     terminate(id) {
-      const worker = engines.get(id);
+      const worker = instances.get(id);
       worker?.terminate();
 
       return null;
