@@ -2,7 +2,6 @@ import { PrismaClient } from '@prisma/client';
 import * as E from 'fp-ts/Either';
 import { handlePrismaError, prismaNotFoundMatchers } from '../../utils/prisma';
 import { NotFoundError, UnexpectedError, errorFactory } from '../../utils/errorFactory';
-import { UUID } from '@dungeon-crawler/contract';
 import { Game, GameId } from './game.entity';
 import { UserId } from '../user/user.entity';
 
@@ -24,6 +23,7 @@ export type GameRepository = {
     gameId: GameId;
     playerId: UserId;
   }): Promise<E.Either<UnexpectedError | NotFoundError, Game>>;
+  delete(id: GameId): Promise<E.Either<UnexpectedError, null>>;
 };
 
 export const gameRepository = ({ prisma }: { prisma: PrismaClient }): GameRepository => {
@@ -132,6 +132,16 @@ export const gameRepository = ({ prisma }: { prisma: PrismaClient }): GameReposi
         return E.right(game);
       } catch (err) {
         return E.left(handlePrismaError(prismaNotFoundMatchers)(err));
+      }
+    },
+
+    async delete(id) {
+      try {
+        await prisma.game.delete({ where: { id } });
+
+        return E.right(null);
+      } catch (err) {
+        return E.left(handlePrismaError()(err));
       }
     }
   };

@@ -5,14 +5,14 @@ import * as swaggerUi from 'swagger-ui-express';
 import bodyParser from 'body-parser';
 import { createExpressEndpoints } from '@ts-rest/express';
 import { ERROR_KINDS, contract } from '@dungeon-crawler/contract';
-import { errorFactory } from './utils/errorFactory';
-import { router } from './router';
+import { errorFactory } from '../../utils/errorFactory';
+import { router } from '../../router';
 import cookieParser from 'cookie-parser';
 import { generateOpenApi } from '@ts-rest/open-api';
-import { config } from './config';
-import { corsMiddleware } from './features/core/middlewares/cors.middleware';
-import { requestScopeMiddleware } from './features/core/middlewares/requestScope.middleware';
-import { authMiddleware } from './features/auth/auth.middleware';
+import { config } from '../../config';
+import { corsMiddleware } from './middlewares/cors.middleware';
+import { requestScopeMiddleware } from './middlewares/requestScope.middleware';
+import { authMiddleware } from '../auth/auth.middleware';
 
 export const createApp = () => {
   const app = express();
