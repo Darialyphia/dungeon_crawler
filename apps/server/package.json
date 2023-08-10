@@ -29,6 +29,7 @@
     "@casl/prisma": "^1.4.0",
     "@dungeon-crawler/contract": "*",
     "@dungeon-crawler/shared": "*",
+    "@dungeon-crawler/game-engine": "*",
     "@prisma/client": "5",
     "@ts-rest/core": "^3.26.3",
     "@ts-rest/express": "^3.25.1",

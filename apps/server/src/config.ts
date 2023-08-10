@@ -49,7 +49,11 @@ const configSchema = z.object({
       }),
       SENDGRID_API_KEY: z.undefined()
     })
-  ])
+  ]),
+
+  ENGINE_WORKERS: z.object({
+    MAX_INSTANCES: z.number()
+  })
 });
 
 export const config = configSchema.parse({
@@ -95,6 +99,10 @@ export const config = configSchema.parse({
       PORT: process.env.MAILDEV_SMTP_PORT
     },
     SENDGRID_API_KEY: process.env.SENDGRID_API_KEY
+  },
+
+  ENGINE_WORKERS: {
+    MAX_INSTANCES: 10
   }
 });
 

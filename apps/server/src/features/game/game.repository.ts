@@ -88,12 +88,7 @@ export const gameRepository = ({ prisma }: { prisma: PrismaClient }): GameReposi
           data: {
             name,
             capacity,
-            authorId,
-            players: {
-              connect: {
-                id: authorId
-              }
-            }
+            authorId
           },
           include: { players: true, author: true }
         });
