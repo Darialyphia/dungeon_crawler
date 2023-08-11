@@ -69,10 +69,10 @@ export const gameRouter = s.router(contract.game, {
   },
 
   async leave({ params, req: { container } }) {
-    const { errorMapper, gameMapper, leaveGameUseCase } = container.cradle;
+    const { errorMapper, gameMapper, leaveGameUseCase, session } = container.cradle;
 
     return pipe(
-      await leaveGameUseCase(params),
+      await leaveGameUseCase({ gameId: params.gameId, userId: session!.id }),
 
       E.matchW(
         err => {

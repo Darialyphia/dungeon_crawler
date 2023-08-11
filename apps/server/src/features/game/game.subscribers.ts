@@ -34,31 +34,32 @@ export const gameSubscribers = ({
       const instance = gameInstancePool.getInstance(game.id);
       const socket = io.getSocketFromUserId(user.id);
 
-      if (O.isNone(instance) || O.isNone(socket)) {
-        console.log("couldn't find socket or instance for game", game.id);
-        return;
+      if (O.isSome(socket)) {
+        socket.value.join(game.id);
       }
 
-      instance.value.dispatch('join', { id: user.id });
-      socket.value.join(game.id);
-
-      instance.value.start();
+      if (O.isSome(instance)) {
+        instance.value.dispatch('join', { id: user.id });
+        if (game.players.length === 1) {
+          instance.value.start();
+        }
+      }
     });
 
     emitter.on('USER_LEFT_GAME', ({ game, user }) => {
       const instance = gameInstancePool.getInstance(game.id);
       const socket = io.getSocketFromUserId(user.id);
 
-      if (O.isNone(instance) || O.isNone(socket)) {
-        console.log("couldn't find socket or instance for game", game.id);
-        return;
+      if (O.isSome(socket)) {
+        socket.value.leave(game.id);
       }
-      instance.value.dispatch('leave', { id: user.id });
-      socket.value.leave(game.id);
 
-      if (!game.players.length) {
-        instance.value.stop();
-        instance.value.scheduleShutdown();
+      if (O.isSome(instance)) {
+        instance.value.dispatch('leave', { id: user.id });
+        if (!game.players.length) {
+          instance.value.stop();
+          instance.value.scheduleShutdown();
+        }
       }
     });
   };

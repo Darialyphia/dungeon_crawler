@@ -11,5 +11,13 @@ export type DomainEvents = {
 
 export type Emitter = TypedEmitter<DomainEvents>;
 
-export const emitter = new EventEmitter() as TypedEmitter<DomainEvents>;
+class MyEmitter extends EventEmitter {
+  emit(type: string, ...args: any[]) {
+    console.log('EVENT EMITTER : ', type);
+    return super.emit(type, ...args);
+  }
+}
+
+export const emitter = new MyEmitter() as TypedEmitter<DomainEvents>;
+
 emitter.setMaxListeners(100);

@@ -20,7 +20,10 @@ const {
 });
 
 const form = useForm({
-  validationSchema: toTypedSchema(gameContract.create.body)
+  validationSchema: toTypedSchema(gameContract.create.body),
+  initialValues: {
+    capacity: 4
+  }
 });
 
 const onSubmit = form.handleSubmit(values => create(values));

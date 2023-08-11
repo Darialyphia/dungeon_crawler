@@ -17,14 +17,17 @@ export type GameIo = (socket: AppSocket) => void;
 
 // We are not destructuring dependencies to avoid cyclic dependencies
 // sunce dependencies are references to a proxy, as long as we don't eagerly access the deps, we're "fine"
-// This definitely deservers a proper fux though
+// This definitely deservers a proper fix though
 export const gameIo = (deps: Dependencies): GameIo => {
   return (socket: AppSocket) => {
-    socket.on('disconnect', async () => {
+    socket.on('disconnecting', async () => {
       const joinedGame = await deps.gameRepo.findByPlayerId(socket.data.userId);
       if (E.isLeft(joinedGame)) return;
 
-      await deps.leaveGameUseCase({ gameId: joinedGame.right.id });
+      await deps.leaveGameUseCase({
+        gameId: joinedGame.right.id,
+        userId: socket.data.userId
+      });
     });
 
     socket.on('GAME_ACTION', ({ gameId, action }) => {
