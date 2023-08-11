@@ -32,7 +32,24 @@ const onSubmit = form.handleSubmit(values => create(values));
 <template>
   <main class="container surface">
     <h2>Games</h2>
-    <pre>{{ games }}</pre>
+    <ul>
+      <li v-for="game in games" :key="game.id" class="flex gap-2 items-center">
+        {{ game.name }} ({{ game.players.length }}/{{ game.capacity }})
+
+        <RouterLink
+          v-slot="{ href, navigate }"
+          :to="{ name: 'Play', params: { id: game.id } }"
+        >
+          <UiButton
+            :href="href"
+            @click="navigate"
+            :disabled="game.players.length >= game.capacity"
+          >
+            Join
+          </UiButton>
+        </RouterLink>
+      </li>
+    </ul>
     <h2>Create game</h2>
     <form @submit.prevent="onSubmit">
       <UiFormControl v-slot="{ error, inputProps }" name="name">

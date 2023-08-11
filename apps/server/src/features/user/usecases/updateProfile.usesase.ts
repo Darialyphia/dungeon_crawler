@@ -32,8 +32,8 @@ type Dependencies = {
 
 export const updateProfileUnseCase =
   ({ userAbilityBuilder, userRepo, session }: Dependencies): UpdateProfileUseCase =>
-  ({ userId, profile }) => {
-    const userAbility = userAbilityBuilder.buildFor(session);
+  async ({ userId, profile }) => {
+    const userAbility = await userAbilityBuilder.buildFor(session);
 
     if (!userAbility.can('edit', subject('User', { id: userId } as User))) {
       return Promise.resolve(left(errorFactory.forbidden()));
