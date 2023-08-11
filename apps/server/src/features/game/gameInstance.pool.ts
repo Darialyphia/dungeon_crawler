@@ -11,9 +11,8 @@ import { DispatchFunction } from '@dungeon-crawler/game-engine';
 import { Nullable } from '@dungeon-crawler/shared';
 
 export type GameInstancePool = {
-  spawn(id: GameId): E.Either<UnexpectedError, GameInstance>;
+  getOrCreate(id: GameId): E.Either<UnexpectedError, GameInstance>;
   scheduleShutdown(id: GameId): O.Option<void>;
-  getInstance(id: GameId): O.Option<GameInstance>;
   isFull(): boolean;
 };
 
@@ -84,26 +83,24 @@ export const gameInstancePool = ({ gameRepo, io }: Dependencies): GameInstancePo
       return instances.size >= config.ENGINE_WORKERS.MAX_INSTANCES;
     },
 
-    spawn(id) {
+    getOrCreate(id) {
       if (instances.size === config.ENGINE_WORKERS.MAX_INSTANCES) {
         return E.left(
           errorFactory.unexpected({ message: 'Game worker instances capacity exceeded' })
         );
       }
 
-      const instance = createInstance(id);
-      instances.set(id, instance);
+      if (!instances.has(id)) {
+        const instance = createInstance(id);
+        instances.set(id, instance);
+      }
 
-      return E.right(instance);
+      return E.right(instances.get(id)!);
     },
 
     scheduleShutdown(id) {
       const instance = instances.get(id);
       return O.fromNullable(instance?.scheduleShutdown());
-    },
-
-    getInstance(id) {
-      return O.fromNullable(instances.get(id));
     }
   };
 };

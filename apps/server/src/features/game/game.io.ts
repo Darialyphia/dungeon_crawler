@@ -1,9 +1,7 @@
 import { AppSocket, Io } from '../core/io';
-import { Emitter } from '../core/providers/event-emitter';
 import { GameRepository } from './game.repository';
 import { GameInstancePool, gameInstancePool } from './gameInstance.pool';
 import * as E from 'fp-ts/Either';
-import * as O from 'fp-ts/Option';
 
 import { LeaveGameUseCase, leaveGameUsecase } from './usecases/leaveGame.usecase';
 
@@ -31,9 +29,10 @@ export const gameIo = (deps: Dependencies): GameIo => {
     });
 
     socket.on('GAME_ACTION', ({ gameId, action }) => {
-      const gameInstance = deps.gameInstancePool.getInstance(gameId);
-      if (O.isSome(gameInstance)) {
-        gameInstance.value.dispatch(action.type, action.payload);
+      const gameInstance = deps.gameInstancePool.getOrCreate(gameId);
+
+      if (E.isRight(gameInstance)) {
+        gameInstance.right.dispatch(action.type, action.payload);
       }
     });
   };

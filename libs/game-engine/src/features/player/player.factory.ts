@@ -30,7 +30,7 @@ export const createPlayer = (
           x: 0,
           y: 0
         },
-        speed: 20
+        speed: 10
       })
     )
     .with(player.component({ id }))

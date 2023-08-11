@@ -30,6 +30,8 @@ export const createEngineWorkerConsumer = () => {
 
   return {
     state,
-    dispatch: (event: any) => worker.postMessage(event),
+    dispatch: (event: any) => {
+      worker.postMessage(event);
+    },
   };
 };

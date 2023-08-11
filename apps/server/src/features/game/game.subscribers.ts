@@ -23,7 +23,7 @@ export const gameSubscribers = ({
 }: Dependencies): GameSubscribers => {
   return () => {
     emitter.on('GAME_CREATED', async game => {
-      const worker = gameInstancePool.spawn(game.id);
+      const worker = gameInstancePool.getOrCreate(game.id);
 
       if (E.isLeft(worker)) {
         await gameRepo.delete(game.id);
@@ -31,34 +31,34 @@ export const gameSubscribers = ({
     });
 
     emitter.on('USER_JOINED_GAME', ({ game, user }) => {
-      const instance = gameInstancePool.getInstance(game.id);
+      const instance = gameInstancePool.getOrCreate(game.id);
       const socket = io.getSocketFromUserId(user.id);
 
       if (O.isSome(socket)) {
         socket.value.join(game.id);
       }
 
-      if (O.isSome(instance)) {
-        instance.value.dispatch('join', { id: user.id });
+      if (E.isRight(instance)) {
+        instance.right.dispatch('join', { id: user.id });
         if (game.players.length === 1) {
-          instance.value.start();
+          instance.right.start();
         }
       }
     });
 
     emitter.on('USER_LEFT_GAME', ({ game, user }) => {
-      const instance = gameInstancePool.getInstance(game.id);
+      const instance = gameInstancePool.getOrCreate(game.id);
       const socket = io.getSocketFromUserId(user.id);
 
       if (O.isSome(socket)) {
         socket.value.leave(game.id);
       }
 
-      if (O.isSome(instance)) {
-        instance.value.dispatch('leave', { id: user.id });
+      if (E.isRight(instance)) {
+        instance.right.dispatch('leave', { id: user.id });
         if (!game.players.length) {
-          instance.value.stop();
-          instance.value.scheduleShutdown();
+          instance.right.stop();
+          instance.right.scheduleShutdown();
         }
       }
     });

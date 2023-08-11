@@ -22,7 +22,7 @@ import {
 const props = defineProps<{
   width: number;
   height: number;
-  player: { id: string; name: string };
+  playerId: string;
   state: SerializedGameState;
 }>();
 
@@ -32,8 +32,8 @@ const emit = defineEmits<{
 
 const state = useGameStateProvider(toRef(props, "state"));
 const dispatch = useDispatchProvider((arg) => emit("game:event", arg));
-useCurrentPlayerProvider(props.player);
-useControls(dispatch, props.player.id);
+useCurrentPlayerProvider(props.playerId);
+useControls(dispatch, props.playerId);
 
 const canvas = ref<HTMLCanvasElement>();
 onMounted(() => {
@@ -51,7 +51,7 @@ onMounted(() => {
   app.provide(appInjectKey, pixiApp);
   app.provide(GAME_STATE_INJECTION_KEY, state);
   app.provide(DISPATCHER_INJECTION_KEY, dispatch);
-  app.provide(CURRENT_PLAYER_INJECTION_KEY, props.player);
+  app.provide(CURRENT_PLAYER_INJECTION_KEY, props.playerId);
   app.mount(pixiApp.stage);
 
   watch(

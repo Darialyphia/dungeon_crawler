@@ -6,10 +6,11 @@ engine.subscribe(state => {
   parentPort?.postMessage(state);
 });
 parentPort?.on('message', data => {
-  console.log('message received in worker', data.type);
   if (data.type === 'start') {
+    console.log('GAME ENGINE WORKER: start');
     engine.start();
   } else if (data.type === 'stop') {
+    console.log('GAME ENGINE WORKER: stop');
     engine.stop();
   } else {
     engine.dispatch(data.type, data.payload);

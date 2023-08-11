@@ -13,7 +13,7 @@ const { state, dispatch } = createEngineWorkerConsumer();
     <GameClient
       v-if="state"
       :width="width"
-      :player="{ id: 'player', name: 'Player' }"
+      player-id="player"
       :height="height"
       :state="state"
       @game:event="dispatch($event)"

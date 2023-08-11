@@ -1,4 +1,4 @@
-import { Point, lerp } from "@dungeon-crawler/shared";
+import { Nullable, Point, lerp } from "@dungeon-crawler/shared";
 
 export type InterPolationState = {
   position: Point;
@@ -11,8 +11,10 @@ export type InterpolateOptions = {
 
 export const interpolatePosition = (
   newState: InterPolationState,
-  oldState: InterPolationState
+  oldState: Nullable<InterPolationState>
 ): Point => {
+  if (!oldState) return newState.position;
+
   const delta = new Date().getTime() - newState.t;
   const statesDelta = newState.t - oldState.t;
   const ratio = delta / statesDelta;

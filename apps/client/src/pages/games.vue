@@ -7,11 +7,11 @@ definePage({
   name: 'Games'
 });
 
-const { data: games } = useGames();
+const { data: games, isLoading } = useGames();
 const router = useRouter();
 const {
   mutate: create,
-  isLoading,
+  isLoading: isCreating,
   error
 } = useCreateGame({
   onSuccess(data) {
@@ -30,28 +30,34 @@ const onSubmit = form.handleSubmit(values => create(values));
 </script>
 
 <template>
-  <main class="container surface">
-    <h2>Games</h2>
-    <ul>
-      <li v-for="game in games" :key="game.id" class="flex gap-2 items-center">
-        {{ game.name }} ({{ game.players.length }}/{{ game.capacity }})
+  <main class="container">
+    <section class="surface">
+      <h2>Games</h2>
+      <p v-if="isLoading">Loading...</p>
+      <p v-if="!games?.length">There are no ongoing games</p>
+      <ul v-else>
+        <li v-for="game in games" :key="game.id" class="flex gap-2 items-center">
+          {{ game.name }} ({{ game.players.length }}/{{ game.capacity }})
 
-        <RouterLink
-          v-slot="{ href, navigate }"
-          :to="{ name: 'Play', params: { id: game.id } }"
-        >
-          <UiButton
-            :href="href"
-            @click="navigate"
-            :disabled="game.players.length >= game.capacity"
+          <RouterLink
+            v-slot="{ href, navigate }"
+            custom
+            :to="{ name: 'Play', params: { id: game.id } }"
           >
-            Join
-          </UiButton>
-        </RouterLink>
-      </li>
-    </ul>
-    <h2>Create game</h2>
-    <form @submit.prevent="onSubmit">
+            <UiButton
+              :href="href"
+              @click="navigate"
+              :disabled="game.players.length >= game.capacity"
+            >
+              Join game
+            </UiButton>
+          </RouterLink>
+        </li>
+      </ul>
+    </section>
+
+    <form class="surface" @submit.prevent="onSubmit">
+      <h2>Create game</h2>
       <UiFormControl v-slot="{ error, inputProps }" name="name">
         <UiFormLabel for="create-game-name">Name</UiFormLabel>
         <UiTextInput v-bind="inputProps" id="create-game-name" autocomplete="off" />
@@ -69,7 +75,7 @@ const onSubmit = form.handleSubmit(values => create(values));
         <UiFormError :error="error" />
       </UiFormControl>
 
-      <UiButton is-cta :disabled="isLoading">Start game</UiButton>
+      <UiButton is-cta :disabled="isCreating">Start game</UiButton>
       <UiFormError :error="error?.message" />
     </form>
   </main>
@@ -77,6 +83,16 @@ const onSubmit = form.handleSubmit(values => create(values));
 
 <style scoped lang="postcss">
 main {
-  --container-size: var(--size-xl);
+  --container-size: var(--size-lg);
+
+  @screen md {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: var(--size-4);
+  }
+}
+
+form {
+  align-self: start;
 }
 </style>

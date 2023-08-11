@@ -1,17 +1,14 @@
 import { useSafeInject } from "./useSafeInject";
 
-type CurrentPlayer = {
-  id: string;
-  name: string;
-};
+type CurrentPlayerId = string;
 
 export const CURRENT_PLAYER_INJECTION_KEY = Symbol(
-  "current_player"
-) as InjectionKey<CurrentPlayer>;
+  "current_player_id"
+) as InjectionKey<CurrentPlayerId>;
 
-export const useCurrentPlayerProvider = (player: CurrentPlayer) => {
+export const useCurrentPlayerProvider = (player: CurrentPlayerId) => {
   provide(CURRENT_PLAYER_INJECTION_KEY, player);
 };
 
-export const useCurrentPlayer = () =>
+export const useCurrentPlayerId = () =>
   useSafeInject(CURRENT_PLAYER_INJECTION_KEY);
