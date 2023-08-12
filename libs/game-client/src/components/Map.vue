@@ -40,15 +40,24 @@ const computeChunkRect = (): Rectangle => ({
 const chunkRect = ref<Rectangle>(computeChunkRect());
 
 watchEffect(() => {
-  const threshold = 5;
-  const { x: gx, y: gy } = gViewport.value;
+  const { x: gx, y: gy, width: gw, height: gh } = gViewport.value;
   const { x: cx, y: cy, width: cw, height: ch } = chunkRect.value;
-  const left = gx - cx < threshold;
-  const right = cx + cw - gx < threshold;
-  const top = gy - cy < threshold;
-  const bottom = cy + ch - gy < threshold;
+  const threshold = {
+    x: gw / 2,
+    y: gh / 2,
+  };
 
-  if (left || right || top || bottom) {
+  const left = gx - cx;
+  const right = cx + cw - (gx + gw);
+  const top = gy - cy;
+  const bottom = cy + ch - (gy + gh);
+
+  const shouldRecompute =
+    left < threshold.x ||
+    right < threshold.x ||
+    top < threshold.y ||
+    bottom < threshold.y;
+  if (shouldRecompute) {
     chunkRect.value = computeChunkRect();
   }
 });

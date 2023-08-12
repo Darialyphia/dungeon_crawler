@@ -38,7 +38,17 @@ const color = computed(() => COLOR_DICT.get(props.cell));
         graphics.endFill();
       }
     "
-  />
+  >
+    <text
+      :x="CELL_SIZE / 2"
+      :y="CELL_SIZE / 2"
+      anchor="0.5"
+      alpha="0.8"
+      :style="{ fill: 'white', fontSize: 10 }"
+    >
+      x: {{ props.x }}\ny: {{ props.y }}
+    </text>
+  </graphics>
 </template>
 
 <style scoped lang="postcss"></style>
