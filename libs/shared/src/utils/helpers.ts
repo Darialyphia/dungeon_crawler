@@ -24,9 +24,7 @@ export function curry<T extends AnyFunction, TAgg extends unknown[]>(
   return ((arg: any) => curry(func, [...aggregatedArgs, arg])) as any;
 }
 
-export const indexToPoint = curry(
-  (width: number, idx: number): Point => ({
-    x: idx % width,
-    y: Math.floor(idx / width)
-  })
-);
+export const indexToPoint = (length: number, idx: number): Point => ({
+  x: idx % length,
+  y: Math.floor(idx / length)
+});

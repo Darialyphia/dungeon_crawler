@@ -1,14 +1,17 @@
 <script setup lang="ts">
-import MapTile from "./MapTile.vue";
 import { useGameState } from "../composables/useGameState";
 import { useIdRef } from "../composables/useIdRef";
 import { useCamera } from "../composables/useCamera";
 import { CELL_SIZE } from "../utils/constants";
 import {
+  Point,
   Rectangle,
   indexToPoint,
   rectRectCollision,
 } from "@dungeon-crawler/shared";
+import { CellType } from "@dungeon-crawler/game-engine/src/features/map/map.factory";
+import { Graphics } from "pixi.js";
+import { toScreenCoords } from "../utils/helpers";
 
 const { state } = useGameState();
 const { viewport } = useCamera();
@@ -17,17 +20,15 @@ const mapRef = useIdRef(state.value.snapshot.map);
 watchEffect(() => {
   mapRef.value = state.value.snapshot.map;
 });
-const toPoint = indexToPoint(mapRef.value.width);
+const toPoint = (index: number) => indexToPoint(mapRef.value.width, index);
 
 // the camera viewport in game units instead of pixel units
 const gViewport = computed(() => {
-  const { x, y, width, height } = viewport.value;
-
   return {
-    x: x / CELL_SIZE,
-    y: y / CELL_SIZE,
-    width: width / CELL_SIZE,
-    height: height / CELL_SIZE,
+    x: viewport.value.x / CELL_SIZE,
+    y: viewport.value.y / CELL_SIZE,
+    width: viewport.value.width / CELL_SIZE,
+    height: viewport.value.height / CELL_SIZE,
   };
 });
 
@@ -43,8 +44,8 @@ watchEffect(() => {
   const { x: gx, y: gy, width: gw, height: gh } = gViewport.value;
   const { x: cx, y: cy, width: cw, height: ch } = chunkRect.value;
   const threshold = {
-    x: gw / 2,
-    y: gh / 2,
+    x: 1,
+    y: 1,
   };
 
   const left = gx - cx;
@@ -62,32 +63,50 @@ watchEffect(() => {
   }
 });
 
-const allCells = computed(() => {
-  return mapRef.value.rows.flat().map((type, index) => ({
-    ...toPoint(index),
-    type,
-  }));
+const visibleCells = computed(() => {
+  const visible: (Point & { type: CellType })[] = [];
+
+  for (const [index, cell] of mapRef.value.rows.flat().entries()) {
+    const { x, y } = toPoint(index);
+    if (
+      rectRectCollision(chunkRect.value, {
+        x,
+        y,
+        width: 1,
+        height: 1,
+      })
+    ) {
+      visible.push({ x, y, type: cell });
+    }
+  }
+
+  return visible;
 });
 
-const visibleCells = computed(() => {
-  return allCells.value.filter((cell) =>
-    rectRectCollision(chunkRect.value, {
-      x: cell.x,
-      y: cell.y,
-      width: 1,
-      height: 1,
-    })
-  );
-});
+const COLOR_DICT = new Map([
+  [0, 0x55aa00],
+  [1, 0x1111cc],
+  [2, 0x222200],
+]);
+
+// We render a single graphics drawing all tiles instead of having a Tile component for perf reasons
+const render = (graphics: Graphics) => {
+  graphics.clear();
+  graphics.lineStyle({
+    width: 1,
+    color: 0x000000,
+  });
+  visibleCells.value.forEach((cell) => {
+    const { x, y } = toScreenCoords(cell);
+    graphics.beginFill(COLOR_DICT.get(cell.type));
+    graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
+    graphics.endFill();
+  });
+};
 </script>
 
 <template>
-  <MapTile
-    v-for="cell in visibleCells"
-    :key="`${cell.x}:${cell.y}`"
-    :position="cell"
-    :cell="cell.type"
-  />
+  <graphics @render="render" />
 </template>
 
 <style scoped lang="postcss"></style>
