@@ -82,27 +82,10 @@ const visibleCells = computed(() => {
 </script>
 
 <template>
-  <graphics
-    :x="0"
-    :y="0"
-    @render="
-      (graphics) => {
-        graphics.beginFill(0x000000, 0.01);
-        graphics.drawRect(
-          0,
-          0,
-          mapRef.width * CELL_SIZE,
-          mapRef.height * CELL_SIZE
-        );
-        graphics.endFill();
-      }
-    "
-  />
   <MapTile
     v-for="cell in visibleCells"
     :key="`${cell.x}:${cell.y}`"
-    :x="cell.x"
-    :y="cell.y"
+    :position="cell"
     :cell="cell.type"
   />
 </template>

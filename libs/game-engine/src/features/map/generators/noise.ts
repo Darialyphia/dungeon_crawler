@@ -35,6 +35,7 @@ export const makeNoiseRectangle = <T>(
       for (let octave = 0; octave < octaves; octave++) {
         const freq = frequency * Math.pow(2, octave);
         const n = noise((startsAt.x + x) * freq, (startsAt.y + y) * freq);
+
         value += n * (amplitude * Math.pow(persistence, octave));
       }
 
@@ -59,7 +60,7 @@ export type NoiseGeneratorOptions<T> = {
 export const createNoiseGenerator = <T>({
   seed,
   scale,
-  frequency = 0.05,
+  frequency = 0.1,
   octaves = 3,
   amplitude = 4,
   persistence = 0.5

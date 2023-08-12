@@ -3,9 +3,9 @@ import type { MapGenerator } from './types';
 import { MAP_CHUNK_SIZE } from '../../constants';
 
 export const CELL_TYPES = {
-  GROUND: 0,
-  WATER: 1,
-  WALL: 2
+  GROUND: 0, // walkable, doesn't block vision and projectiles
+  WATER: 1, // not walkable, doesn't block vision or projectiles
+  WALL: 2 // not walkabe, blocks vision and projectiles
 } as const;
 export type CellType = 0 | 1 | 2; // GROUND / water / wall
 

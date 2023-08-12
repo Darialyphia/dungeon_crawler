@@ -2,22 +2,18 @@
 import { CELL_SIZE } from "../utils/constants";
 import { toScreenCoords } from "../utils/helpers";
 import { SerializedGameState } from "@dungeon-crawler/game-engine";
+import { Point } from "@dungeon-crawler/shared";
 
 const props = defineProps<{
-  x: number;
-  y: number;
+  position: Point;
   cell: SerializedGameState["map"]["rows"][number][number];
 }>();
-const screenRect = computed(() => ({
-  ...toScreenCoords({ x: props.x, y: props.y }),
-  width: CELL_SIZE,
-  height: CELL_SIZE,
-}));
+const screenRect = computed(() => toScreenCoords(props.position));
 
 const COLOR_DICT = new Map([
-  [0, 0x00ff00],
-  [1, 0x0000ff],
-  [2, 0x333300],
+  [0, 0x55aa00],
+  [1, 0x1111cc],
+  [2, 0x222200],
 ]);
 const color = computed(() => COLOR_DICT.get(props.cell));
 </script>
@@ -33,7 +29,7 @@ const color = computed(() => COLOR_DICT.get(props.cell));
           width: 1,
           color: 0x000000,
         });
-        graphics.beginFill(color, 0.5);
+        graphics.beginFill(color);
         graphics.drawRect(0, 0, CELL_SIZE, CELL_SIZE);
         graphics.endFill();
       }
@@ -43,10 +39,9 @@ const color = computed(() => COLOR_DICT.get(props.cell));
       :x="CELL_SIZE / 2"
       :y="CELL_SIZE / 2"
       anchor="0.5"
-      alpha="0.8"
       :style="{ fill: 'white', fontSize: 10 }"
     >
-      x: {{ props.x }}\ny: {{ props.y }}
+      x: {{ props.position.x }}\ny: {{ props.position.y }}
     </text>
   </graphics>
 </template>

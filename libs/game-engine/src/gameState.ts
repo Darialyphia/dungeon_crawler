@@ -1,3 +1,4 @@
+import { mapRange } from '@dungeon-crawler/shared';
 import { HEIGHT, SEED, WIDTH } from './constants';
 import { ECSWorld, createWorld } from './features/ecs/ECSWorld';
 import { createNoiseGenerator } from './features/map/generators/noise';
@@ -19,10 +20,12 @@ export const createGameState = (): GameState => {
       generator: createNoiseGenerator({
         seed: SEED,
         scale({ x, y, value }) {
-          if (value < 0.05) {
+          const normalized = mapRange(value, [-1, 1], [0, 1]);
+
+          if (normalized < 0.005) {
             return { x, y, type: CELL_TYPES.WATER };
           }
-          if (value > 0.8) {
+          if (normalized > 0.7) {
             return { x, y, type: CELL_TYPES.WALL };
           }
           return { x, y, type: CELL_TYPES.GROUND };
