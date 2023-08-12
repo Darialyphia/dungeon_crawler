@@ -1,14 +1,22 @@
-import { Nullable, Point, clamp, lerp } from "@dungeon-crawler/shared";
+import {
+  Nullable,
+  Point,
+  Rectangle,
+  clamp,
+  lerp,
+} from "@dungeon-crawler/shared";
 import { InjectionKey } from "vue";
 import { useSafeInject } from "./useSafeInject";
 import { throttle } from "lodash-es";
 import { useScreen } from "vue3-pixi";
-import { Container } from "pixi.js";
 import { CELL_SIZE } from "../utils/constants";
 import { useGameState } from "./useGameState";
+import { Container } from "pixi.js";
 
 export type Camera = {
   position: Readonly<Ref<Point>>;
+  pivot: Readonly<Ref<Point>>;
+  viewport: ComputedRef<Rectangle>;
   centerOn(point: Point): void;
 };
 
@@ -20,6 +28,19 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
     x: screen.value.width / 2,
     y: screen.value.height / 2,
   });
+  const scale = 1;
+
+  const pivot = ref({
+    x: screen.value.width / 2,
+    y: screen.value.height / 2,
+  });
+
+  const viewport = computed(() => ({
+    x: pivot.value.x - screen.value.width / 2,
+    y: pivot.value.y - screen.value.height / 2,
+    width: screen.value.width,
+    height: screen.value.height,
+  }));
 
   const setPosition = throttle(() => {
     position.value = {
@@ -33,33 +54,36 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
   const { state } = useGameState();
   const api: Camera = {
     position: readonly(position),
+    pivot: readonly(pivot),
+    viewport,
+
     centerOn({ x, y }) {
       if (!container.value) return;
-
       const { width, height } = screen.value;
-      const { scale } = container.value;
       const { map } = state.value.snapshot;
 
       const newPivot = {
-        x: lerp(1, [container.value.pivot.x, x]),
-        y: lerp(1, [container.value.pivot.y, y]),
+        x: lerp(1, [pivot.value.x, x]),
+        y: lerp(1, [pivot.value.y, y]),
       };
 
-      const halfScreenWidth = width / 2 / scale.x;
-      const halfScreenHeight = height / 2 / scale.y;
+      const halfScreenWidth = width / 2 / scale;
+      const halfScreenHeight = height / 2 / scale;
 
-      container.value.pivot.set(
-        clamp(
-          newPivot.x,
-          halfScreenWidth,
-          map.width * CELL_SIZE - halfScreenWidth
-        ),
-        clamp(
-          newPivot.y,
-          halfScreenHeight,
-          map.height * CELL_SIZE - halfScreenHeight
-        )
+      const newX = clamp(
+        newPivot.x,
+        halfScreenWidth,
+        map.width * CELL_SIZE - halfScreenWidth
       );
+      const newY = clamp(
+        newPivot.y,
+        halfScreenHeight,
+        map.height * CELL_SIZE - halfScreenHeight
+      );
+      if (newX !== pivot.value.x) pivot.value.x = newX;
+      if (newX !== pivot.value.y) pivot.value.y = newY;
+
+      container.value.pivot.set(pivot.value.x, pivot.value.y);
     },
   };
 

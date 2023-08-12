@@ -5,10 +5,11 @@ import { TICK_RATE } from './constants';
 import { BBox, bbox } from './features/physics/physics.components';
 import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
 import { Player, player } from './features/player/player.components';
+import { SerializedMap } from './features/map/map.factory';
 
 export type { EventMap };
 export type SerializedGameState = {
-  map: GameState['map'];
+  map: SerializedMap;
   players: Record<ECSEntityId, ECSEntity & BBox & Player>;
   timestamp: number;
 };
@@ -74,7 +75,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
     return {
       timestamp: Date.now(),
-      map: state.map,
+      map: state.map.serialize(),
       players: Object.fromEntries(players.map(e => [e.entity_id, e]))
     };
   };

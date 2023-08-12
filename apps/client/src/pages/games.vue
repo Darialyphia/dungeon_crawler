@@ -40,17 +40,12 @@ const onSubmit = form.handleSubmit(values => create(values));
           {{ game.name }} ({{ game.players.length }}/{{ game.capacity }})
 
           <RouterLink
+            v-if="game.players.length < game.capacity"
             v-slot="{ href, navigate }"
             custom
             :to="{ name: 'Play', params: { id: game.id } }"
           >
-            <UiButton
-              :href="href"
-              @click="navigate"
-              :disabled="game.players.length >= game.capacity"
-            >
-              Join game
-            </UiButton>
+            <UiButton :href="href" @click="navigate">Join game</UiButton>
           </RouterLink>
         </li>
       </ul>
@@ -70,6 +65,7 @@ const onSubmit = form.handleSubmit(values => create(values));
           id="create-game-capacity"
           v-bind="inputProps"
           type="number"
+          min="1"
           :max="MAX_USERS_PER_GAME"
         />
         <UiFormError :error="error" />

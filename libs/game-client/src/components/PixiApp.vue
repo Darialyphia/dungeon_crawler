@@ -2,7 +2,8 @@
 import { useGameState } from "../composables/useGameState";
 import Player from "./Player.vue";
 import Camera from "./Camera.vue";
-import MapTile from "./MapTile.vue";
+import GameMap from "./Map.vue";
+
 import Debug from "./Debug.vue";
 
 const { state } = useGameState();
@@ -10,13 +11,7 @@ const { state } = useGameState();
 
 <template>
   <Camera>
-    <template v-for="x in state.snapshot.map.width">
-      <MapTile
-        v-for="y in state.snapshot.map.height"
-        :key="`${x}:${y}`"
-        :position="{ x: x - 1, y: y - 1 }"
-      />
-    </template>
+    <GameMap />
 
     <Player
       v-for="player in state.snapshot.players"

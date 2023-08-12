@@ -37,14 +37,11 @@ export const leaveGameUsecase =
       return gameEither;
     }
 
-    // We are fetching the user instead of using the Session dependency, because we can call this usecase from the global container in  an io handler
     const user = await userRepo.findById(userId);
     if (E.isLeft(user)) return E.left(errorFactory.badRequest());
 
     const ability = await gameAbilityBuilder.buildForUser(user.right);
-
     if (ability.cannot('leave', subject('Game', gameEither.right))) {
-      console.log('cannot leave');
       return E.left(errorFactory.badRequest());
     }
 

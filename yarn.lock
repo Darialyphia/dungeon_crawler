@@ -8338,6 +8338,11 @@ open-props@^1.5.10:
   resolved "https://registry.yarnpkg.com/open-props/-/open-props-1.5.10.tgz#6d877ceb7b325b5996f64ef0894a860a52c2da5b"
   integrity sha512-iE+B7Zo0ytgeUNI38uHiBrxF5Nnv3uX8AzogBXzf7wqeNyG6oqQEEBs1gnAZdRF+h7IRO0zOGM5d9/huiNFR+w==
 
+open-simplex-noise@^2.5.0:
+  version "2.5.0"
+  resolved "https://registry.yarnpkg.com/open-simplex-noise/-/open-simplex-noise-2.5.0.tgz#2f88539c2e3a70eb387a3609bdb2aede547bb0db"
+  integrity sha512-co7x8uWxGcgFtsJNBFqI9ylq+5Isotz2hZR7dsD5Sl+RDPGBeMEG41KAfF+5gF10ksi9Pg6DNpMHEoyTKLbejQ==
+
 openapi3-ts@^2.0.2:
   version "2.0.2"
   resolved "https://registry.yarnpkg.com/openapi3-ts/-/openapi3-ts-2.0.2.tgz#a200dd838bf24c9086c8eedcfeb380b7eb31e82a"
