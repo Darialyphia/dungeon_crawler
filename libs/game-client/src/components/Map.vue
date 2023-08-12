@@ -4,22 +4,20 @@ import { useGameState } from "../composables/useGameState";
 import { useIdRef } from "../composables/useIdRef";
 import { useCamera } from "../composables/useCamera";
 import { CELL_SIZE } from "../utils/constants";
-import { Point, Rectangle, rectRectCollision } from "@dungeon-crawler/shared";
+import {
+  Rectangle,
+  indexToPoint,
+  rectRectCollision,
+} from "@dungeon-crawler/shared";
 
 const { state } = useGameState();
+const { viewport } = useCamera();
 
 const mapRef = useIdRef(state.value.snapshot.map);
-
 watchEffect(() => {
   mapRef.value = state.value.snapshot.map;
 });
-
-const indexXy = (idx: number): Point => ({
-  x: idx % mapRef.value.width,
-  y: Math.floor(idx / mapRef.value.width),
-});
-
-const { viewport } = useCamera();
+const toPoint = indexToPoint(mapRef.value.width);
 
 // the camera viewport in game units instead of pixel units
 const gViewport = computed(() => {
@@ -34,15 +32,15 @@ const gViewport = computed(() => {
 });
 
 const computeChunkRect = (): Rectangle => ({
-  x: gViewport.value.x - gViewport.value.width,
-  y: gViewport.value.y - gViewport.value.height,
-  width: gViewport.value.width * 4,
-  height: gViewport.value.height * 4,
+  x: gViewport.value.x - gViewport.value.width * 0.5,
+  y: gViewport.value.y - gViewport.value.height * 0.5,
+  width: gViewport.value.width * 2,
+  height: gViewport.value.height * 2,
 });
 const chunkRect = ref<Rectangle>(computeChunkRect());
 
 watchEffect(() => {
-  const threshold = 8;
+  const threshold = 5;
   const { x: gx, y: gy } = gViewport.value;
   const { x: cx, y: cy, width: cw, height: ch } = chunkRect.value;
   const left = gx - cx < threshold;
@@ -57,7 +55,7 @@ watchEffect(() => {
 
 const allCells = computed(() => {
   return mapRef.value.rows.flat().map((type, index) => ({
-    ...indexXy(index),
+    ...toPoint(index),
     type,
   }));
 });

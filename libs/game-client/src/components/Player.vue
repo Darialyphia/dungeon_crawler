@@ -22,7 +22,9 @@ const isCurrentPlayer = computed(
 );
 
 const position = ref<Point>(props.player.bbox);
-const screenPosition = computed(() => toScreenCoords(position.value));
+const screenPosition = computed(() => {
+  return toScreenCoords(position.value);
+});
 
 const followPlayer = () => {
   if (isCurrentPlayer.value) {
@@ -35,7 +37,7 @@ const interpolatePlayerPosition = () => {
     return;
   }
 
-  position.value = interpolatePosition(
+  const interpolated = interpolatePosition(
     {
       position: props.player.bbox,
       t: state.value.timestamp,
@@ -45,6 +47,8 @@ const interpolatePlayerPosition = () => {
       t: prevState.value.timestamp,
     }
   );
+
+  position.value = interpolated;
 };
 
 const color = computed(() => (isCurrentPlayer.value ? "red" : "blue"));
