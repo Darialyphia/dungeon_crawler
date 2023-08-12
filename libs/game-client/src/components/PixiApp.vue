@@ -4,8 +4,6 @@ import Player from "./Player.vue";
 import Camera from "./Camera.vue";
 import GameMap from "./Map.vue";
 
-import Debug from "./Debug.vue";
-
 const { state } = useGameState();
 </script>
 
@@ -19,6 +17,4 @@ const { state } = useGameState();
       :player="player"
     />
   </Camera>
-
-  <Debug />
 </template>

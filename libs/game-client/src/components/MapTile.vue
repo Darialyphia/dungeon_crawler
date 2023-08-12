@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { Point } from "@dungeon-crawler/shared";
 import { CELL_SIZE } from "../utils/constants";
 import { toScreenCoords } from "../utils/helpers";
 import { SerializedGameState } from "@dungeon-crawler/game-engine";
 
 const props = defineProps<{
-  position: Point;
+  x: number;
+  y: number;
   cell: SerializedGameState["map"]["rows"][number][number];
 }>();
 const screenRect = computed(() => ({
-  ...toScreenCoords(props.position),
+  ...toScreenCoords({ x: props.x, y: props.y }),
   width: CELL_SIZE,
   height: CELL_SIZE,
 }));

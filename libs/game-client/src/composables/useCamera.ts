@@ -12,6 +12,7 @@ import { useScreen } from "vue3-pixi";
 import { CELL_SIZE } from "../utils/constants";
 import { useGameState } from "./useGameState";
 import { Container } from "pixi.js";
+import { useStableRef } from "./useStableRef";
 
 export type Camera = {
   position: Readonly<Ref<Point>>;
@@ -30,10 +31,13 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
   });
   const scale = 1;
 
-  const pivot = ref({
-    x: screen.value.width / 2,
-    y: screen.value.height / 2,
-  });
+  const pivot = useStableRef(
+    {
+      x: screen.value.width / 2,
+      y: screen.value.height / 2,
+    },
+    ["x", "y"]
+  );
 
   const viewport = computed(() => ({
     x: pivot.value.x - screen.value.width / 2,
@@ -70,18 +74,18 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
       const halfScreenWidth = width / 2 / scale;
       const halfScreenHeight = height / 2 / scale;
 
-      const newX = clamp(
-        newPivot.x,
-        halfScreenWidth,
-        map.width * CELL_SIZE - halfScreenWidth
-      );
-      const newY = clamp(
-        newPivot.y,
-        halfScreenHeight,
-        map.height * CELL_SIZE - halfScreenHeight
-      );
-      if (newX !== pivot.value.x) pivot.value.x = newX;
-      if (newX !== pivot.value.y) pivot.value.y = newY;
+      pivot.value = {
+        x: clamp(
+          newPivot.x,
+          halfScreenWidth,
+          map.width * CELL_SIZE - halfScreenWidth
+        ),
+        y: clamp(
+          newPivot.y,
+          halfScreenHeight,
+          map.height * CELL_SIZE - halfScreenHeight
+        ),
+      };
 
       container.value.pivot.set(pivot.value.x, pivot.value.y);
     },
