@@ -74,7 +74,6 @@ watchEffect(() => {
 
 const visibleCells = computed(() => {
   const visible: (Point & { type: CellType })[] = [];
-
   for (const [index, cell] of mapRef.value.rows.flat().entries()) {
     const { x, y } = toPoint(index);
     if (
@@ -94,12 +93,12 @@ const visibleCells = computed(() => {
 
 // We render a single graphics drawing all tiles instead of having a Tile component for perf reasons
 const render = (graphics: Graphics) => {
-  const now = performance.now();
   graphics.clear();
-  // graphics.lineStyle({
-  //   width: 1,
-  //   color: 0x000000,
-  // });
+  graphics.lineStyle({
+    width: 1,
+    color: 0x000000,
+    alpha: 0.2,
+  });
   visibleCells.value.forEach((cell) => {
     const { x, y } = toScreenCoords(cell);
     const texture = textureBuilder.getTextureFor(cell);
@@ -109,9 +108,6 @@ const render = (graphics: Graphics) => {
     graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
     graphics.endFill();
   });
-  const elapsed = performance.now() - now;
-
-  console.log(`drawing map took ${elapsed}ms`);
 };
 </script>
 

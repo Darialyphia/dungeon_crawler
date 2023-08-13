@@ -31,6 +31,10 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
     y: screen.value.height / 2,
   });
   const scale = ref(2);
+  useEventListener(document, "wheel", (e) => {
+    const diff = -e.deltaY / 1000;
+    scale.value = clamp(scale.value + diff, 1, 3);
+  });
 
   const pivot = useStableRef(
     {
@@ -41,8 +45,8 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
   );
 
   const viewport = computed(() => ({
-    x: pivot.value.x - screen.value.width / 2,
-    y: pivot.value.y - screen.value.height / 2,
+    x: pivot.value.x - screen.value.width / 2 / scale.value,
+    y: pivot.value.y - screen.value.height / 2 / scale.value,
     width: screen.value.width,
     height: screen.value.height,
   }));
