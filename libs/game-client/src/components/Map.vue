@@ -9,7 +9,7 @@ import {
   indexToPoint,
   rectRectCollision,
 } from "@dungeon-crawler/shared";
-import { CellType } from "@dungeon-crawler/game-engine/src/features/map/map.factory";
+import { CellType } from "@dungeon-crawler/game-engine";
 import { Graphics } from "pixi.js";
 import { toScreenCoords } from "../utils/helpers";
 
@@ -43,10 +43,7 @@ const chunkRect = ref<Rectangle>(computeChunkRect());
 watchEffect(() => {
   const { x: gx, y: gy, width: gw, height: gh } = gViewport.value;
   const { x: cx, y: cy, width: cw, height: ch } = chunkRect.value;
-  const threshold = {
-    x: 1,
-    y: 1,
-  };
+  const threshold = 1;
 
   const left = gx - cx;
   const right = cx + cw - (gx + gw);
@@ -54,10 +51,10 @@ watchEffect(() => {
   const bottom = cy + ch - (gy + gh);
 
   const shouldRecompute =
-    left < threshold.x ||
-    right < threshold.x ||
-    top < threshold.y ||
-    bottom < threshold.y;
+    left < threshold ||
+    right < threshold ||
+    top < threshold ||
+    bottom < threshold;
   if (shouldRecompute) {
     chunkRect.value = computeChunkRect();
   }
@@ -92,10 +89,10 @@ const COLOR_DICT = new Map([
 // We render a single graphics drawing all tiles instead of having a Tile component for perf reasons
 const render = (graphics: Graphics) => {
   graphics.clear();
-  graphics.lineStyle({
-    width: 1,
-    color: 0x000000,
-  });
+  // graphics.lineStyle({
+  //   width: 1,
+  //   color: 0x000000,
+  // });
   visibleCells.value.forEach((cell) => {
     const { x, y } = toScreenCoords(cell);
     graphics.beginFill(COLOR_DICT.get(cell.type));

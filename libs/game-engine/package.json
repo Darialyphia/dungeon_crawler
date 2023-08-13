@@ -15,6 +15,7 @@
     "nanoid": "^4.0.2",
     "open-simplex-noise": "^2.5.0",
     "rbush": "^3.0.1",
+    "zipson": "^0.2.12",
     "zod": "^3.21.4"
   },
   "scripts": {

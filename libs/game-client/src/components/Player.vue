@@ -8,6 +8,7 @@ import { useCamera } from "../composables/useCamera";
 import { useCurrentPlayerId } from "../composables/useCurrentPlayer";
 import { toScreenCoords } from "../utils/helpers";
 import { Point } from "@dungeon-crawler/shared";
+import { Spritesheet } from "pixi.js";
 
 const props = defineProps<{
   player: SerializedGameState["players"][number];
@@ -54,6 +55,8 @@ const interpolatePlayerPosition = () => {
 const color = computed(() => (isCurrentPlayer.value ? "red" : "blue"));
 onTick(interpolatePlayerPosition);
 onTick(followPlayer);
+
+const sheet = ref<Spritesheet>();
 </script>
 
 <template>
@@ -67,5 +70,12 @@ onTick(followPlayer);
         graphics.endFill();
       }
     "
-  />
+  >
+    <sprite
+      v-if="sheet"
+      :texture="sheet.textures[0]"
+      :anchor="0.5"
+      :scale="2"
+    />
+  </graphics>
 </template>

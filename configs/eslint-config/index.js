@@ -14,5 +14,6 @@ module.exports = {
     "no-redeclare": "off",
     "vue/multi-word-component-names": "off",
     "vue/no-setup-props-destructure": "off",
+    "@typescript-eslint/ban-ts-comment": "off",
   },
 };

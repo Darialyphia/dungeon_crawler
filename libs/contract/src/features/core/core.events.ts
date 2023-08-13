@@ -17,6 +17,6 @@ export type IoEvents = {
   SERVER: {
     USER_JOINED_ROOM(payload: { user: UserResponse; roomId: string }): void;
     USER_LEFT_ROOM(payload: { user: UserResponse; roomId: string }): void;
-    GAME_STATE_UPDATE(payload: { gameId: UUID; state: SerializedGameState }): void;
+    GAME_STATE_UPDATE(payload: { gameId: UUID; state: string }): void;
   };
 };

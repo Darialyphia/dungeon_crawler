@@ -1,8 +1,6 @@
-import { SerializedGameState } from "@dungeon-crawler/game-engine";
-
 export const createEngineWorkerConsumer = () => {
   console.log("Create engine worker");
-  const state = ref<SerializedGameState>();
+  const state = ref<string>();
 
   const worker = new Worker(new URL("./engine-worker.ts", import.meta.url), {
     type: "module",

@@ -9,6 +9,8 @@ export const CELL_TYPES = {
 } as const;
 export type CellType = 0 | 1 | 2; // GROUND / water / wall
 
+export type Tileset = 'base';
+
 export type MapCell = Point & {
   type: CellType;
 };
@@ -16,6 +18,7 @@ export type MapCell = Point & {
 export type MapFactoryOptions = {
   width: number;
   height: number;
+  tileset: Tileset;
   generator: MapGenerator<MapCell>;
 };
 
@@ -30,12 +33,14 @@ export type SerializedMap = {
   id: number;
   width: number;
   height: number;
+  tileset: Tileset;
   rows: CellType[][];
 };
 
 export const createGameMap = ({
   width,
   height,
+  tileset,
   generator
 }: MapFactoryOptions): GameMap => {
   const chunkCoordsToIndex = ({ x, y }: Point) => MAP_CHUNK_SIZE * y + x;
@@ -91,6 +96,7 @@ export const createGameMap = ({
         id: 1,
         width,
         height,
+        tileset,
         rows
       };
     }

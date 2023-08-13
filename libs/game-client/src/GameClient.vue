@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { Application } from "pixi.js";
+import { parse } from "zipson";
+import { Application, Assets, extensions } from "pixi.js";
 import { appInjectKey, createApp } from "vue3-pixi";
 import { SerializedGameState } from "@dungeon-crawler/game-engine";
 import {
@@ -18,19 +19,24 @@ import {
   CURRENT_PLAYER_INJECTION_KEY,
   useCurrentPlayerProvider,
 } from "./composables/useCurrentPlayer";
+import { assetsManifest } from "./assets-manifest";
+import { spriteSheetParser } from "./utils/spritesheet-parser";
 
 const props = defineProps<{
   width: number;
   height: number;
   playerId: string;
-  state: SerializedGameState;
+  state: string;
 }>();
 
 const emit = defineEmits<{
   "game:event": [DispatcherArg];
 }>();
 
-const state = useGameStateProvider(toRef(props, "state"));
+const parsedState = computed<SerializedGameState>(() =>
+  parse(props.state as unknown as string)
+);
+const gameState = useGameStateProvider(parsedState);
 const dispatch = useDispatchProvider((arg) => emit("game:event", arg));
 useCurrentPlayerProvider(props.playerId);
 useControls(dispatch, props.playerId);
@@ -47,9 +53,17 @@ onMounted(() => {
     autoDensity: true,
     antialias: false,
   });
+
+  if (import.meta.env.DEV) {
+    // @ts-ignore  enable PIXI devtools
+    window.__PIXI_APP__ = pixiApp;
+  }
+
+  extensions.add(spriteSheetParser);
+  Assets.init({ manifest: assetsManifest });
   const app = createApp(PixiApp);
   app.provide(appInjectKey, pixiApp);
-  app.provide(GAME_STATE_INJECTION_KEY, state);
+  app.provide(GAME_STATE_INJECTION_KEY, gameState);
   app.provide(DISPATCHER_INJECTION_KEY, dispatch);
   app.provide(CURRENT_PLAYER_INJECTION_KEY, props.playerId);
   app.mount(pixiApp.stage);

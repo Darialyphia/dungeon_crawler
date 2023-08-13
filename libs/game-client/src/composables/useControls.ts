@@ -1,4 +1,4 @@
-import { Dispatcher, useDispatch } from "./useDispatch";
+import { Dispatcher } from "./useDispatch";
 import { useKeydownOnce } from "./useKeydownOnce";
 
 export const useControls = (dispatch: Dispatcher, playerId: string) => {

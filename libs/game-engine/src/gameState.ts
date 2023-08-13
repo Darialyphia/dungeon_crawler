@@ -17,6 +17,7 @@ export const createGameState = (): GameState => {
     map: createGameMap({
       width: WIDTH,
       height: HEIGHT,
+      tileset: 'base',
       generator: createNoiseGenerator({
         seed: SEED,
         scale({ x, y, value }) {

@@ -6,8 +6,11 @@ import { BBox, bbox } from './features/physics/physics.components';
 import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
 import { Player, player } from './features/player/player.components';
 import { SerializedMap } from './features/map/map.factory';
+import { stringify } from 'zipson';
 
 export type { EventMap };
+export type { CellType, Tileset } from './features/map/map.factory';
+
 export type SerializedGameState = {
   map: SerializedMap;
   players: Record<ECSEntityId, ECSEntity & BBox & Player>;
@@ -73,11 +76,13 @@ export const createGame: GameFactory = ({ debug = false }) => {
   const serializeState = (state: GameState): SerializedGameState => {
     const players = player.findAll<[BBox]>(state.world, [bbox.brand]);
 
-    return {
+    const serialized: SerializedGameState = {
       timestamp: Date.now(),
       map: state.map.serialize(),
       players: Object.fromEntries(players.map(e => [e.entity_id, e]))
     };
+
+    return stringify(serialized) as unknown as SerializedGameState;
   };
 
   return {

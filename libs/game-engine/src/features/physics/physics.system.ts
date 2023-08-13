@@ -19,8 +19,16 @@ export const physicsSystem = ({
         );
 
         Object.assign(e.bbox, {
-          x: clamp(newPosition.x, e.bbox.w / 2, map.width - e.bbox.w / 2),
-          y: clamp(newPosition.y, e.bbox.h / 2, map.height - e.bbox.h / 2)
+          x: clamp(
+            newPosition.x,
+            e.bbox.width / 2,
+            map.width - e.bbox.width / 2
+          ),
+          y: clamp(
+            newPosition.y,
+            e.bbox.height / 2,
+            map.height - e.bbox.height / 2
+          )
         });
       });
     }

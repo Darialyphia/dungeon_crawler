@@ -9,12 +9,14 @@
   },
   "dependencies": {
     "@dungeon-crawler/game-engine": "*",
+    "@dungeon-crawler/resources": "*",
     "comlink": "^4.4.1",
     "pixi.js": "^7.2.4",
     "unplugin-auto-import": "^0.16.6",
     "vite-plugin-comlink": "^3.0.5",
     "vue": "^3.3.4",
-    "vue3-pixi": "^0.7.8"
+    "vue3-pixi": "^0.7.8",
+    "zipson": "^0.2.12"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

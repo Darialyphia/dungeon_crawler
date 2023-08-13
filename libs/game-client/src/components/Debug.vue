@@ -21,7 +21,7 @@ const averagePing = computed(() =>
 );
 onTick(() => {
   fps.value = app.value.ticker.FPS;
-  if (fps.value < 30) {
+  if (fps.value < 25) {
     console.warn("low FPS", fps.value);
   }
 });
