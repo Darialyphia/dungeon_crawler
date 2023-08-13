@@ -1,7 +1,23 @@
 import { addVector, clamp, setMagnitude } from '@dungeon-crawler/shared';
 import { ECSSystem } from '../ecs/ECSSystem';
-import { BBox, Velocity, bbox, velocity } from './physics.components';
+import {
+  BBox,
+  BBoxProps,
+  Velocity,
+  bbox,
+  rectToBBox,
+  velocity
+} from './physics.components';
 import { GameState } from '../../gameState';
+
+const minkowskiSum = (box1: BBoxProps, box2: BBoxProps): BBoxProps => {
+  return rectToBBox({
+    x: box2.x,
+    y: box2.y,
+    width: box1.width + box2.width,
+    height: box1.height + box2.height
+  });
+};
 
 export const physicsSystem = ({
   map

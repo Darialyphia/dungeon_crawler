@@ -4,16 +4,20 @@ import { ECSWorld, createWorld } from './features/ecs/ECSWorld';
 import { createNoiseGenerator } from './features/map/generators/noise';
 import { CELL_TYPES, GameMap, createGameMap } from './features/map/map.factory';
 import { physicsSystem } from './features/physics/physics.system';
+import RBush from 'rbush';
+import { BBoxProps } from './features/physics/physics.components';
 
 export type GameState = {
   isRunning: boolean;
   world: ECSWorld;
   map: GameMap;
+  tree: RBush<BBoxProps>;
 };
 
 export const createGameState = (): GameState => {
   const state: GameState = {
     isRunning: false,
+    tree: new RBush<BBoxProps>(),
     map: createGameMap({
       width: WIDTH,
       height: HEIGHT,

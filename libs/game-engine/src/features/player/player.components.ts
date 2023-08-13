@@ -3,7 +3,10 @@ import { ECSComponent } from '../ecs/ECSComponent';
 
 export type PlayerId = string;
 
-export const player = defineECSComponent<'player', { id: PlayerId }>('player');
+export const player = defineECSComponent<'player', { id: PlayerId }>(
+  'player',
+  player => player
+);
 export type Player = inferComponent<typeof player>;
 
 export const getPlayerById = <T extends ECSComponent<string>[] = []>(

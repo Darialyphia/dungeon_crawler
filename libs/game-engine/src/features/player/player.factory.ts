@@ -36,5 +36,7 @@ export const createPlayer = (
     .with(player.component({ id }))
     .build();
 
+  state.tree.insert(entity.bbox);
+
   return entity;
 };

@@ -8,7 +8,11 @@ import type {
 } from './features/ecs/ECSComponent';
 
 import { ecsComponent, has } from './features/ecs/ECSComponent';
-import { BrandFromComponent, BrandsFromComponents } from './features/ecs/types';
+import {
+  BrandFromComponent,
+  BrandsFromComponents,
+  ECSComponentProps
+} from './features/ecs/types';
 import { ECSWorld } from './features/ecs/ECSWorld';
 import { ECSEntity } from './features/ecs/ECSEntity';
 
@@ -30,12 +34,16 @@ type ComponentFindResult<
   ? ECSEntity & ECSComponent<TName, TType>
   : ECSEntity & ECSComponent<TName, TType> & Intersect<TBrands>;
 
-type Component<TType extends {}, TName extends string> = {
+type Component<
+  TType extends {},
+  TName extends string,
+  TInit extends {} = TType
+> = {
   readonly _type: ECSComponent<TName, TType>;
 
   brand: BrandFromComponent<ECSComponent<TName, TType>>;
 
-  component: ECSComponentBuilder<ECSComponent<TName, TType>>;
+  component(init: TInit): () => ECSComponent<TName, TType>;
 
   has: ReturnType<typeof has<ECSComponent<TName, TType>>>;
 
@@ -59,9 +67,14 @@ type Component<TType extends {}, TName extends string> = {
   ) => O.Option<ComponentFindResult<TType, TName, TBrands>>;
 };
 
-export const defineECSComponent = <TName extends string, TType extends {}>(
-  name: TName
-): Component<TType, TName> => {
+export const defineECSComponent = <
+  TName extends string,
+  TType extends {},
+  TInit extends {} = TType
+>(
+  name: TName,
+  init: (input: TInit) => ECSComponentProps<ECSComponent<TName, TType>>
+): Component<TType, TName, TInit> => {
   type Component = ECSComponent<TName, TType>;
   type Brand = BrandFromComponent<Component>;
 
@@ -71,7 +84,9 @@ export const defineECSComponent = <TName extends string, TType extends {}>(
 
   return {
     brand,
-    component,
+    component(input) {
+      return component(init(input)) as () => ECSComponent<TName, TType>;
+    },
     has: hasComponent,
     findAll(world, otherBrands?) {
       return world.entitiesByComponent([brand, ...(otherBrands ?? [])]);
