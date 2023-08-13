@@ -9,7 +9,11 @@ import { SerializedMap } from './features/map/map.factory';
 import { stringify } from 'zipson';
 
 export type { EventMap };
-export type { CellType, Tileset } from './features/map/map.factory';
+export {
+  type CellType,
+  type Tileset,
+  CELL_TYPES
+} from './features/map/map.factory';
 
 export type SerializedGameState = {
   map: SerializedMap;

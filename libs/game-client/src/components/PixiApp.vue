@@ -5,24 +5,29 @@ import Camera from "./Camera.vue";
 import GameMap from "./Map.vue";
 import { Assets } from "pixi.js";
 import { useScreen } from "vue3-pixi";
+import { Spritesheet } from "pixi.js";
 
 const { state } = useGameState();
 const screen = useScreen();
 
-const bundleIds = [`map-${state.value.snapshot.map.tileset}`];
+const assetNames = {
+  bundle: `${state.value.snapshot.map.tileset}-map`,
+  tileset: `${state.value.snapshot.map.tileset}-tileset`,
+};
 
-const isLoading = ref(true);
+const bundleIds = [assetNames.bundle];
+
+const spritesheet = ref<Spritesheet>();
 
 onMounted(async () => {
   const assets = await Assets.loadBundle(bundleIds);
-  console.log(assets);
-  isLoading.value = false;
+  spritesheet.value = assets[assetNames.bundle][assetNames.tileset];
 });
 </script>
 
 <template>
   <text
-    v-if="isLoading"
+    v-if="!spritesheet"
     :anchor="0.5"
     :x="screen.width / 2"
     :y="screen.height / 2"
@@ -32,7 +37,7 @@ onMounted(async () => {
   </text>
 
   <Camera v-else>
-    <GameMap />
+    <GameMap :spritesheet="spritesheet" />
 
     <Player
       v-for="player in state.snapshot.players"

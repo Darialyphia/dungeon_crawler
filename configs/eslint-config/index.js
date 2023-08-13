@@ -12,8 +12,10 @@ module.exports = {
   rules: {
     "no-undef": "off",
     "no-redeclare": "off",
+    "no-unused-vars": "off",
     "vue/multi-word-component-names": "off",
     "vue/no-setup-props-destructure": "off",
     "@typescript-eslint/ban-ts-comment": "off",
+    "@typescript-eslint/no-non-null-assertion": "off",
   },
 };

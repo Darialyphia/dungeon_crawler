@@ -4,10 +4,10 @@ import { ResolverManifest } from "pixi.js";
 export const assetsManifest: ResolverManifest = {
   bundles: [
     {
-      name: "map-base",
+      name: "base-map",
       assets: [
         {
-          name: "baseTileset",
+          name: "base-tileset",
           srcs: baseTileset,
         },
       ],

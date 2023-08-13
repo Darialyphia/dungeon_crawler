@@ -8,7 +8,7 @@ const { position } = useCameraProvider(container);
 </script>
 
 <template>
-  <container :position="position" ref="container">
+  <container ref="container" :position="position">
     <slot />
   </container>
   <Debug />
