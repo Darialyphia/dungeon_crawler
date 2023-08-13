@@ -16,6 +16,7 @@ import { useStableRef } from "./useStableRef";
 
 export type Camera = {
   position: Readonly<Ref<Point>>;
+  scale: Readonly<Ref<number>>;
   pivot: Readonly<Ref<Point>>;
   viewport: ComputedRef<Rectangle>;
   centerOn(point: Point): void;
@@ -29,7 +30,7 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
     x: screen.value.width / 2,
     y: screen.value.height / 2,
   });
-  const scale = 1;
+  const scale = ref(2);
 
   const pivot = useStableRef(
     {
@@ -58,6 +59,7 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
   const { state } = useGameState();
   const api: Camera = {
     position: readonly(position),
+    scale: readonly(scale),
     pivot: readonly(pivot),
     viewport,
 
@@ -71,8 +73,8 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
         y: lerp(1, [pivot.value.y, y]),
       };
 
-      const halfScreenWidth = width / 2 / scale;
-      const halfScreenHeight = height / 2 / scale;
+      const halfScreenWidth = width / 2 / scale.value;
+      const halfScreenHeight = height / 2 / scale.value;
 
       pivot.value = {
         x: clamp(

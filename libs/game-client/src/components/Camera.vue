@@ -4,11 +4,11 @@ import { useCameraProvider } from "../composables/useCamera";
 import Debug from "./Debug.vue";
 
 const container = ref<Container>();
-const { position } = useCameraProvider(container);
+const { position, scale } = useCameraProvider(container);
 </script>
 
 <template>
-  <container ref="container" :position="position">
+  <container ref="container" :position="position" :scale="scale">
     <slot />
   </container>
   <Debug />
