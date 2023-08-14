@@ -68,6 +68,16 @@ const sheet = ref<Spritesheet>();
         graphics.beginFill(color);
         graphics.drawCircle(0, 0, CELL_SIZE / 2);
         graphics.endFill();
+        graphics.lineStyle({
+          color: color,
+          width: 1,
+        });
+        graphics.drawRect(
+          (-player.bbox.width * CELL_SIZE) / 2,
+          (-player.bbox.height * CELL_SIZE) / 2,
+          CELL_SIZE,
+          CELL_SIZE
+        );
       }
     "
   >

@@ -6,6 +6,8 @@ import GameMap from "./Map.vue";
 import { Assets } from "pixi.js";
 import { useScreen } from "vue3-pixi";
 import { Spritesheet } from "pixi.js";
+import { toScreenCoords } from "../utils/helpers";
+import { CELL_SIZE } from "../utils/constants";
 
 const { state } = useGameState();
 const screen = useScreen();
@@ -38,6 +40,31 @@ onMounted(async () => {
 
   <Camera v-else>
     <GameMap :spritesheet="spritesheet" />
+
+    <graphics
+      v-for="obstacle in state.snapshot.obstacles"
+      :key="obstacle.entity_id"
+      :position="toScreenCoords(obstacle.bbox)"
+      @render="
+        (graphics) => {
+          graphics.clear();
+
+          graphics.beginFill('yellow', 0.25);
+
+          graphics.lineStyle({
+            color: 'yellow',
+            width: 1,
+          });
+          graphics.drawRect(
+            (-obstacle.bbox.width * CELL_SIZE) / 2,
+            (-obstacle.bbox.height * CELL_SIZE) / 2,
+            CELL_SIZE,
+            CELL_SIZE
+          );
+          graphics.endFill();
+        }
+      "
+    />
 
     <Player
       v-for="player in state.snapshot.players"

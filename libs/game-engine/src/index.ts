@@ -7,6 +7,7 @@ import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
 import { Player, player } from './features/player/player.components';
 import { SerializedMap } from './features/map/map.factory';
 import { stringify } from 'zipson';
+import { Obstacle, obstacle } from './features/map/map.components';
 
 export type { EventMap };
 export {
@@ -18,6 +19,7 @@ export {
 export type SerializedGameState = {
   map: SerializedMap;
   players: Record<ECSEntityId, ECSEntity & BBox & Player>;
+  obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
   timestamp: number;
 };
 export type DispatchFunction = <T extends keyof EventMap>(
@@ -79,11 +81,26 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
   const serializeState = (state: GameState): SerializedGameState => {
     const players = player.findAll<[BBox]>(state.world, [bbox.brand]);
+    const bboxes = players
+      .map(p =>
+        state.tree.search({
+          minX: p.bbox.x - 10,
+          minY: p.bbox.y - 10,
+          maxX: p.bbox.x + 10,
+          maxY: p.bbox.y + 10
+        })
+      )
+      .flat();
+    const obstacles = obstacle
+      .findAll<[BBox]>(state.world, [bbox.brand])
+      .filter(obstacle => bboxes.includes(obstacle.bbox));
+    // console.log(obstacles.length);
 
     const serialized: SerializedGameState = {
       timestamp: Date.now(),
       map: state.map.serialize(),
-      players: Object.fromEntries(players.map(e => [e.entity_id, e]))
+      players: Object.fromEntries(players.map(e => [e.entity_id, e])),
+      obstacles: Object.fromEntries(obstacles.map(e => [e.entity_id, e]))
     };
 
     return stringify(serialized) as unknown as SerializedGameState;

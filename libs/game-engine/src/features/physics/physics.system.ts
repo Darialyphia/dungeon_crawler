@@ -10,21 +10,18 @@ import { ECSSystem } from '../ecs/ECSSystem';
 import {
   BBox,
   BBoxProps,
-  Velocity,
   bbox,
   rectToBBox,
   velocity
 } from './physics.components';
 import { GameState } from '../../gameState';
-import { CELL_TYPES } from '../map/map.factory';
-import { min } from 'fp-ts/lib/ReadonlyNonEmptyArray';
 
 const minkowskiSum = (box1: BBoxProps, box2: BBoxProps): BBoxProps => {
   return rectToBBox({
     x: box2.x,
     y: box2.y,
-    width: (box1.width + box2.width) * 0.95,
-    height: (box1.height + box2.height) * 0.95
+    width: (box1.width + box2.width) * 0.9,
+    height: (box1.height + box2.height) * 0.9
   });
 };
 
@@ -53,13 +50,6 @@ export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox]> => {
             maxY: Math.max(e.bbox.minY, newBbox.minY)
           });
 
-          const clampToMap = ({ x, y }: Point) => {
-            Object.assign(e.bbox, {
-              x: clamp(x, e.bbox.width / 2, map.width - e.bbox.width / 2),
-              y: clamp(y, e.bbox.height / 2, map.height - e.bbox.height / 2)
-            });
-          };
-
           result.forEach(bbox => {
             if (bbox === e.bbox) return;
 
@@ -71,34 +61,47 @@ export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox]> => {
               },
               minkowskiRectangle
             );
-            console.log(intersectionPoints.length);
-            switch (intersectionPoints.length) {
-              case 1:
-                newBbox = rectToBBox({
-                  ...intersectionPoints[0],
-                  width: e.bbox.width,
-                  height: e.bbox.height
-                });
-
-                break;
-              case 2:
-                const closest = intersectionPoints.reduce((acc, current) => {
-                  const dAcc = dist(e.bbox, acc);
-                  const dCurr = dist(e.bbox, current);
-                  return dAcc < dCurr ? acc : current;
-                });
-                newBbox = rectToBBox({
-                  ...closest,
-                  width: e.bbox.width,
-                  height: e.bbox.height
-                });
-                break;
-              default:
-                break;
+            if (intersectionPoints.length) {
+              // console.log({
+              //   bbox: { ...e.bbox },
+              //   newBbox,
+              //   intersectionPoints,
+              //   minkowskiRectangle,
+              //   obstacle: { ...bbox },
+              //   velocity: { ...e.velocity.target }
+              // });
+              const closest = intersectionPoints.reduce((acc, current) =>
+                dist(e.bbox, acc) < dist(e.bbox, current) ? acc : current
+              );
+              newBbox = rectToBBox({
+                x:
+                  closest.x +
+                  (closest.x < e.bbox.x
+                    ? 1 / 100
+                    : closest.x > e.bbox.x
+                    ? -1 / 100
+                    : 0),
+                y:
+                  closest.y +
+                  (closest.y < e.bbox.y
+                    ? 1 / 100
+                    : closest.y > e.bbox.y
+                    ? -1 / 100
+                    : 0),
+                width: e.bbox.width,
+                height: e.bbox.height
+              });
             }
           });
 
-          clampToMap(newBbox);
+          Object.assign(e.bbox, {
+            x: clamp(newBbox.x, e.bbox.width / 2, map.width - e.bbox.width / 2),
+            y: clamp(
+              newBbox.y,
+              e.bbox.height / 2,
+              map.height - e.bbox.height / 2
+            )
+          });
         }
       });
     }

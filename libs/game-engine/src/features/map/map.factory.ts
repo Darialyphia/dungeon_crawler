@@ -1,7 +1,6 @@
 import { Point, randomInt, subVector } from '@dungeon-crawler/shared';
 import type { MapGenerator } from './types';
 import { WIDTH } from '../../constants';
-import { ECSWorld } from '../ecs/ECSWorld';
 import { GameState } from '../../gameState';
 import { createCell } from './cell.factory';
 
@@ -107,7 +106,10 @@ export const createGameMap = ({
         cell = map.getCellAt(point);
       }
 
-      return point;
+      return {
+        x: point.x + 0.5,
+        y: point.y + 0.5
+      };
     },
 
     serialize() {
