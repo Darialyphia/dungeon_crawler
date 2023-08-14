@@ -1,6 +1,9 @@
-import { Point, subVector } from '@dungeon-crawler/shared';
+import { Point, randomInt, subVector } from '@dungeon-crawler/shared';
 import type { MapGenerator } from './types';
-import { MAP_CHUNK_SIZE } from '../../constants';
+import { WIDTH } from '../../constants';
+import { ECSWorld } from '../ecs/ECSWorld';
+import { GameState } from '../../gameState';
+import { createCell } from './cell.factory';
 
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
@@ -25,6 +28,8 @@ export type MapFactoryOptions = {
 export type GameMap = {
   width: number;
   height: number;
+  init(state: GameState): void;
+  getValidSpawnPoint(): Point;
   getCellAt(pt: Point): MapCell;
   serialize(): SerializedMap;
 };
@@ -36,6 +41,7 @@ export type SerializedMap = {
   tileset: Tileset;
   rows: CellType[][];
 };
+export const MAP_CHUNK_SIZE = WIDTH;
 
 export const createGameMap = ({
   width,
@@ -70,6 +76,16 @@ export const createGameMap = ({
     width,
     height,
 
+    init(state) {
+      const chunk = getOrCreateChunk({ x: 0, y: 0 });
+
+      chunk.forEach(cell => {
+        if (cell.type !== CELL_TYPES.GROUND) {
+          createCell(state, cell);
+        }
+      });
+    },
+
     getCellAt({ x, y }) {
       const topLeft = {
         x: MAP_CHUNK_SIZE * Math.floor(x / MAP_CHUNK_SIZE),
@@ -80,6 +96,18 @@ export const createGameMap = ({
       const index = chunkCoordsToIndex(subVector({ x, y }, topLeft));
 
       return chunk[index];
+    },
+
+    getValidSpawnPoint() {
+      let point = { x: randomInt(width), y: randomInt(height) };
+      let cell = map.getCellAt(point);
+
+      while (cell.type !== CELL_TYPES.GROUND) {
+        point = { x: randomInt(width), y: randomInt(height) };
+        cell = map.getCellAt(point);
+      }
+
+      return point;
     },
 
     serialize() {

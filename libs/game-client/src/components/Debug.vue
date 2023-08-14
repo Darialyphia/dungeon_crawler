@@ -19,11 +19,16 @@ const averagePing = computed(() =>
     history.value.length
   ).toFixed(0)
 );
+// const WARNING_THRESHOLD = 18;
 onTick(() => {
   fps.value = app.value.ticker.FPS;
-  if (fps.value < 30) {
-    console.warn("low FPS", fps.value);
-  }
+
+  // if (app.value.ticker.elapsedMS > WARNING_THRESHOLD) {
+  //   console.warn(
+  //     "elapsed time over frame budget : ",
+  //     app.value.ticker.elapsedMS
+  //   );
+  // }
 });
 
 const roundedViewport = computed(() => ({

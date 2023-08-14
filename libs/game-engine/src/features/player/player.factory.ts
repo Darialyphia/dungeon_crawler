@@ -18,8 +18,7 @@ export const createPlayer = (
     .createEntity()
     .with(
       bbox.component({
-        x: randomInt(state.map.width),
-        y: randomInt(state.map.height),
+        ...state.map.getValidSpawnPoint(),
         width: 1,
         height: 1
       })

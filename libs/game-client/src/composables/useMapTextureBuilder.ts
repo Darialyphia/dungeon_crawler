@@ -130,6 +130,7 @@ export const useMapTextureBuilder = (
   const textures = groupTextures(spritesheet);
 
   const addLayer = (g: Graphics, texture: Texture) => {
+    // texture.baseTexture.wrapMode = WRAP_MODES.CLAMP;
     g.beginTextureFill({
       texture: texture,
     });
@@ -186,18 +187,27 @@ export const useMapTextureBuilder = (
   };
 
   const cache = new Map<string, RenderTexture>();
-  const getCacheKey = ({ x, y }: Point) => `${x}:${y}`;
+  const decorationSeedCache = new Map<string, number>();
+
+  const getDecorationSeed = ({ x, y, type }: Cell) => {
+    const key = `${x}:${y}`;
+    if (!decorationSeedCache.has(key)) {
+      const decorations = textures.decorations[type];
+      decorationSeedCache.set(key, randomInt(decorations.length - 1));
+    }
+    return decorationSeedCache.get(key)!;
+  };
 
   const getTextureFor = (cell: Cell): RenderTexture => {
-    const key = getCacheKey(cell);
+    const neighbors = getNeighbors(cell, ({ x, y }) => map.value.rows[y]?.[x]);
+    const weight = getWeight(neighbors);
+    const decorationSeed = getDecorationSeed(cell);
+
+    const key = `${cell.type}:${weight}:${decorationSeed}`;
+
     if (!cache.has(key)) {
       const g = new Graphics();
       addLayer(g, textures.base[cell.type]);
-      const neighbors = getNeighbors(
-        cell,
-        ({ x, y }) => map.value.rows[y]?.[x]
-      );
-      const weight = getWeight(neighbors);
       const edgeTextures = getEdgesTextures(cell, weight);
 
       edgeTextures.forEach((texture) => {
@@ -209,7 +219,7 @@ export const useMapTextureBuilder = (
 
       if (hasDecoration) {
         const decorations = textures.decorations[cell.type];
-        addLayer(g, decorations[randomInt(decorations.length - 1)]);
+        addLayer(g, decorations[decorationSeed]);
       }
 
       cache.set(key, renderer.value.generateTexture(g));

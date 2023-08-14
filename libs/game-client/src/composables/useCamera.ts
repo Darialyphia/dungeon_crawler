@@ -13,6 +13,7 @@ import { CELL_SIZE } from "../utils/constants";
 import { useGameState } from "./useGameState";
 import { Container } from "pixi.js";
 import { useStableRef } from "./useStableRef";
+import { useCurrentPlayer } from "./useCurrentPlayer";
 
 export type Camera = {
   position: Readonly<Ref<Point>>;
@@ -25,30 +26,42 @@ export type Camera = {
 export const CAMERA_INJECTION_KEY = Symbol("camera") as InjectionKey<Camera>;
 
 export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
+  const currentPlayer = useCurrentPlayer();
+  const { state } = useGameState();
   const screen = useScreen();
+
   const position = ref({
     x: screen.value.width / 2,
     y: screen.value.height / 2,
   });
   const scale = ref(2);
+
   useEventListener(document, "wheel", (e) => {
     const diff = -e.deltaY / 1000;
     scale.value = clamp(scale.value + diff, 1, 3);
   });
 
+  const clampPivot = ({ x, y }: Point) => {
+    const { width, height } = screen.value;
+    const { map } = state.value.snapshot;
+    const halfW = width / 2 / scale.value;
+    const halfH = height / 2 / scale.value;
+    return {
+      x: clamp(x, halfW, map.width * CELL_SIZE - halfW),
+      y: clamp(y, halfH, map.height * CELL_SIZE - halfH),
+    };
+  };
+
   const pivot = useStableRef(
-    {
-      x: screen.value.width / 2,
-      y: screen.value.height / 2,
-    },
+    clampPivot(currentPlayer.value?.bbox ?? { x: 0, y: 0 }),
     ["x", "y"]
   );
 
   const viewport = computed(() => ({
     x: pivot.value.x - screen.value.width / 2 / scale.value,
     y: pivot.value.y - screen.value.height / 2 / scale.value,
-    width: screen.value.width,
-    height: screen.value.height,
+    width: screen.value.width / scale.value,
+    height: screen.value.height / scale.value,
   }));
 
   const setPosition = throttle(() => {
@@ -60,7 +73,6 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
 
   useEventListener(window, "resize", setPosition);
 
-  const { state } = useGameState();
   const api: Camera = {
     position: readonly(position),
     scale: readonly(scale),
@@ -69,31 +81,13 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
 
     centerOn({ x, y }) {
       if (!container.value) return;
-      const { width, height } = screen.value;
-      const { map } = state.value.snapshot;
 
       const newPivot = {
         x: lerp(1, [pivot.value.x, x]),
         y: lerp(1, [pivot.value.y, y]),
       };
 
-      const halfScreenWidth = width / 2 / scale.value;
-      const halfScreenHeight = height / 2 / scale.value;
-
-      pivot.value = {
-        x: clamp(
-          newPivot.x,
-          halfScreenWidth,
-          map.width * CELL_SIZE - halfScreenWidth
-        ),
-        y: clamp(
-          newPivot.y,
-          halfScreenHeight,
-          map.height * CELL_SIZE - halfScreenHeight
-        ),
-      };
-
-      container.value.pivot.set(pivot.value.x, pivot.value.y);
+      pivot.value = clampPivot(newPivot);
     },
   };
 

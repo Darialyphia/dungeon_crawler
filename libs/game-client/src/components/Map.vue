@@ -41,10 +41,10 @@ const gViewport = computed(() => {
 });
 
 const computeChunkRect = (): Rectangle => ({
-  x: gViewport.value.x - gViewport.value.width * 0.5,
-  y: gViewport.value.y - gViewport.value.height * 0.5,
-  width: gViewport.value.width * 2,
-  height: gViewport.value.height * 2,
+  x: gViewport.value.x - gViewport.value.width * 0.25,
+  y: gViewport.value.y - gViewport.value.height * 0.25,
+  width: gViewport.value.width * 1.5,
+  height: gViewport.value.height * 1.5,
 });
 const chunkRect = ref<Rectangle>(computeChunkRect());
 
@@ -97,7 +97,7 @@ const render = (graphics: Graphics) => {
   graphics.lineStyle({
     width: 1,
     color: 0x000000,
-    alpha: 0.2,
+    alpha: 0.1,
   });
   visibleCells.value.forEach((cell) => {
     const { x, y } = toScreenCoords(cell);

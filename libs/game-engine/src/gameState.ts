@@ -26,7 +26,6 @@ export const createGameState = (): GameState => {
         seed: SEED,
         scale({ x, y, value }) {
           const normalized = mapRange(value, [-1, 1], [0, 1]);
-
           if (normalized < 0.005) {
             return { x, y, type: CELL_TYPES.WATER };
           }
@@ -40,6 +39,8 @@ export const createGameState = (): GameState => {
     world: createWorld()
   };
 
+  state.map.init(state);
   state.world.addSystem('physics', physicsSystem(state));
+
   return state;
 };
