@@ -15,6 +15,7 @@ import { useStableRef } from "../composables/useStableRef";
 import { Spritesheet } from "pixi.js";
 import { useMapTextureBuilder } from "../composables/useMapTextureBuilder";
 import { useDebugOptions } from "../composables/useDebugOptions";
+import { Container } from "pixi.js";
 
 const props = defineProps<{
   spritesheet: Spritesheet;
@@ -29,6 +30,14 @@ watchEffect(() => {
 });
 
 const textureBuilder = useMapTextureBuilder(props.spritesheet, mapRef);
+
+mapRef.value.rows.forEach((row, y) => {
+  row.forEach((type, x) => {
+    window.requestIdleCallback(() => {
+      textureBuilder.getTextureFor({ x, y, type });
+    });
+  });
+});
 
 // the camera viewport in game units instead of pixel units
 const gViewport = computed(() =>
