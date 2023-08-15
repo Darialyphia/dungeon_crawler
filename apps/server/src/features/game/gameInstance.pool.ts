@@ -55,10 +55,12 @@ export const gameInstancePool = ({ gameRepo, io }: Dependencies): GameInstancePo
         console.log('starting game instance');
         return worker.postMessage({ type: 'start' });
       },
+
       stop() {
         console.log('stopping game instance');
         return worker.postMessage({ type: 'stop' });
       },
+
       scheduleShutdown() {
         console.log('scheduling game instance shutdown');
         shutdownTimeout = setTimeout(() => {
@@ -66,6 +68,7 @@ export const gameInstancePool = ({ gameRepo, io }: Dependencies): GameInstancePo
           worker.terminate();
         }, config.ENGINE_WORKERS.SHUTDOWN_TIMEOUT);
       },
+
       dispatch(type, payload) {
         if (type === 'join' && shutdownTimeout) {
           console.log('Player rejoined, cancelling game instance shutdown');
