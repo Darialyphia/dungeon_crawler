@@ -84,16 +84,16 @@ export const createGame: GameFactory = ({ debug = false }) => {
     const bboxes = players
       .map(p =>
         state.tree.search({
-          minX: p.bbox.x - 2,
-          minY: p.bbox.y - 2,
-          maxX: p.bbox.x + 2,
-          maxY: p.bbox.y + 2
+          minX: p.bbox.x - 8,
+          minY: p.bbox.y - 8,
+          maxX: p.bbox.x + 8,
+          maxY: p.bbox.y + 8
         })
       )
       .flat();
     const obstacles = obstacle
       .findAll<[BBox]>(state.world, [bbox.brand])
-      .filter(obstacle => bboxes.includes(obstacle.bbox));
+      .filter(obstacle => bboxes.includes(obstacle));
     // console.log(obstacles.length);
 
     const serialized: SerializedGameState = {

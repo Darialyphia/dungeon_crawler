@@ -19,12 +19,14 @@ const assetNames = {
   tileset: `${state.value.snapshot.map.tileset}-tileset`,
 };
 
-const bundleIds = [assetNames.bundle];
+const bundleIds = [assetNames.bundle, "sprites"];
 
 const spritesheet = ref<Spritesheet>();
 
 onMounted(async () => {
   const assets = await Assets.loadBundle(bundleIds);
+  Assets.loadBundle("sprites");
+
   spritesheet.value = assets[assetNames.bundle][assetNames.tileset];
 });
 

@@ -113,7 +113,8 @@ const visibleCells = computed(() => {
 });
 
 const debugOptions = useDebugOptions();
-// We render a single graphics drawing all tiles instead of having a Tile component for perf reasons
+
+// We render a single graphics drawing all tiles instead of multiple graphics in the template
 const render = (graphics: Graphics) => {
   graphics.clear();
   graphics.lineStyle({
@@ -162,5 +163,3 @@ const render = (graphics: Graphics) => {
     </container>
   </template>
 </template>
-
-<style scoped lang="postcss"></style>

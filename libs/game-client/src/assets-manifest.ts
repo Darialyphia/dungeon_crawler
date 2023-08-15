@@ -1,4 +1,6 @@
 import baseTileset from "@dungeon-crawler/resources/src/tilesets/base/base-tileset.json?url";
+import testSprite from "@dungeon-crawler/resources/src/sprites/test.json?url";
+
 import { ResolverManifest } from "pixi.js";
 
 export const assetsManifest: ResolverManifest = {
@@ -9,6 +11,15 @@ export const assetsManifest: ResolverManifest = {
         {
           name: "base-tileset",
           srcs: baseTileset,
+        },
+      ],
+    },
+    {
+      name: "sprites",
+      assets: [
+        {
+          name: "test-sprite",
+          srcs: testSprite,
         },
       ],
     },
