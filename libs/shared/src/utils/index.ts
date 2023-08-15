@@ -7,3 +7,4 @@ export * from './vectors';
 export * from './awilix';
 export * from './constants';
 export * from './pipe-builder';
+export * from './geometry';

@@ -2,11 +2,14 @@
 import { useApplication, onTick } from "vue3-pixi";
 import { useGameState } from "../composables/useGameState";
 import { useCamera } from "../composables/useCamera";
+import { useCurrentPlayer } from "../composables/useCurrentPlayer";
+import { toScreenCoords } from "../utils/helpers";
 
 const fps = ref(0);
 const app = useApplication();
 const { state } = useGameState();
 const { viewport } = useCamera();
+const player = useCurrentPlayer();
 
 const ping = computed(
   () => state.value.timestamp - state.value.snapshot.timestamp
@@ -37,6 +40,10 @@ const roundedViewport = computed(() => ({
   width: Math.round(viewport.value.width),
   height: Math.round(viewport.value.height),
 }));
+const roundedPlayerCoords = computed(() => ({
+  x: Math.round(toScreenCoords(player.value!.bbox).x),
+  y: Math.round(toScreenCoords(player.value!.bbox).y),
+}));
 </script>
 
 <template>
@@ -48,19 +55,39 @@ const roundedViewport = computed(() => ({
         graphics.clear();
 
         graphics.beginFill(0x000000, 0.5);
-        graphics.drawRect(0, 0, 100, 140);
+        graphics.drawRect(0, 0, 120, 175);
         graphics.endFill();
       }
     "
   >
-    <text :x="10" :y="15" :style="{ fill: 'white', fontSize: 12 }">
+    <text
+      :x="10"
+      :y="15"
+      :style="{ fill: 'white', fontSize: 12, fontFamily: 'monospace' }"
+    >
       FPS: {{ fps.toFixed() }}
     </text>
-    <text :x="10" :y="30" :style="{ fill: 'white', fontSize: 12 }">
+    <text
+      :x="10"
+      :y="30"
+      :style="{ fill: 'white', fontSize: 12, fontFamily: 'monospace' }"
+    >
       ping: {{ averagePing }}ms
     </text>
-    <text :x="10" :y="45" :style="{ fill: 'white', fontSize: 12 }">
+    <text
+      :x="10"
+      :y="45"
+      :style="{ fill: 'white', fontSize: 12, fontFamily: 'monospace' }"
+    >
       camera: {{ roundedViewport }}
+    </text>
+    <text
+      v-if="player"
+      :x="10"
+      :y="45 + 75"
+      :style="{ fill: 'white', fontSize: 12, fontFamily: 'monospace' }"
+    >
+      player: {{ roundedPlayerCoords }}
     </text>
   </graphics>
 </template>

@@ -4,6 +4,7 @@ import {
   Rectangle,
   clamp,
   lerp,
+  rectToBBox,
 } from "@dungeon-crawler/shared";
 import { InjectionKey } from "vue";
 import { useSafeInject } from "./useSafeInject";
@@ -57,12 +58,14 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
     ["x", "y"]
   );
 
-  const viewport = computed(() => ({
-    x: pivot.value.x - screen.value.width / 2 / scale.value,
-    y: pivot.value.y - screen.value.height / 2 / scale.value,
-    width: screen.value.width / scale.value,
-    height: screen.value.height / scale.value,
-  }));
+  const viewport = computed(() =>
+    rectToBBox({
+      x: pivot.value.x,
+      y: pivot.value.y,
+      width: screen.value.width / scale.value,
+      height: screen.value.height / scale.value,
+    })
+  );
 
   const setPosition = throttle(() => {
     position.value = {

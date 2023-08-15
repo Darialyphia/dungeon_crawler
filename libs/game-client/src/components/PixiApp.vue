@@ -8,6 +8,8 @@ import { useScreen } from "vue3-pixi";
 import { Spritesheet } from "pixi.js";
 import { toScreenCoords } from "../utils/helpers";
 import { CELL_SIZE } from "../utils/constants";
+import { useCurrentPlayer } from "../composables/useCurrentPlayer";
+import { useDebugOptions } from "../composables/useDebugOptions";
 
 const { state } = useGameState();
 const screen = useScreen();
@@ -25,6 +27,9 @@ onMounted(async () => {
   const assets = await Assets.loadBundle(bundleIds);
   spritesheet.value = assets[assetNames.bundle][assetNames.tileset];
 });
+
+const currentPlayer = useCurrentPlayer();
+const debugOptions = useDebugOptions();
 </script>
 
 <template>
@@ -49,19 +54,49 @@ onMounted(async () => {
         (graphics) => {
           graphics.clear();
 
-          graphics.beginFill('yellow', 0.25);
+          if (debugOptions.obstacles) {
+            graphics.beginFill('yellow', 0.25);
+            graphics.lineStyle({
+              color: 'yellow',
+              width: 1,
+            });
+            graphics.drawRect(
+              (-obstacle.bbox.width * CELL_SIZE) / 2,
+              (-obstacle.bbox.height * CELL_SIZE) / 2,
+              CELL_SIZE,
+              CELL_SIZE
+            );
 
-          graphics.lineStyle({
-            color: 'yellow',
-            width: 1,
-          });
-          graphics.drawRect(
-            (-obstacle.bbox.width * CELL_SIZE) / 2,
-            (-obstacle.bbox.height * CELL_SIZE) / 2,
-            CELL_SIZE,
-            CELL_SIZE
-          );
-          graphics.endFill();
+            graphics.endFill();
+          }
+
+          if (debugOptions.obstaclesMinkowski) {
+            graphics.beginFill('yellow', 0.1);
+            graphics.lineStyle({
+              color: 'blue',
+              alpha: 0.6,
+              width: 1,
+            });
+            if (currentPlayer) {
+              graphics.drawRect(
+                (-(obstacle.bbox.width + currentPlayer.bbox.width) *
+                  CELL_SIZE *
+                  0.9) /
+                  2,
+                (-(obstacle.bbox.height + currentPlayer.bbox.height) *
+                  CELL_SIZE *
+                  0.9) /
+                  2,
+                (obstacle.bbox.width + currentPlayer.bbox.width) *
+                  CELL_SIZE *
+                  0.9,
+                (obstacle.bbox.height + currentPlayer.bbox.height) *
+                  CELL_SIZE *
+                  0.9
+              );
+            }
+            graphics.endFill();
+          }
         }
       "
     />

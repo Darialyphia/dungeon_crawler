@@ -84,10 +84,10 @@ export const createGame: GameFactory = ({ debug = false }) => {
     const bboxes = players
       .map(p =>
         state.tree.search({
-          minX: p.bbox.x - 10,
-          minY: p.bbox.y - 10,
-          maxX: p.bbox.x + 10,
-          maxY: p.bbox.y + 10
+          minX: p.bbox.x - 2,
+          minY: p.bbox.y - 2,
+          maxX: p.bbox.x + 2,
+          maxY: p.bbox.y + 2
         })
       )
       .flat();

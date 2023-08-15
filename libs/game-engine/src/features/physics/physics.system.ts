@@ -3,7 +3,8 @@ import {
   addVector,
   clamp,
   dist,
-  lineRectIntersectionPoints,
+  lineRectIntersection,
+  rectRectCollision,
   setMagnitude
 } from '@dungeon-crawler/shared';
 import { ECSSystem } from '../ecs/ECSSystem';
@@ -50,49 +51,59 @@ export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox]> => {
             maxY: Math.max(e.bbox.minY, newBbox.minY)
           });
 
-          result.forEach(bbox => {
-            if (bbox === e.bbox) return;
+          // result.forEach(bbox => {
+          //   if (bbox === e.bbox) return;
 
-            const minkowskiRectangle = minkowskiSum(e.bbox, bbox);
-            const intersectionPoints = lineRectIntersectionPoints(
-              {
-                start: { x: e.bbox.x, y: e.bbox.y },
-                end: { x: newBbox.x, y: newBbox.y }
-              },
-              minkowskiRectangle
-            );
-            if (intersectionPoints.length) {
-              // console.log({
-              //   bbox: { ...e.bbox },
-              //   newBbox,
-              //   intersectionPoints,
-              //   minkowskiRectangle,
-              //   obstacle: { ...bbox },
-              //   velocity: { ...e.velocity.target }
-              // });
-              const closest = intersectionPoints.reduce((acc, current) =>
-                dist(e.bbox, acc) < dist(e.bbox, current) ? acc : current
-              );
-              newBbox = rectToBBox({
-                x:
-                  closest.x +
-                  (closest.x < e.bbox.x
-                    ? 1 / 100
-                    : closest.x > e.bbox.x
-                    ? -1 / 100
-                    : 0),
-                y:
-                  closest.y +
-                  (closest.y < e.bbox.y
-                    ? 1 / 100
-                    : closest.y > e.bbox.y
-                    ? -1 / 100
-                    : 0),
-                width: e.bbox.width,
-                height: e.bbox.height
-              });
-            }
-          });
+          //   const minkowskiRectangle = minkowskiSum(e.bbox, bbox);
+          //   const intersection = lineRectIntersection(
+          //     {
+          //       start: { x: e.bbox.x, y: e.bbox.y },
+          //       end: { x: newBbox.x, y: newBbox.y }
+          //     },
+          //     minkowskiRectangle
+          //   );
+          //   if (rectRectCollision(newBbox, minkowskiRectangle)) {
+          //     // console.group('Rect Collision');
+          //     // console.log(newBbox, minkowskiRectangle);
+          //     // console.groupEnd();
+          //   }
+          //   if (intersection.length) {
+          //     // console.log(intersection.length);
+          //     const closest = intersection.reduce((acc, current) =>
+          //       dist(e.bbox, acc) < dist(e.bbox, current) ? acc : current
+          //     );
+          //     // console.groupCollapsed('Line collision');
+          //     // console.log({
+          //     //   bbox: { ...e.bbox },
+          //     //   newBbox: { ...newBbox },
+          //     //   closest,
+          //     //   intersectionPoints,
+          //     //   minkowskiRectangle,
+          //     //   obstacle: { ...bbox },
+          //     //   velocity: { ...e.velocity.target }
+          //     // });
+          //     // console.groupEnd();
+          //     newBbox = rectToBBox({
+          //       x:
+          //         closest.x +
+          //         (closest.x < e.bbox.x
+          //           ? 1 / 100
+          //           : closest.x > e.bbox.x
+          //           ? -1 / 100
+          //           : 0),
+          //       y:
+          //         closest.y +
+          //         (closest.y < e.bbox.y
+          //           ? 1 / 10
+          //           : closest.y > e.bbox.y
+          //           ? -1 / 10
+          //           : 0),
+          //       width: e.bbox.width,
+          //       height: e.bbox.height
+          //     });
+          //     // console.log({ newBbox });
+          //   }
+          // });
 
           Object.assign(e.bbox, {
             x: clamp(newBbox.x, e.bbox.width / 2, map.width - e.bbox.width / 2),

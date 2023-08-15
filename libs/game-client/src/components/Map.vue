@@ -3,10 +3,10 @@ import { useGameState } from "../composables/useGameState";
 import { useCamera } from "../composables/useCamera";
 import { CELL_SIZE } from "../utils/constants";
 import {
+  BBox,
   Point,
-  Rectangle,
-  indexToPoint,
   rectRectCollision,
+  rectToBBox,
 } from "@dungeon-crawler/shared";
 import { CellType } from "@dungeon-crawler/game-engine";
 import { Graphics } from "pixi.js";
@@ -14,6 +14,7 @@ import { toScreenCoords } from "../utils/helpers";
 import { useStableRef } from "../composables/useStableRef";
 import { Spritesheet } from "pixi.js";
 import { useMapTextureBuilder } from "../composables/useMapTextureBuilder";
+import { useDebugOptions } from "../composables/useDebugOptions";
 
 const props = defineProps<{
   spritesheet: Spritesheet;
@@ -28,35 +29,36 @@ watchEffect(() => {
 });
 
 const textureBuilder = useMapTextureBuilder(props.spritesheet, mapRef);
-const toPoint = (index: number) => indexToPoint(mapRef.value.width, index);
 
 // the camera viewport in game units instead of pixel units
-const gViewport = computed(() => {
-  return {
+const gViewport = computed(() =>
+  rectToBBox({
     x: viewport.value.x / CELL_SIZE,
     y: viewport.value.y / CELL_SIZE,
     width: viewport.value.width / CELL_SIZE,
     height: viewport.value.height / CELL_SIZE,
-  };
-});
+  })
+);
 
-const computeChunkRect = (): Rectangle => ({
-  x: gViewport.value.x - gViewport.value.width * 0.25,
-  y: gViewport.value.y - gViewport.value.height * 0.25,
-  width: gViewport.value.width * 1.5,
-  height: gViewport.value.height * 1.5,
-});
-const chunkRect = ref<Rectangle>(computeChunkRect());
+const computeChunkRect = (): BBox => {
+  const r = rectToBBox({
+    x: gViewport.value.x,
+    y: gViewport.value.y,
+    width: gViewport.value.width * 3,
+    height: gViewport.value.height * 3,
+  });
+
+  return r;
+};
+const chunkRect = ref<BBox>(computeChunkRect());
 
 const isAtChunkedge = () => {
-  const { x: gx, y: gy, width: gw, height: gh } = gViewport.value;
-  const { x: cx, y: cy, width: cw, height: ch } = chunkRect.value;
-  const threshold = 1;
+  const threshold = 5;
 
-  const left = gx - cx;
-  const right = cx + cw - (gx + gw);
-  const top = gy - cy;
-  const bottom = cy + ch - (gy + gh);
+  const left = gViewport.value.minX - chunkRect.value.minX;
+  const right = chunkRect.value.maxX - gViewport.value.maxX;
+  const top = gViewport.value.minY - chunkRect.value.minY;
+  const bottom = chunkRect.value.maxY - gViewport.value.maxY;
 
   return (
     left < threshold ||
@@ -66,6 +68,9 @@ const isAtChunkedge = () => {
   );
 };
 
+// watchEffect(() => {
+//   console.log(gViewport.value.x.toFixed(2));
+// });
 watchEffect(() => {
   if (isAtChunkedge()) {
     chunkRect.value = computeChunkRect();
@@ -74,23 +79,35 @@ watchEffect(() => {
 
 const visibleCells = computed(() => {
   const visible: (Point & { type: CellType })[] = [];
-  for (const [index, cell] of mapRef.value.rows.flat().entries()) {
-    const { x, y } = toPoint(index);
-    if (
-      rectRectCollision(chunkRect.value, {
-        x,
-        y,
-        width: 1,
-        height: 1,
-      })
-    ) {
-      visible.push({ x, y, type: cell });
-    }
-  }
+  mapRef.value.rows.forEach((row, y) => {
+    if (y > chunkRect.value.maxY || y < chunkRect.value.minY) return;
+
+    row.forEach((type, x) => {
+      if (
+        rectRectCollision(
+          {
+            x: chunkRect.value.minX,
+            y: chunkRect.value.minY,
+            width: chunkRect.value.width,
+            height: chunkRect.value.height,
+          },
+          {
+            x,
+            y,
+            width: 1,
+            height: 1,
+          }
+        )
+      ) {
+        visible.push({ x, y, type });
+      }
+    });
+  });
 
   return visible;
 });
 
+const debugOptions = useDebugOptions();
 // We render a single graphics drawing all tiles instead of having a Tile component for perf reasons
 const render = (graphics: Graphics) => {
   graphics.clear();
@@ -112,7 +129,33 @@ const render = (graphics: Graphics) => {
 </script>
 
 <template>
+  <graphics
+    @render="
+      (graphics: Graphics) => {
+        graphics.clear();
+        graphics.beginFill('black', 0.01);
+        graphics.drawRect(chunkRect.minX, chunkRect.minY, chunkRect.width, chunkRect.height)
+      }
+    "
+  />
   <graphics @render="render" />
+  <template v-if="debugOptions.mapCoords">
+    <container
+      v-for="cell in visibleCells"
+      :key="`${cell.x}:${cell.y}`"
+      :position="toScreenCoords(cell)"
+    >
+      <text
+        :anchor="0.5"
+        :x="CELL_SIZE / 2"
+        :y="CELL_SIZE / 2"
+        :scale="0.5"
+        :style="{ fill: 'white', fontSize: 12 }"
+      >
+        x:{{ cell.x }}\ny:{{ cell.y }}
+      </text>
+    </container>
+  </template>
 </template>
 
 <style scoped lang="postcss"></style>
