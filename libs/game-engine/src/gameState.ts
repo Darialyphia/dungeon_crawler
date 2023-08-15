@@ -6,15 +6,16 @@ import { CELL_TYPES, GameMap, createGameMap } from './features/map/map.factory';
 import { physicsSystem } from './features/physics/physics.system';
 import RBush from 'rbush';
 import { BBox, BBoxProps } from './features/physics/physics.components';
+import { ECSEntity } from './features/ecs/ECSEntity';
 
 export type GameState = {
   isRunning: boolean;
   world: ECSWorld;
   map: GameMap;
-  tree: RBush<BBox>;
+  tree: RBush<ECSEntity & BBox>;
 };
 
-class MyRBush extends RBush<BBox> {
+class MyRBush extends RBush<ECSEntity & BBox> {
   toBBox(e: BBox) {
     return e.bbox;
   }
