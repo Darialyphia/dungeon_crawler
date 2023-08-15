@@ -5,19 +5,31 @@ import { createNoiseGenerator } from './features/map/generators/noise';
 import { CELL_TYPES, GameMap, createGameMap } from './features/map/map.factory';
 import { physicsSystem } from './features/physics/physics.system';
 import RBush from 'rbush';
-import { BBoxProps } from './features/physics/physics.components';
+import { BBox, BBoxProps } from './features/physics/physics.components';
 
 export type GameState = {
   isRunning: boolean;
   world: ECSWorld;
   map: GameMap;
-  tree: RBush<BBoxProps>;
+  tree: RBush<BBox>;
 };
+
+class MyRBush extends RBush<BBox> {
+  toBBox(e: BBox) {
+    return e.bbox;
+  }
+  compareMinX(a: BBox, b: BBox) {
+    return a.bbox.minX - b.bbox.minX;
+  }
+  compareMinY(a: BBox, b: BBox) {
+    return a.bbox.minY - b.bbox.minY;
+  }
+}
 
 export const createGameState = (): GameState => {
   const state: GameState = {
     isRunning: false,
-    tree: new RBush<BBoxProps>(),
+    tree: new MyRBush(),
     map: createGameMap({
       width: WIDTH,
       height: HEIGHT,

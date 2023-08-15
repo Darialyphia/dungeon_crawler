@@ -77,9 +77,6 @@ const isAtChunkedge = () => {
   );
 };
 
-// watchEffect(() => {
-//   console.log(gViewport.value.x.toFixed(2));
-// });
 watchEffect(() => {
   if (isAtChunkedge()) {
     chunkRect.value = computeChunkRect();
@@ -92,22 +89,21 @@ const visibleCells = computed(() => {
     if (y > chunkRect.value.maxY || y < chunkRect.value.minY) return;
 
     row.forEach((type, x) => {
-      if (
-        rectRectCollision(
-          {
-            x: chunkRect.value.minX,
-            y: chunkRect.value.minY,
-            width: chunkRect.value.width,
-            height: chunkRect.value.height,
-          },
-          {
-            x,
-            y,
-            width: 1,
-            height: 1,
-          }
-        )
-      ) {
+      const isInside = rectRectCollision(
+        {
+          x: chunkRect.value.minX,
+          y: chunkRect.value.minY,
+          width: chunkRect.value.width,
+          height: chunkRect.value.height,
+        },
+        {
+          x,
+          y,
+          width: 1,
+          height: 1,
+        }
+      );
+      if (isInside) {
         visible.push({ x, y, type });
       }
     });

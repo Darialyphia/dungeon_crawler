@@ -29,7 +29,7 @@ export const createCell = (
     )
     .build();
 
-  state.tree.insert(entity.bbox);
+  state.tree.insert(entity);
 
   return entity;
 };

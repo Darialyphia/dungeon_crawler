@@ -55,10 +55,14 @@ export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox]> => {
             maxY: Math.max(e.bbox.maxY, newBbox.maxY)
           });
 
-          result.forEach(bbox => {
-            if (bbox === e.bbox) return;
+          result.forEach(collidable => {
+            if (collidable.bbox === e.bbox) return;
 
-            const minkowskiRectangle = minkowskiSum(e.bbox, bbox, 0.9);
+            const minkowskiRectangle = minkowskiSum(
+              e.bbox,
+              collidable.bbox,
+              0.9
+            );
             const intersection = lineRectIntersection(
               {
                 start: { x: e.bbox.x, y: e.bbox.y },
