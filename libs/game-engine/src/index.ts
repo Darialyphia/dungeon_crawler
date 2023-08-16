@@ -4,7 +4,12 @@ import { EventMap, inferEventInput } from './events';
 import { TICK_RATE } from './constants';
 import { BBox, bbox } from './features/physics/physics.components';
 import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
-import { Player, player } from './features/player/player.components';
+import {
+  Player,
+  PlayerState,
+  player,
+  playerState
+} from './features/player/player.components';
 import { SerializedMap } from './features/map/map.factory';
 import { stringify } from 'zipson';
 import { Obstacle, obstacle } from './features/map/map.components';
@@ -18,7 +23,7 @@ export {
 
 export type SerializedGameState = {
   map: SerializedMap;
-  players: Record<ECSEntityId, ECSEntity & BBox & Player>;
+  players: Record<ECSEntityId, ECSEntity & BBox & Player & PlayerState>;
   obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
   timestamp: number;
 };
@@ -80,7 +85,10 @@ export const createGame: GameFactory = ({ debug = false }) => {
   };
 
   const serializeState = (state: GameState): SerializedGameState => {
-    const players = player.findAll<[BBox]>(state.world, [bbox.brand]);
+    const players = player.findAll<[BBox, PlayerState]>(state.world, [
+      bbox.brand,
+      playerState.brand
+    ]);
     const bboxes = players
       .map(p =>
         state.tree.search({
@@ -94,7 +102,6 @@ export const createGame: GameFactory = ({ debug = false }) => {
     const obstacles = obstacle
       .findAll<[BBox]>(state.world, [bbox.brand])
       .filter(obstacle => bboxes.includes(obstacle));
-    // console.log(obstacles.length);
 
     const serialized: SerializedGameState = {
       timestamp: Date.now(),

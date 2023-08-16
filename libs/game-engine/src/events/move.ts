@@ -2,7 +2,11 @@ import { z } from 'zod';
 import { defineEventHandler } from '../utils';
 import { Point, addVector, setMagnitude } from '@dungeon-crawler/shared';
 import { isNone } from 'fp-ts/Option';
-import { getPlayerById } from '../features/player/player.components';
+import {
+  PlayerState,
+  getPlayerById,
+  playerState
+} from '../features/player/player.components';
 import {
   type BBox,
   type Velocity,
@@ -43,16 +47,18 @@ export const moveEvent = defineEventHandler({
     right: z.boolean()
   }),
   handler: ({ input, state }) => {
-    const optionPlayer = getPlayerById<[BBox, Velocity]>(input.playerId)(
-      state.world,
-      [bbox.brand, velocity.brand]
-    );
+    const maybePlayer = getPlayerById<[BBox, Velocity, PlayerState]>(
+      input.playerId
+    )(state.world, [bbox.brand, velocity.brand, playerState.brand]);
 
-    if (isNone(optionPlayer)) return;
+    if (isNone(maybePlayer)) return;
 
-    const player = optionPlayer.value;
+    const player = maybePlayer.value;
     if (player.player.id !== input.playerId) return;
 
-    player.velocity.target = computeVelocity(input);
+    const newVelocity = computeVelocity(input);
+    player.playerState.state =
+      newVelocity.x === 0 && newVelocity.y === 0 ? 'idle' : 'walking';
+    player.velocity.target = newVelocity;
   }
 });

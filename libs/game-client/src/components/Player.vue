@@ -8,7 +8,7 @@ import { useCamera } from "../composables/useCamera";
 import { useCurrentPlayerId } from "../composables/useCurrentPlayer";
 import { toScreenCoords } from "../utils/helpers";
 import { Point } from "@dungeon-crawler/shared";
-import { Assets, FrameObject, Texture } from "pixi.js";
+import { Assets, FrameObject, Spritesheet, Texture } from "pixi.js";
 import { createSpritesheetFrameObject } from "../utils/frame-object";
 
 const props = defineProps<{
@@ -57,13 +57,22 @@ const color = computed(() => (isCurrentPlayer.value ? "red" : "blue"));
 onTick(interpolatePlayerPosition);
 onTick(followPlayer);
 
+const sheet = ref<Spritesheet>();
 const textures = ref<FrameObject[]>([]);
+
+watch(
+  [() => props.player.playerState.state, sheet],
+  ([playerState, sheet]) => {
+    if (sheet) {
+      textures.value = createSpritesheetFrameObject(playerState, sheet);
+    }
+  },
+  { immediate: true }
+);
 
 onMounted(async () => {
   const assets = await Assets.loadBundle("sprites");
-  const sheet = assets["test-sprite"];
-
-  textures.value = createSpritesheetFrameObject("idle", sheet);
+  sheet.value = assets["test-sprite"];
 });
 </script>
 

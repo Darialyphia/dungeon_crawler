@@ -1,5 +1,11 @@
 import { randomInt } from '@dungeon-crawler/shared';
-import { Player, PlayerId, player } from './player.components';
+import {
+  Player,
+  PlayerId,
+  PlayerState,
+  player,
+  playerState
+} from './player.components';
 import { GameState } from '../../gameState';
 import { BBox, bbox, velocity } from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
@@ -8,7 +14,7 @@ export type CreatePlayerOptions = {
   id: PlayerId;
 };
 
-export type PlayerEntity = ECSEntity & BBox & Player;
+export type PlayerEntity = ECSEntity & BBox & Player & PlayerState;
 
 export const createPlayer = (
   state: GameState,
@@ -25,14 +31,12 @@ export const createPlayer = (
     )
     .with(
       velocity.component({
-        target: {
-          x: 0,
-          y: 0
-        },
+        target: { x: 0, y: 0 },
         speed: 10
       })
     )
     .with(player.component({ id }))
+    .with(playerState.component('idle'))
     .build();
 
   state.tree.insert(entity);

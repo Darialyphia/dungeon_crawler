@@ -1,6 +1,10 @@
 import { Point, Rectangle, Size } from '@dungeon-crawler/shared';
 import { defineECSComponent, inferComponent } from '../../utils';
 
+/**
+ * BBoxComponent
+ */
+
 export type BBoxProps = Rectangle & {
   minX: number;
   minY: number;
@@ -41,8 +45,13 @@ export const bbox = defineECSComponent<'bbox', BBoxProps, Rectangle>(
 );
 export type BBox = inferComponent<typeof bbox>;
 
+/**
+ * Velocity Component
+ */
+
 export const velocity = defineECSComponent<
   'velocity',
   { target: Point; speed: number }
 >('velocity', vel => vel);
+
 export type Velocity = inferComponent<typeof velocity>;
