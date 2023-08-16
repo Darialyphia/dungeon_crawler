@@ -7,14 +7,26 @@ import {
   playerState
 } from './player.components';
 import { GameState } from '../../gameState';
-import { BBox, bbox, velocity } from '../physics/physics.components';
+import {
+  BBox,
+  Orientation,
+  bbox,
+  velocity,
+  orientation,
+  Velocity
+} from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
 
 export type CreatePlayerOptions = {
   id: PlayerId;
 };
 
-export type PlayerEntity = ECSEntity & BBox & Player & PlayerState;
+export type PlayerEntity = ECSEntity &
+  Player &
+  PlayerState &
+  BBox &
+  Velocity &
+  Orientation;
 
 export const createPlayer = (
   state: GameState,
@@ -32,9 +44,10 @@ export const createPlayer = (
     .with(
       velocity.component({
         target: { x: 0, y: 0 },
-        speed: 10
+        speed: 6
       })
     )
+    .with(orientation.component('right'))
     .with(player.component({ id }))
     .with(playerState.component('idle'))
     .build();

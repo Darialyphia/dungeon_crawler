@@ -7,6 +7,7 @@ export const createSpritesheetFrameObject = (
 ): FrameObject[] => {
   const frames = spritesheet.data.animations?.[name];
   const textures = spritesheet.animations[name];
+
   if (!frames || !textures) throw new Error(`unknown animation: ${name}`);
 
   return frames.map((frame, index) => {

@@ -7,21 +7,27 @@ import { createCell } from './cell.factory';
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
   WATER: 1, // not walkable, doesn't block vision or projectiles
-  WALL: 2 // not walkabe, blocks vision and projectiles
+  WALL: 2 // not walkable, blocks vision and projectiles
 } as const;
 export type CellType = 0 | 1 | 2; // GROUND / water / wall
 
 export type Tileset = 'base';
 
-export type MapCell = Point & {
+type GeneratedCell = Point & {
   type: CellType;
 };
+export type MapCell = GeneratedCell & {
+  type: CellType;
+  bitMask: number;
+};
+
+export type SerializedCell = Pick<MapCell, 'type' | 'bitMask'>;
 
 export type MapFactoryOptions = {
   width: number;
   height: number;
   tileset: Tileset;
-  generator: MapGenerator<MapCell>;
+  generator: MapGenerator<GeneratedCell>;
 };
 
 export type GameMap = {
@@ -38,7 +44,7 @@ export type SerializedMap = {
   width: number;
   height: number;
   tileset: Tileset;
-  rows: CellType[][];
+  rows: SerializedCell[][];
 };
 export const MAP_CHUNK_SIZE = WIDTH;
 
@@ -54,17 +60,26 @@ export const createGameMap = ({
   // map of tile chunks, indexed by their top-left stringified coordinates
   const chunks = new Map<string, MapCell[]>();
 
+  const getBitMask = (cell: GeneratedCell) => {
+    return 0;
+  };
+
   const getOrCreateChunk = ({ x, y }: Point) => {
     const key = getChunkKey({ x, y });
 
     if (!chunks.has(key)) {
+      const chunk = generator.getChunk({
+        width: x + MAP_CHUNK_SIZE > width ? width - x : MAP_CHUNK_SIZE,
+        height: y + MAP_CHUNK_SIZE > height ? height - y : MAP_CHUNK_SIZE,
+        startsAt: { x, y }
+      });
+
       chunks.set(
         key,
-        generator.getChunk({
-          width: x + MAP_CHUNK_SIZE > width ? width - x : MAP_CHUNK_SIZE,
-          height: y + MAP_CHUNK_SIZE > height ? height - y : MAP_CHUNK_SIZE,
-          startsAt: { x, y }
-        })
+        chunk.map(cell => ({
+          ...cell,
+          bitMask: getBitMask(cell)
+        }))
       );
     }
 
@@ -113,12 +128,13 @@ export const createGameMap = ({
     },
 
     serialize() {
-      const rows: CellType[][] = [];
+      const rows: SerializedCell[][] = [];
       for (let y = 0; y < height; y++) {
-        const row: CellType[] = [];
+        const row: SerializedCell[] = [];
         rows.push(row);
         for (let x = 0; x < width; x++) {
-          row.push(map.getCellAt({ x, y }).type);
+          const cell = map.getCellAt({ x, y });
+          row.push({ type: cell.type, bitMask: cell.bitMask });
         }
       }
 

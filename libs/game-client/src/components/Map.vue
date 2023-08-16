@@ -8,7 +8,6 @@ import {
   rectRectCollision,
   rectToBBox,
 } from "@dungeon-crawler/shared";
-import { CellType } from "@dungeon-crawler/game-engine";
 import { Graphics } from "pixi.js";
 import { toScreenCoords } from "../utils/helpers";
 import { useStableRef } from "../composables/useStableRef";
@@ -16,6 +15,7 @@ import { Spritesheet } from "pixi.js";
 import { useMapTextureBuilder } from "../composables/useMapTextureBuilder";
 import { useDebugOptions } from "../composables/useDebugOptions";
 import { Container } from "pixi.js";
+import { SerializedCell } from "@dungeon-crawler/game-engine/src/features/map/map.factory";
 
 const props = defineProps<{
   spritesheet: Spritesheet;
@@ -30,14 +30,6 @@ watchEffect(() => {
 });
 
 const textureBuilder = useMapTextureBuilder(props.spritesheet, mapRef);
-
-mapRef.value.rows.forEach((row, y) => {
-  row.forEach((type, x) => {
-    window.requestIdleCallback(() => {
-      textureBuilder.getTextureFor({ x, y, type });
-    });
-  });
-});
 
 // the camera viewport in game units instead of pixel units
 const gViewport = computed(() =>
@@ -84,11 +76,11 @@ watchEffect(() => {
 });
 
 const visibleCells = computed(() => {
-  const visible: (Point & { type: CellType })[] = [];
+  const visible: (Point & SerializedCell)[] = [];
   mapRef.value.rows.forEach((row, y) => {
     if (y > chunkRect.value.maxY || y < chunkRect.value.minY) return;
 
-    row.forEach((type, x) => {
+    row.forEach((cell, x) => {
       const isInside = rectRectCollision(
         {
           x: chunkRect.value.minX,
@@ -104,7 +96,7 @@ const visibleCells = computed(() => {
         }
       );
       if (isInside) {
-        visible.push({ x, y, type });
+        visible.push({ x, y, ...cell });
       }
     });
   });
@@ -117,11 +109,6 @@ const debugOptions = useDebugOptions();
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
 const render = (graphics: Graphics) => {
   graphics.clear();
-  graphics.lineStyle({
-    width: 1,
-    color: 0x000000,
-    alpha: 0.1,
-  });
   visibleCells.value.forEach((cell) => {
     const { x, y } = toScreenCoords(cell);
     const texture = textureBuilder.getTextureFor(cell);

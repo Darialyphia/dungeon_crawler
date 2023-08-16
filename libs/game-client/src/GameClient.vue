@@ -1,6 +1,12 @@
 <script setup lang="ts">
 import { parse } from "zipson";
-import { Application, Assets, BaseTexture, extensions } from "pixi.js";
+import {
+  Application,
+  Assets,
+  BaseTexture,
+  SCALE_MODES,
+  extensions,
+} from "pixi.js";
 import { appInjectKey, createApp } from "vue3-pixi";
 import { SerializedGameState } from "@dungeon-crawler/game-engine";
 import {
@@ -66,6 +72,7 @@ onMounted(() => {
   }
 
   BaseTexture.defaultOptions.wrapMode = WRAP_MODES.CLAMP;
+  BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
   extensions.add(spriteSheetParser);
   Assets.init({ manifest: assetsManifest });
   const app = createApp(PixiApp);

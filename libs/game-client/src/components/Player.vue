@@ -81,6 +81,7 @@ onMounted(async () => {
     v-if="textures?.length"
     :textures="(textures as unknown as Texture[])"
     :position="screenPosition"
+    :scale-x="player.orientation === 'left' ? -1 : 1"
     :anchor="0.5"
     playing
   />

@@ -55,3 +55,15 @@ export const velocity = defineECSComponent<
 >('velocity', vel => vel);
 
 export type Velocity = inferComponent<typeof velocity>;
+
+/**
+ * Orientation Component
+ */
+
+export type OrientationType = 'left' | 'right';
+export const orientation = defineECSComponent<'orientation', OrientationType>(
+  'orientation',
+  o => o
+);
+
+export type Orientation = inferComponent<typeof orientation>;

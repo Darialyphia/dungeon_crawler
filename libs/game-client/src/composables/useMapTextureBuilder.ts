@@ -9,9 +9,12 @@ import {
 } from "@dungeon-crawler/shared";
 import { CELL_SIZE } from "../utils/constants";
 import { useRenderer } from "vue3-pixi";
-import { SerializedMap } from "@dungeon-crawler/game-engine/src/features/map/map.factory";
+import {
+  SerializedCell,
+  SerializedMap,
+} from "@dungeon-crawler/game-engine/src/features/map/map.factory";
 
-type Cell = Point & { type: CellType };
+type Cell = Point & SerializedCell;
 export type NeighborRow = [CellType, CellType, CellType];
 export type Neighborhood = [NeighborRow, NeighborRow, NeighborRow];
 
@@ -199,7 +202,9 @@ export const useMapTextureBuilder = (
   };
 
   const getTextureFor = (cell: Cell): RenderTexture => {
-    const neighbors = getNeighbors(cell, ({ x, y }) => map.value.rows[y]?.[x]);
+    const neighbors = getNeighbors(cell, ({ x, y }) => {
+      return map.value.rows[y]?.[x]?.type;
+    });
     const weight = getWeight(neighbors);
     const decorationSeed = getDecorationSeed(cell);
 
@@ -231,9 +236,9 @@ export const useMapTextureBuilder = (
 
   watchEffect(() => {
     map.value.rows.forEach((row, y) => {
-      row.forEach((type, x) => {
+      row.forEach((cell, x) => {
         requestIdleCallback(() => {
-          getTextureFor({ x, y, type });
+          getTextureFor({ x, y, ...cell });
         });
       });
     });

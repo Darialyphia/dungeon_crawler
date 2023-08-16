@@ -4,7 +4,6 @@ import {
   clamp,
   dist,
   lineRectIntersection,
-  rectRectCollision,
   setMagnitude
 } from '@dungeon-crawler/shared';
 import { ECSSystem } from '../ecs/ECSSystem';
@@ -19,7 +18,6 @@ import {
 } from './physics.components';
 import * as O from 'fp-ts/Option';
 import { GameState } from '../../gameState';
-import { playerState } from '../player/player.components';
 import {} from '../ecs/ECSEntity';
 
 export const physicsSystem = ({
@@ -98,7 +96,6 @@ export const physicsSystem = ({
 
         const newPos = computeNewPosition(e, props.delta);
         let newBbox = clampToMapEdges(e.bbox, newPos);
-        let hasCollided = false;
 
         const collidables = getCollidables(e.bbox, newBbox);
 
@@ -113,7 +110,6 @@ export const physicsSystem = ({
           });
 
           if (O.isNone(closest)) return;
-          hasCollided = true;
           // has a very sùamm offset, otherwise on the next tick the entity will still be colliding and get stuck
           const withOffset = (a: number, b: number) =>
             a + (a < b ? 1 / 100 : a > b ? -1 / 100 : 0);

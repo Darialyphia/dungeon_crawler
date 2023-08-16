@@ -5,6 +5,7 @@ import { trimExtension } from "./helpers";
 import baseTileset from "@dungeon-crawler/resources/src/tilesets/base/base-tileset.json?url";
 
 import testSprite from "@dungeon-crawler/resources/src/sprites/test.json?url";
+import orcSprite from "@dungeon-crawler/resources/src/sprites/orc.json?url";
 
 const asepriteSizeSchema = z.object({
   w: z.number(),
@@ -41,7 +42,7 @@ const asepriteJsonSchema = z.object({
 type AsepriteJson = z.infer<typeof asepriteJsonSchema>;
 
 const tilesetsUrls = [baseTileset];
-const spritesUrls = [testSprite];
+const spritesUrls = [testSprite, orcSprite];
 
 const isTileset = (url: string) =>
   !!tilesetsUrls.find((path) => url.includes(path));

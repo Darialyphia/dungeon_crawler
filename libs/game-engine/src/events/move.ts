@@ -10,8 +10,10 @@ import {
 import {
   type BBox,
   type Velocity,
+  type Orientation,
   bbox,
-  velocity
+  velocity,
+  orientation
 } from '../features/physics/physics.components';
 
 type Directions = {
@@ -47,9 +49,14 @@ export const moveEvent = defineEventHandler({
     right: z.boolean()
   }),
   handler: ({ input, state }) => {
-    const maybePlayer = getPlayerById<[BBox, Velocity, PlayerState]>(
-      input.playerId
-    )(state.world, [bbox.brand, velocity.brand, playerState.brand]);
+    const maybePlayer = getPlayerById<
+      [BBox, Velocity, Orientation, PlayerState]
+    >(input.playerId)(state.world, [
+      bbox.brand,
+      velocity.brand,
+      orientation.brand,
+      playerState.brand
+    ]);
 
     if (isNone(maybePlayer)) return;
 
@@ -57,8 +64,13 @@ export const moveEvent = defineEventHandler({
     if (player.player.id !== input.playerId) return;
 
     const newVelocity = computeVelocity(input);
-    player.playerState.state =
-      newVelocity.x === 0 && newVelocity.y === 0 ? 'idle' : 'walking';
+
+    const isMoving = newVelocity.x !== 0 || newVelocity.y !== 0;
+    player.playerState.state = isMoving ? 'walking' : 'idle';
+
+    if (newVelocity.x) {
+      player.orientation = newVelocity.x < 0 ? 'left' : 'right';
+    }
     player.velocity.target = newVelocity;
   }
 });
