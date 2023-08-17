@@ -1,6 +1,5 @@
-import { Point, randomInt, subVector } from '@dungeon-crawler/shared';
+import { Nullable, Point, pointToIndex, randomInt } from '@dungeon-crawler/shared';
 import type { MapGenerator } from './types';
-import { WIDTH } from '../../constants';
 import { GameState } from '../../gameState';
 import { createCell } from './cell.factory';
 
@@ -20,8 +19,6 @@ export type MapCell = GeneratedCell & {
   type: CellType;
   bitMask: number;
 };
-
-export type SerializedCell = Pick<MapCell, 'type' | 'bitMask'>;
 
 export type MapFactoryOptions = {
   width: number;
@@ -44,9 +41,23 @@ export type SerializedMap = {
   width: number;
   height: number;
   tileset: Tileset;
-  rows: SerializedCell[][];
+  rows: MapCell[][];
 };
-export const MAP_CHUNK_SIZE = WIDTH;
+
+// Indicates the diff necessary to get neighbors cell
+// with an index fallback in case the cell is out of bounds
+// prettier-ignore
+const neighborCoords: [[number, number], number][] = [
+  [[-1, -1], 3], [[0, -1], 4], [[1, -1], 5],
+  [[-1, 0], 4],  [[0, 0], 4],  [[1, 0], 4],
+  [[-1, 1], 3],  [[0, 1], 4],  [[1, 1], 5]
+]
+// prettier-ignore
+const weights = [
+128, 1,  2 ,
+64,  0,  4,
+32,  16, 8
+] as const
 
 export const createGameMap = ({
   width,
@@ -54,62 +65,89 @@ export const createGameMap = ({
   tileset,
   generator
 }: MapFactoryOptions): GameMap => {
-  const chunkCoordsToIndex = ({ x, y }: Point) => MAP_CHUNK_SIZE * y + x;
-  const getChunkKey = ({ x, y }: Point) => `${x}:${y}`;
+  const makeRows = () => {
+    const getBitMask = ({ x, y }: Point, type: CellType) => {
+      const isMatch = (ttype: CellType) => ttype === type;
 
-  // map of tile chunks, indexed by their top-left stringified coordinates
-  const chunks = new Map<string, MapCell[]>();
+      const getCellWithDiff = (neighborIndex: number): GeneratedCell => {
+        const [[diffX, diffY], fallback] = neighborCoords[neighborIndex];
+        const index = pointToIndex({ x: x + diffX, y: y + diffY }, width);
 
-  const getBitMask = (cell: GeneratedCell) => {
-    return 0;
-  };
+        return cells[index] ?? getCellWithDiff(fallback);
+      };
 
-  const getOrCreateChunk = ({ x, y }: Point) => {
-    const key = getChunkKey({ x, y });
+      const [
+        topLeft,
+        top,
+        topRight,
+        left,
+        center,
+        right,
+        bottomLeft,
+        bottom,
+        bottomRight
+      ] = neighborCoords.map((_, index) => getCellWithDiff(index).type);
 
-    if (!chunks.has(key)) {
-      const chunk = generator.getChunk({
-        width: x + MAP_CHUNK_SIZE > width ? width - x : MAP_CHUNK_SIZE,
-        height: y + MAP_CHUNK_SIZE > height ? height - y : MAP_CHUNK_SIZE,
-        startsAt: { x, y }
-      });
+      // for a corner to match, both of its sides must match as well
+      // see https://gamedevelopment.tutsplus.com/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673t
+      const weight = [
+        isMatch(topLeft) && isMatch(top) && isMatch(left),
+        isMatch(top),
+        isMatch(topRight) && isMatch(top) && isMatch(right),
+        isMatch(left),
+        isMatch(center),
+        isMatch(right),
+        isMatch(bottomLeft) && isMatch(bottom) && isMatch(left),
+        isMatch(bottom),
+        isMatch(bottomRight) && isMatch(bottom) && isMatch(right)
+      ].reduce((weight, match, index) => {
+        return match ? weight + weights[index] : weight;
+      }, 0);
 
-      chunks.set(
-        key,
-        chunk.map(cell => ({
-          ...cell,
-          bitMask: getBitMask(cell)
-        }))
-      );
+      return weight;
+    };
+
+    const cells = generator.getChunk({
+      width,
+      height,
+      startsAt: { x: 0, y: 0 }
+    });
+    const rows: MapCell[][] = [];
+    for (let y = 0; y < height; y++) {
+      const row: MapCell[] = [];
+      rows.push(row);
+      for (let x = 0; x < width; x++) {
+        const cell = cells[pointToIndex({ x, y }, width)];
+        row.push({
+          x,
+          y,
+          type: cell.type,
+          bitMask: getBitMask({ x, y }, cell.type)
+        });
+      }
     }
 
-    return chunks.get(key)!;
+    return rows;
   };
+
+  const rows = makeRows();
 
   const map: GameMap = {
     width,
     height,
 
     init(state) {
-      const chunk = getOrCreateChunk({ x: 0, y: 0 });
-
-      chunk.forEach(cell => {
-        if (cell.type !== CELL_TYPES.GROUND) {
-          createCell(state, cell);
-        }
+      rows.forEach(row => {
+        row.forEach(cell => {
+          if (cell.type !== CELL_TYPES.GROUND) {
+            createCell(state, cell);
+          }
+        });
       });
     },
 
     getCellAt({ x, y }) {
-      const topLeft = {
-        x: MAP_CHUNK_SIZE * Math.floor(x / MAP_CHUNK_SIZE),
-        y: MAP_CHUNK_SIZE * Math.floor(y / MAP_CHUNK_SIZE)
-      };
-
-      const chunk = getOrCreateChunk(topLeft);
-      const index = chunkCoordsToIndex(subVector({ x, y }, topLeft));
-
-      return chunk[index];
+      return rows[y][x];
     },
 
     getValidSpawnPoint() {
@@ -128,16 +166,6 @@ export const createGameMap = ({
     },
 
     serialize() {
-      const rows: SerializedCell[][] = [];
-      for (let y = 0; y < height; y++) {
-        const row: SerializedCell[] = [];
-        rows.push(row);
-        for (let x = 0; x < width; x++) {
-          const cell = map.getCellAt({ x, y });
-          row.push({ type: cell.type, bitMask: cell.bitMask });
-        }
-      }
-
       return {
         id: 1,
         width,

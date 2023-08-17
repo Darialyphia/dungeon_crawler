@@ -29,6 +29,8 @@ export const indexToPoint = (length: number, idx: number): Point => ({
   y: Math.floor(idx / length)
 });
 
+export const pointToIndex = ({ x, y }: Point, width: number) => width * y + x;
+
 type UnionToIntersection<T> = (T extends T ? (p: T) => void : never) extends (
   p: infer U
 ) => void

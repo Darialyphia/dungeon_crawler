@@ -23,15 +23,13 @@ export type { EventMap };
 export {
   type CellType,
   type Tileset,
+  type MapCell,
   CELL_TYPES
 } from './features/map/map.factory';
 
 export type SerializedGameState = {
   map: SerializedMap;
-  players: Record<
-    ECSEntityId,
-    ECSEntity & BBox & Orientation & Player & PlayerState
-  >;
+  players: Record<ECSEntityId, ECSEntity & BBox & Orientation & Player & PlayerState>;
   obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
   timestamp: number;
 };
@@ -52,9 +50,7 @@ export type GameFactory = (opts: { debug?: boolean }) => GameEngine;
 const tickDuration = 1000 / TICK_RATE;
 const perfWarning = (elapsed: number) => {
   console.log(
-    `tick duration over performance budget by ${(
-      elapsed - tickDuration
-    ).toFixed(1)}ms`
+    `tick duration over performance budget by ${(elapsed - tickDuration).toFixed(1)}ms`
   );
 };
 
@@ -93,10 +89,11 @@ export const createGame: GameFactory = ({ debug = false }) => {
   };
 
   const serializeState = (state: GameState): SerializedGameState => {
-    const players = player.findAll<[BBox, PlayerState, Orientation]>(
-      state.world,
-      [bbox.brand, playerState.brand, orientation.brand]
-    );
+    const players = player.findAll<[BBox, PlayerState, Orientation]>(state.world, [
+      bbox.brand,
+      playerState.brand,
+      orientation.brand
+    ]);
     const bboxes = players
       .map(p =>
         state.tree.search({

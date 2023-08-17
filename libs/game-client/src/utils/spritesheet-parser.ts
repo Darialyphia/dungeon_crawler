@@ -2,7 +2,7 @@ import { ExtensionType, LoaderParserPriority, Texture } from "pixi.js";
 import { z } from "zod";
 import { trimExtension } from "./helpers";
 
-import baseTileset from "@dungeon-crawler/resources/src/tilesets/base/base-tileset.json?url";
+import baseTileset from "@dungeon-crawler/resources/src/tilesets/base/base-v2.json?url";
 
 import testSprite from "@dungeon-crawler/resources/src/sprites/test.json?url";
 import orcSprite from "@dungeon-crawler/resources/src/sprites/orc.json?url";

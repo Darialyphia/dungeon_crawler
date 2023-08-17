@@ -15,7 +15,7 @@ import { Spritesheet } from "pixi.js";
 import { useMapTextureBuilder } from "../composables/useMapTextureBuilder";
 import { useDebugOptions } from "../composables/useDebugOptions";
 import { Container } from "pixi.js";
-import { SerializedCell } from "@dungeon-crawler/game-engine/src/features/map/map.factory";
+import { MapCell } from "@dungeon-crawler/game-engine/src/features/map/map.factory";
 
 const props = defineProps<{
   spritesheet: Spritesheet;
@@ -29,7 +29,7 @@ watchEffect(() => {
   mapRef.value = state.value.snapshot.map;
 });
 
-const textureBuilder = useMapTextureBuilder(props.spritesheet, mapRef);
+const textureBuilder = useMapTextureBuilder(props.spritesheet);
 
 // the camera viewport in game units instead of pixel units
 const gViewport = computed(() =>
@@ -76,7 +76,7 @@ watchEffect(() => {
 });
 
 const visibleCells = computed(() => {
-  const visible: (Point & SerializedCell)[] = [];
+  const visible: (Point & MapCell)[] = [];
   mapRef.value.rows.forEach((row, y) => {
     if (y > chunkRect.value.maxY || y < chunkRect.value.minY) return;
 
@@ -96,7 +96,7 @@ const visibleCells = computed(() => {
         }
       );
       if (isInside) {
-        visible.push({ x, y, ...cell });
+        visible.push(cell);
       }
     });
   });
@@ -108,12 +108,15 @@ const debugOptions = useDebugOptions();
 
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
 const render = (graphics: Graphics) => {
+  console.log("render");
   graphics.clear();
   visibleCells.value.forEach((cell) => {
     const { x, y } = toScreenCoords(cell);
-    const texture = textureBuilder.getTextureFor(cell);
+
+    const texture = textureBuilder.getBitmapTexture(cell);
+
     graphics.beginTextureFill({
-      texture: texture,
+      texture,
     });
     graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
     graphics.endFill();
