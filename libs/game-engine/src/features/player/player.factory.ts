@@ -1,11 +1,5 @@
 import { randomInt } from '@dungeon-crawler/shared';
-import {
-  Player,
-  PlayerId,
-  PlayerState,
-  player,
-  playerState
-} from './player.components';
+import { Player, PlayerId, PlayerState, player, playerState } from './player.components';
 import { GameState } from '../../gameState';
 import {
   BBox,
@@ -44,7 +38,7 @@ export const createPlayer = (
     .with(
       velocity.component({
         target: { x: 0, y: 0 },
-        speed: 6
+        speed: 15
       })
     )
     .with(orientation.component('right'))

@@ -2,12 +2,7 @@
 import { useGameState } from "../composables/useGameState";
 import { useCamera } from "../composables/useCamera";
 import { CELL_SIZE } from "../utils/constants";
-import {
-  BBox,
-  Point,
-  rectRectCollision,
-  rectToBBox,
-} from "@dungeon-crawler/shared";
+import { BBox, Point, rectToBBox } from "@dungeon-crawler/shared";
 import { Graphics } from "pixi.js";
 import { toScreenCoords } from "../utils/helpers";
 import { Spritesheet } from "pixi.js";
@@ -24,10 +19,9 @@ const { state } = useGameState();
 const { viewport } = useCamera();
 
 const allCells = ref<Map<string, MapCell>>(new Map());
+const getKey = ({ x, y }: Point) => `${x}:${y}`;
 
 watchEffect(() => {
-  const getKey = ({ x, y }: Point) => `${x}:${y}`;
-
   state.value.snapshot.map.cells.forEach((cell) => {
     const key = getKey(cell);
     if (!allCells.value.has(key)) {
@@ -84,25 +78,20 @@ watchEffect(() => {
 
 const getVisibleCells = () => {
   const visible: (Point & MapCell)[] = [];
-  [...allCells.value.values()].forEach((cell) => {
-    const isInside = rectRectCollision(
-      {
-        x: chunkRect.value.minX,
-        y: chunkRect.value.minY,
-        width: chunkRect.value.width,
-        height: chunkRect.value.height,
-      },
-      {
-        x: cell.x,
-        y: cell.y,
-        width: 1,
-        height: 1,
+  const minX = Math.floor(chunkRect.value.minX);
+  const maxX = Math.ceil(chunkRect.value.maxX);
+  const minY = Math.floor(chunkRect.value.minY);
+  const maxY = Math.ceil(chunkRect.value.maxY);
+
+  for (let x = minX; x <= maxX; x++) {
+    for (let y = minY; y <= maxY; y++) {
+      const cell = allCells.value.get(getKey({ x, y }));
+      if (cell) {
+        visible.push(cell);
       }
-    );
-    if (isInside) {
-      visible.push(cell);
     }
-  });
+  }
+
   return visible;
 };
 
