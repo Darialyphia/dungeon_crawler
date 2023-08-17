@@ -38,7 +38,7 @@ export const createPlayer = (
     .with(
       velocity.component({
         target: { x: 0, y: 0 },
-        speed: 15
+        speed: 6
       })
     )
     .with(orientation.component('right'))

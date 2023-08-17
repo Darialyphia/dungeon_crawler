@@ -108,10 +108,10 @@ export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox, Veloci
           const withOffset = (a: number, b: number) =>
             a + (a < b ? 1 / 100 : a > b ? -1 / 100 : 0);
 
-          // newBbox = clampToMapEdges(e.bbox, {
-          //   x: withOffset(closest.value.x, e.bbox.x),
-          //   y: withOffset(closest.value.y, e.bbox.y)
-          // });
+          newBbox = clampToMapEdges(e.bbox, {
+            x: withOffset(closest.value.x, e.bbox.x),
+            y: withOffset(closest.value.y, e.bbox.y)
+          });
         });
 
         e.bbox = newBbox;
