@@ -10,7 +10,6 @@ import {
 } from "@dungeon-crawler/shared";
 import { Graphics } from "pixi.js";
 import { toScreenCoords } from "../utils/helpers";
-import { useStableRef } from "../composables/useStableRef";
 import { Spritesheet } from "pixi.js";
 import { useMapTextureBuilder } from "../composables/useMapTextureBuilder";
 import { useDebugOptions } from "../composables/useDebugOptions";
@@ -24,9 +23,17 @@ const props = defineProps<{
 const { state } = useGameState();
 const { viewport } = useCamera();
 
-const mapRef = useStableRef(state.value.snapshot.map, ["id"]);
+const allCells = ref<Map<string, MapCell>>(new Map());
+
 watchEffect(() => {
-  mapRef.value = state.value.snapshot.map;
+  const getKey = ({ x, y }: Point) => `${x}:${y}`;
+
+  state.value.snapshot.map.cells.forEach((cell) => {
+    const key = getKey(cell);
+    if (!allCells.value.has(key)) {
+      allCells.value.set(key, cell);
+    }
+  });
 });
 
 const textureBuilder = useMapTextureBuilder(props.spritesheet);
@@ -75,40 +82,42 @@ watchEffect(() => {
   }
 });
 
-const visibleCells = computed(() => {
+const getVisibleCells = () => {
   const visible: (Point & MapCell)[] = [];
-  mapRef.value.rows.forEach((row, y) => {
-    if (y > chunkRect.value.maxY || y < chunkRect.value.minY) return;
-
-    row.forEach((cell, x) => {
-      const isInside = rectRectCollision(
-        {
-          x: chunkRect.value.minX,
-          y: chunkRect.value.minY,
-          width: chunkRect.value.width,
-          height: chunkRect.value.height,
-        },
-        {
-          x,
-          y,
-          width: 1,
-          height: 1,
-        }
-      );
-      if (isInside) {
-        visible.push(cell);
+  [...allCells.value.values()].forEach((cell) => {
+    const isInside = rectRectCollision(
+      {
+        x: chunkRect.value.minX,
+        y: chunkRect.value.minY,
+        width: chunkRect.value.width,
+        height: chunkRect.value.height,
+      },
+      {
+        x: cell.x,
+        y: cell.y,
+        width: 1,
+        height: 1,
       }
-    });
+    );
+    if (isInside) {
+      visible.push(cell);
+    }
   });
-
   return visible;
-});
+};
 
+const visibleCells = ref<MapCell[]>([]);
+watch(
+  [chunkRect, allCells],
+  () => {
+    visibleCells.value = getVisibleCells();
+  },
+  { immediate: true, deep: true }
+);
 const debugOptions = useDebugOptions();
 
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
 const render = (graphics: Graphics) => {
-  console.log("render");
   graphics.clear();
   visibleCells.value.forEach((cell) => {
     const { x, y } = toScreenCoords(cell);
@@ -149,6 +158,24 @@ const render = (graphics: Graphics) => {
         :style="{ fill: 'white', fontSize: 12 }"
       >
         x:{{ cell.x }}\ny:{{ cell.y }}
+      </text>
+    </container>
+  </template>
+
+  <template v-if="debugOptions.mapBitmask">
+    <container
+      v-for="cell in visibleCells"
+      :key="`${cell.x}:${cell.y}`"
+      :position="toScreenCoords(cell)"
+    >
+      <text
+        :anchor="0.5"
+        :x="CELL_SIZE / 2"
+        :y="CELL_SIZE / 2"
+        :scale="0.5"
+        :style="{ fill: 'white', fontSize: 12 }"
+      >
+        bitMask{{ cell.bitMask }}\nterrain:{{ cell.type }}
       </text>
     </container>
   </template>

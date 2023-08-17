@@ -1,7 +1,9 @@
-import { Nullable, Point, pointToIndex, randomInt } from '@dungeon-crawler/shared';
+import { Nullable, Point, dist, pointToIndex, randomInt } from '@dungeon-crawler/shared';
 import type { MapGenerator } from './types';
 import { GameState } from '../../gameState';
 import { createCell } from './cell.factory';
+import { player } from '../player/player.components';
+import { BBox, BBoxProps } from '../physics/physics.components';
 
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
@@ -33,7 +35,8 @@ export type GameMap = {
   init(state: GameState): void;
   getValidSpawnPoint(): Point;
   getCellAt(pt: Point): MapCell;
-  serialize(): SerializedMap;
+  getNearby(pt: Point, radius: number): MapCell[];
+  serialize(players: { bbox: BBoxProps }[]): SerializedMap;
 };
 
 export type SerializedMap = {
@@ -41,7 +44,7 @@ export type SerializedMap = {
   width: number;
   height: number;
   tileset: Tileset;
-  rows: MapCell[][];
+  cells: MapCell[];
 };
 
 // Indicates the diff necessary to get neighbors cell
@@ -112,6 +115,7 @@ export const createGameMap = ({
       height,
       startsAt: { x: 0, y: 0 }
     });
+
     const rows: MapCell[][] = [];
     for (let y = 0; y < height; y++) {
       const row: MapCell[] = [];
@@ -165,13 +169,27 @@ export const createGameMap = ({
       };
     },
 
-    serialize() {
+    getNearby({ x, y }, radius) {
+      const minX = Math.floor(x - radius);
+      const minY = Math.floor(y - radius);
+      const maxX = Math.ceil(x + radius);
+      const maxY = Math.ceil(y + radius);
+      return rows
+        .slice(minY, maxY)
+        .map(row => row.slice(minX, maxX))
+        .flat()
+        .filter(cell => dist(cell, { x, y }) <= radius);
+    },
+
+    serialize(players) {
+      const visible = players.map(player => map.getNearby(player.bbox, 10));
+
       return {
         id: 1,
         width,
         height,
         tileset,
-        rows
+        cells: [...new Set(visible.flat())]
       };
     }
   };

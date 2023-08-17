@@ -1,8 +1,8 @@
-import { useGameState } from "./useGameState";
 import { useSafeInject } from "./useSafeInject";
 
 type DebugOptions = {
   mapCoords: boolean;
+  mapBitmask: boolean;
   obstacles: boolean;
   obstaclesMinkowski: boolean;
 };
@@ -14,6 +14,7 @@ export const DEBUG_OPTIONS_INJECTION_KEY = Symbol(
 export const useDebugOptionsProvider = () => {
   const options = useStorage("debug-options", {
     mapCoords: false,
+    mapBitmask: false,
     obstacles: false,
     obstaclesMinkowski: false,
   });

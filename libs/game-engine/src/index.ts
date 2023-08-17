@@ -110,7 +110,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
     const serialized: SerializedGameState = {
       timestamp: Date.now(),
-      map: state.map.serialize(),
+      map: state.map.serialize(players),
       players: Object.fromEntries(players.map(e => [e.entity_id, e])),
       obstacles: Object.fromEntries(obstacles.map(e => [e.entity_id, e]))
     };

@@ -102,6 +102,10 @@ onMounted(() => {
         ><input v-model="options.mapCoords" type="checkbox" />Display map
         coordinates
       </label>
+      <label
+        ><input v-model="options.mapBitmask" type="checkbox" />Display map
+        bitmask
+      </label>
       <label>
         <input v-model="options.obstacles" type="checkbox" />Display nearby
         obstacles</label
