@@ -10,6 +10,7 @@ import { Point } from '@dungeon-crawler/shared';
 import { FrameObject, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
 import { useSprite } from '../composables/useAssetCache';
+import { useAutoDestroy } from '../composables/useAutoDestroy';
 
 const props = defineProps<{
   player: SerializedGameState['players'][number];
@@ -66,11 +67,14 @@ watch(
   },
   { immediate: true }
 );
+
+const { autoDestroyRef } = useAutoDestroy();
 </script>
 
 <template>
   <animated-sprite
     v-if="textures?.length"
+    :ref="autoDestroyRef"
     :textures="(textures as unknown as Texture[])"
     :position="screenPosition"
     :scale-x="player.orientation === 'left' ? -1 : 1"
@@ -100,3 +104,4 @@ watch(
     "
   /> -->
 </template>
+../composables/useAutoDestroy

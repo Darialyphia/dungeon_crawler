@@ -33,7 +33,8 @@ export const createPlayer = (
     .createEntity()
     .with(
       bbox.component({
-        ...addVector(state.map.getEntrance(), { x: 0.5, y: 0.5 }),
+        //fixes artifact on map tiles
+        ...addVector(state.map.getEntrance(), { x: 0.501, y: 0.501 }),
         width: 1,
         height: 1
       })

@@ -15,8 +15,9 @@ export const createPortal = (
     .createEntity()
     .with(
       bbox.component({
-        x: x + 0.5,
-        y: y + 0.5,
+        //fixes artifact on map tiles
+        x: x + 0.501,
+        y: y + 0.501,
         width: 1,
         height: 1.5
       })

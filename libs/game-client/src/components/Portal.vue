@@ -6,7 +6,7 @@ import { FrameObject, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
 import { useSprite } from '../composables/useAssetCache';
-import { AnimatedSprite } from 'pixi.js';
+import { useAutoDestroy } from '../composables/useAutoDestroy';
 
 const props = defineProps<{
   portal: SerializedGameState['portals'][number];
@@ -43,49 +43,45 @@ const isInteractable = computed(
   () => distance.value <= props.portal.interactive.activationRange
 );
 
-const animatedSprite = ref<AnimatedSprite>();
-onBeforeUnmount(() => {
-  if (!animatedSprite.value?.destroyed) {
-    animatedSprite.value?.destroy();
-  }
-});
+const { autoDestroyRef } = useAutoDestroy();
 </script>
 
 <template>
-  <animated-sprite
-    v-if="textures?.length"
-    ref="animatedSprite"
-    :textures="(textures as unknown as Texture[])"
-    :position="screenPosition"
-    :anchor="0.5"
-    :z-index="props.portal.bbox.y"
-    playing
-  />
-
-  <graphics
-    v-if="isInteractable"
-    :x="0"
-    :y="0"
-    :position="{ x: screenPosition.x, y: screenPosition.y - 45 }"
-    :z-index="9999"
-    @render="
-      graphics => {
-        graphics.clear();
-
-        graphics.beginFill(0x000000, 0.5);
-        graphics.drawRoundedRect(0, 0, 80, 20, 3);
-        graphics.endFill();
-      }
-    "
-  >
-    <text
+  <container :ref="autoDestroyRef">
+    <animated-sprite
+      v-if="textures?.length"
+      :textures="(textures as unknown as Texture[])"
+      :position="screenPosition"
       :anchor="0.5"
-      :scale="0.5"
-      :x="40"
-      :y="10"
-      :style="{ fill: 'white', fontSize: 12, fontFamily: 'monospace' }"
+      :z-index="props.portal.bbox.y"
+      playing
+    />
+
+    <graphics
+      v-if="isInteractable"
+      :x="0"
+      :y="0"
+      :position="{ x: screenPosition.x, y: screenPosition.y - 45 }"
+      :z-index="9999"
+      @render="
+        graphics => {
+          graphics.clear();
+
+          graphics.beginFill(0x000000, 0.5);
+          graphics.drawRoundedRect(0, 0, 80, 20, 3);
+          graphics.endFill();
+        }
+      "
     >
-      press F to enter
-    </text>
-  </graphics>
+      <text
+        :anchor="0.5"
+        :scale="0.5"
+        :x="40"
+        :y="10"
+        :style="{ fill: 'white', fontSize: 12, fontFamily: 'monospace' }"
+      >
+        press F to enter
+      </text>
+    </graphics>
+  </container>
 </template>

@@ -23,6 +23,9 @@ const averagePing = computed(() =>
 onTick(() => {
   fps.value = app.value.ticker.FPS;
 
+  if (fps.value < 25) {
+    console.warn(`low fps: ${fps.value.toFixed()}`);
+  }
   // if (app.value.ticker.elapsedMS > WARNING_THRESHOLD) {
   //   console.warn('elapsed time over frame budget : ', app.value.ticker.elapsedMS);
   // }

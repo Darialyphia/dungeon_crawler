@@ -8,21 +8,21 @@ import { MaybeRef } from 'vue';
 type BundlesCache = Record<AssetBundle, any>;
 
 export const ASSET_CACHE_INJECTION_KEY = Symbol('asset_cache') as InjectionKey<{
-  bundles: Ref<BundlesCache>;
+  bundles: BundlesCache;
   loadBundle(name: AssetBundle): Promise<void>;
 }>;
 
 export const useAssetCacheProvider = () => {
-  const bundles = ref<BundlesCache>({
+  const bundles: BundlesCache = {
     [ASSET_BUNDLES.SPRITES]: null,
     [ASSET_BUNDLES.TILESETS]: null
-  });
+  };
 
   const api = {
     bundles,
     async loadBundle(name: AssetBundle) {
-      if (!bundles.value[name]) {
-        bundles.value[name] = await Assets.loadBundle(name);
+      if (!bundles[name]) {
+        bundles[name] = await Assets.loadBundle(name);
       }
     }
   };
@@ -40,7 +40,7 @@ export const useSprite = (spriteName: MaybeRef<string>) => {
   loadBundle(ASSET_BUNDLES.SPRITES);
 
   const sheet = computed(() => {
-    return bundles.value[ASSET_BUNDLES.SPRITES]?.[unref(spriteName)];
+    return bundles[ASSET_BUNDLES.SPRITES]?.[unref(spriteName)];
   });
 
   return { sheet };

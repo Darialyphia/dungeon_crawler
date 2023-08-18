@@ -9,7 +9,7 @@ import { Spritesheet } from 'pixi.js';
 import { useMapTextureBuilder } from '../composables/useMapTextureBuilder';
 import { useDebugOptions } from '../composables/useDebugOptions';
 import { Container } from 'pixi.js';
-import { MapCell } from '@dungeon-crawler/game-engine/src/features/map/map.factory';
+import { MapCell } from '@dungeon-crawler/game-engine';
 
 const props = defineProps<{
   spritesheet: Spritesheet;
@@ -101,20 +101,21 @@ watch(
 );
 
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
-const render = (graphics: Graphics, cell: MapCell) => {
+const render = (graphics: Graphics) => {
   graphics.clear();
+  visibleCells.value.forEach(cell => {
+    const { x, y } = toScreenCoords(cell);
 
-  const { x, y } = toScreenCoords(cell);
+    const texture = textureBuilder.getBitmaskTexture(cell);
 
-  const texture = textureBuilder.getBitmapTexture(cell);
+    graphics.beginTextureFill({
+      texture
+    });
+    graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
 
-  graphics.beginTextureFill({
-    texture
+    renderFogOfWar(cell, graphics);
+    graphics.endFill();
   });
-  graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
-
-  renderFogOfWar(cell, graphics);
-  graphics.endFill();
 };
 
 const textures = computed(() => Object.values(props.spritesheet.textures));
@@ -178,11 +179,7 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
       }
     "
   />
-  <graphics
-    v-for="cell in visibleCells"
-    :key="`${cell.x}:${cell.y}`"
-    @render="(graphics: Graphics) => render(graphics, cell)"
-  />
+  <graphics @render="render" />
   <template v-if="debugOptions.mapCoords">
     <container
       v-for="cell in visibleCells"

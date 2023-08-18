@@ -28,7 +28,7 @@ class MyRBush extends RBush<ECSEntity & BBox> {
   }
 }
 
-export const createGameState = (): GameState => {
+export const createInstance = (): GameState => {
   const state: GameState = {
     isRunning: false,
     tree: new MyRBush(),
@@ -58,4 +58,8 @@ export const createGameState = (): GameState => {
   state.world.addSystem('portals', portalsSystem());
 
   return state;
+};
+
+export const createGameState = () => {
+  return createInstance();
 };

@@ -171,7 +171,7 @@ export const createGameMap = ({
     }))
   );
 
-  const exitDistance = 40;
+  const exitDistance = 50;
   const exitCandidates = finalRows
     .flatMap(row => row.flat())
     .filter(cell => cell.dijakstra === exitDistance);

@@ -39,7 +39,7 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
 
   useEventListener(document, 'wheel', e => {
     const diff = -e.deltaY / 1000;
-    scale.value = clamp(scale.value + diff, 1, 3);
+    scale.value = clamp(scale.value + diff, 1, 4);
   });
 
   const clampPivot = ({ x, y }: Point) => {

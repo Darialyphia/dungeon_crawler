@@ -61,7 +61,7 @@ export const useMapTextureBuilder = (spritesheet: Spritesheet) => {
 
   return {
     // getTextureFor,
-    getBitmapTexture(cell: MapCell) {
+    getBitmaskTexture(cell: MapCell) {
       const bitMaskIndex =
         BITMASK_TO_INDEX_DICT[cell.bitMask as keyof typeof BITMASK_TO_INDEX_DICT];
 
