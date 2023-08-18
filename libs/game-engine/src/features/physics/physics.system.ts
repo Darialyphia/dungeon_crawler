@@ -10,8 +10,10 @@ import { ECSSystem } from '../ecs/ECSSystem';
 import {
   BBox,
   BBoxProps,
+  Collidable,
   Velocity,
   bbox,
+  collidable,
   rectToBBox,
   updatePosition,
   velocity
@@ -20,7 +22,10 @@ import * as O from 'fp-ts/Option';
 import { GameState } from '../../gameState';
 import {} from '../ecs/ECSEntity';
 
-export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox, Velocity]> => {
+export const physicsSystem = ({
+  map,
+  tree
+}: GameState): ECSSystem<[Collidable, BBox, Velocity]> => {
   const computeNewPosition = (e: BBox & Velocity, delta: number) =>
     addVector(e.bbox, setMagnitude(e.velocity.target, (e.velocity.speed * delta) / 1000));
 
@@ -83,7 +88,7 @@ export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox, Veloci
   };
 
   return {
-    target: [bbox.brand, velocity.brand],
+    target: [collidable.brand, bbox.brand, velocity.brand],
     run(_, props, entities) {
       entities.forEach(e => {
         if (!velocity.has(e)) return;
@@ -91,15 +96,16 @@ export const physicsSystem = ({ map, tree }: GameState): ECSSystem<[BBox, Veloci
         const newPos = computeNewPosition(e, props.delta);
         let newBbox = clampToMapEdges(e.bbox, newPos);
 
-        const collidables = getCollidables(e.bbox, newBbox);
+        const nearby = getCollidables(e.bbox, newBbox);
 
-        collidables.forEach(collidable => {
-          if (collidable.entity_id === e.entity_id) return;
+        nearby.forEach(element => {
+          if (collidable.has(element)) return;
+          if (element.entity_id === e.entity_id) return;
 
           const closest = getClosestIntersection({
             oldBbox: e.bbox,
             newBbox,
-            collidable: collidable.bbox,
+            collidable: element.bbox,
             coefficient: 0.9
           });
 

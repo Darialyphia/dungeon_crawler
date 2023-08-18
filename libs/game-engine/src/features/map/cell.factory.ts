@@ -1,11 +1,11 @@
 import { Point } from '@dungeon-crawler/shared';
 import { GameState } from '../../gameState';
-import { BBox, bbox } from '../physics/physics.components';
+import { BBox, Collidable, bbox, collidable } from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
 import { CELL_TYPES, CellType } from './map.factory';
 import { obstacle } from './map.components';
 
-export type CellEntity = ECSEntity & BBox;
+export type CellEntity = ECSEntity & BBox & Collidable;
 
 export const createCell = (
   state: GameState,
@@ -27,6 +27,7 @@ export const createCell = (
         isWater: type === CELL_TYPES.WATER
       })
     )
+    .with(collidable.component(true))
     .build();
 
   state.tree.insert(entity);

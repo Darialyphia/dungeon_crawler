@@ -28,10 +28,7 @@ export const updatePosition = (bbox: BBoxProps, { x, y }: Point): BBoxProps =>
     height: bbox.height
   });
 
-export const updateSize = (
-  bbox: BBoxProps,
-  { width, height }: Size
-): BBoxProps =>
+export const updateSize = (bbox: BBoxProps, { width, height }: Size): BBoxProps =>
   rectToBBox({
     x: bbox.x,
     y: bbox.y,
@@ -39,21 +36,17 @@ export const updateSize = (
     height
   });
 
-export const bbox = defineECSComponent<'bbox', BBoxProps, Rectangle>(
-  'bbox',
-  rectToBBox
-);
+export const bbox = defineECSComponent<'bbox', BBoxProps, Rectangle>('bbox', rectToBBox);
 export type BBox = inferComponent<typeof bbox>;
 
 /**
  * Velocity Component
  */
 
-export const velocity = defineECSComponent<
+export const velocity = defineECSComponent<'velocity', { target: Point; speed: number }>(
   'velocity',
-  { target: Point; speed: number }
->('velocity', vel => vel);
-
+  vel => vel
+);
 export type Velocity = inferComponent<typeof velocity>;
 
 /**
@@ -65,5 +58,13 @@ export const orientation = defineECSComponent<'orientation', OrientationType>(
   'orientation',
   o => o
 );
-
 export type Orientation = inferComponent<typeof orientation>;
+
+/**
+ * Collidable component
+ */
+export const collidable = defineECSComponent<'collidable', true, any>(
+  'collidable',
+  () => true
+);
+export type Collidable = inferComponent<typeof collidable>;

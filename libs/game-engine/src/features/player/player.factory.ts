@@ -7,7 +7,9 @@ import {
   bbox,
   velocity,
   orientation,
-  Velocity
+  Velocity,
+  collidable,
+  Collidable
 } from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
 
@@ -20,7 +22,8 @@ export type PlayerEntity = ECSEntity &
   PlayerState &
   BBox &
   Velocity &
-  Orientation;
+  Orientation &
+  Collidable;
 
 export const createPlayer = (
   state: GameState,
@@ -44,6 +47,7 @@ export const createPlayer = (
     .with(orientation.component('right'))
     .with(player.component({ id }))
     .with(playerState.component('idle'))
+    .with(collidable.component(true))
     .build();
 
   state.tree.insert(entity);
