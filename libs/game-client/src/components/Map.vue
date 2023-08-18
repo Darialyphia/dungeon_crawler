@@ -1,15 +1,15 @@
 <script setup lang="ts">
-import { useGameState } from "../composables/useGameState";
-import { useCamera } from "../composables/useCamera";
-import { CELL_SIZE } from "../utils/constants";
-import { BBox, Nullable, Point, rectToBBox } from "@dungeon-crawler/shared";
-import { Graphics, Texture } from "pixi.js";
-import { toScreenCoords } from "../utils/helpers";
-import { Spritesheet } from "pixi.js";
-import { useMapTextureBuilder } from "../composables/useMapTextureBuilder";
-import { useDebugOptions } from "../composables/useDebugOptions";
-import { Container } from "pixi.js";
-import { MapCell } from "@dungeon-crawler/game-engine/src/features/map/map.factory";
+import { useGameState } from '../composables/useGameState';
+import { useCamera } from '../composables/useCamera';
+import { CELL_SIZE } from '../utils/constants';
+import { BBox, Nullable, Point, rectToBBox } from '@dungeon-crawler/shared';
+import { Graphics, Texture } from 'pixi.js';
+import { toScreenCoords } from '../utils/helpers';
+import { Spritesheet } from 'pixi.js';
+import { useMapTextureBuilder } from '../composables/useMapTextureBuilder';
+import { useDebugOptions } from '../composables/useDebugOptions';
+import { Container } from 'pixi.js';
+import { MapCell } from '@dungeon-crawler/game-engine/src/features/map/map.factory';
 
 const props = defineProps<{
   spritesheet: Spritesheet;
@@ -23,7 +23,7 @@ const allCells = ref<Map<string, MapCell>>(new Map());
 const getKey = ({ x, y }: Point) => `${x}:${y}`;
 
 watchEffect(() => {
-  state.value.snapshot.map.cells.forEach((cell) => {
+  state.value.snapshot.map.cells.forEach(cell => {
     const key = getKey(cell);
     if (!allCells.value.has(key)) {
       allCells.value.set(key, cell);
@@ -39,7 +39,7 @@ const gViewport = computed(() =>
     x: viewport.value.x / CELL_SIZE,
     y: viewport.value.y / CELL_SIZE,
     width: viewport.value.width / CELL_SIZE,
-    height: viewport.value.height / CELL_SIZE,
+    height: viewport.value.height / CELL_SIZE
   })
 );
 
@@ -48,7 +48,7 @@ const computeChunkRect = (): BBox => {
     x: gViewport.value.x,
     y: gViewport.value.y,
     width: gViewport.value.width * 2,
-    height: gViewport.value.height * 2,
+    height: gViewport.value.height * 2
   });
 
   return r;
@@ -63,12 +63,7 @@ const isAtChunkedge = () => {
   const top = gViewport.value.minY - chunkRect.value.minY;
   const bottom = chunkRect.value.maxY - gViewport.value.maxY;
 
-  return (
-    left < threshold ||
-    right < threshold ||
-    top < threshold ||
-    bottom < threshold
-  );
+  return left < threshold || right < threshold || top < threshold || bottom < threshold;
 };
 
 watchEffect(() => {
@@ -108,13 +103,13 @@ watch(
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
 const render = (graphics: Graphics) => {
   graphics.clear();
-  visibleCells.value.forEach((cell) => {
+  visibleCells.value.forEach(cell => {
     const { x, y } = toScreenCoords(cell);
 
     const texture = textureBuilder.getBitmapTexture(cell);
 
     graphics.beginTextureFill({
-      texture,
+      texture
     });
     graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
 
@@ -133,12 +128,8 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
 
   const topLeft = allCells.value.get(getKey({ x: cell.x - 1, y: cell.y - 1 }));
   const topRight = allCells.value.get(getKey({ x: cell.x + 1, y: cell.y - 1 }));
-  const bottomLeft = allCells.value.get(
-    getKey({ x: cell.x - 1, y: cell.y + 1 })
-  );
-  const bottomRight = allCells.value.get(
-    getKey({ x: cell.x + 1, y: cell.y + 1 })
-  );
+  const bottomLeft = allCells.value.get(getKey({ x: cell.x - 1, y: cell.y + 1 }));
+  const bottomRight = allCells.value.get(getKey({ x: cell.x + 1, y: cell.y + 1 }));
 
   let texture: Nullable<Texture> = null;
   if (!left && !bottom) {
@@ -171,7 +162,7 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
     const { x, y } = toScreenCoords(cell);
 
     graphics.beginTextureFill({
-      texture,
+      texture
     });
     graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
   }
@@ -221,6 +212,23 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
         :style="{ fill: 'white', fontSize: 12 }"
       >
         bitMask{{ cell.bitMask }}\nterrain:{{ cell.type }}
+      </text>
+    </container>
+  </template>
+  <template v-if="debugOptions.mapDijakstra">
+    <container
+      v-for="cell in visibleCells"
+      :key="`${cell.x}:${cell.y}`"
+      :position="toScreenCoords(cell)"
+    >
+      <text
+        :anchor="0.5"
+        :x="CELL_SIZE / 2"
+        :y="CELL_SIZE / 2"
+        :scale="0.5"
+        :style="{ fill: 'white', fontSize: 12 }"
+      >
+        {{ cell.dijakstra ?? 'X' }}
       </text>
     </container>
   </template>

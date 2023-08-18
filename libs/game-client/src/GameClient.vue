@@ -102,6 +102,10 @@ onMounted(() => {
         Display map bitmask
       </label>
       <label>
+        <input v-model="options.mapDijakstra" type="checkbox" />
+        Display map Dijakstra distance
+      </label>
+      <label>
         <input v-model="options.obstacles" type="checkbox" />
         Display nearby obstacles
       </label>

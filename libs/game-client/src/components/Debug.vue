@@ -19,13 +19,13 @@ const averagePing = computed(() =>
     history.value.reduce((total, curr) => total + curr.snapshot, 0) / history.value.length
   ).toFixed(0)
 );
-const WARNING_THRESHOLD = 18;
+// const WARNING_THRESHOLD = 18;
 onTick(() => {
   fps.value = app.value.ticker.FPS;
 
-  if (app.value.ticker.elapsedMS > WARNING_THRESHOLD) {
-    console.warn('elapsed time over frame budget : ', app.value.ticker.elapsedMS);
-  }
+  // if (app.value.ticker.elapsedMS > WARNING_THRESHOLD) {
+  //   console.warn('elapsed time over frame budget : ', app.value.ticker.elapsedMS);
+  // }
 });
 
 const roundedViewport = computed(() => ({

@@ -3,6 +3,7 @@ import type { MapGenerator } from './types';
 import { GameState } from '../../gameState';
 import { createCell } from './cell.factory';
 import { BBoxProps } from '../physics/physics.components';
+import { makeDijakstraMap } from './dijakstraMap';
 
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
@@ -19,6 +20,7 @@ type GeneratedCell = Point & {
 export type MapCell = GeneratedCell & {
   type: CellType;
   bitMask: number;
+  dijakstra: number | null;
 };
 
 export type MapFactoryOptions = {
@@ -32,6 +34,7 @@ export type GameMap = {
   width: number;
   height: number;
   init(state: GameState): void;
+  getEntrance(): Point;
   getValidSpawnPoint(): Point;
   getCellAt(pt: Point): MapCell;
   getNearby(pt: Point, radius: number): MapCell[];
@@ -61,71 +64,77 @@ const weights = [
 32,  16, 8
 ] as const
 
+const getRandomWalkableCell = (
+  rows: (Point & { type: CellType })[][],
+  width: number,
+  height: number
+) => {
+  let point = { x: randomInt(width - 1), y: randomInt(height - 1) };
+  let cell = rows[point.y][point.x];
+
+  while (cell.type !== CELL_TYPES.GROUND) {
+    point = { x: randomInt(width), y: randomInt(height) };
+    cell = rows[point.y][point.x];
+  }
+
+  return point;
+};
+
 export const createGameMap = ({
   width,
   height,
   tileset,
   generator
 }: MapFactoryOptions): GameMap => {
-  const makeRows = () => {
-    const getBitMask = ({ x, y }: Point, type: CellType) => {
-      const isMatch = (ttype: CellType) => ttype === type;
+  const cells = generator.getChunk({
+    width,
+    height,
+    startsAt: { x: 0, y: 0 }
+  });
 
-      const getCellWithDiff = (neighborIndex: number): GeneratedCell => {
-        const [[diffX, diffY], fallback] = neighborCoords[neighborIndex];
-        const index = pointToIndex({ x: x + diffX, y: y + diffY }, width);
+  const getBitMask = ({ x, y }: Point, type: CellType, rows: GeneratedCell[][]) => {
+    const isMatch = (ttype: CellType) => ttype === type;
 
-        return cells[index] ?? getCellWithDiff(fallback);
-      };
+    const getCellWithDiff = (neighborIndex: number): GeneratedCell => {
+      const [[diffX, diffY], fallback] = neighborCoords[neighborIndex];
+      const index = pointToIndex({ x: x + diffX, y: y + diffY }, width);
 
-      const [
-        topLeft,
-        top,
-        topRight,
-        left,
-        center,
-        right,
-        bottomLeft,
-        bottom,
-        bottomRight
-      ] = neighborCoords.map((_, index) => getCellWithDiff(index).type);
-
-      // for a corner to match, both of its sides must match as well
-      // see https://gamedevelopment.tutsplus.com/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673t
-      const weight = [
-        isMatch(topLeft) && isMatch(top) && isMatch(left),
-        isMatch(top),
-        isMatch(topRight) && isMatch(top) && isMatch(right),
-        isMatch(left),
-        isMatch(center),
-        isMatch(right),
-        isMatch(bottomLeft) && isMatch(bottom) && isMatch(left),
-        isMatch(bottom),
-        isMatch(bottomRight) && isMatch(bottom) && isMatch(right)
-      ].reduce((weight, match, index) => {
-        return match ? weight + weights[index] : weight;
-      }, 0);
-
-      return weight;
+      return rows[y + diffY]?.[x + diffX] ?? getCellWithDiff(fallback);
     };
 
-    const cells = generator.getChunk({
-      width,
-      height,
-      startsAt: { x: 0, y: 0 }
-    });
+    const [topLeft, top, topRight, left, center, right, bottomLeft, bottom, bottomRight] =
+      neighborCoords.map((_, index) => getCellWithDiff(index).type);
 
-    const rows: MapCell[][] = [];
+    // for a corner to match, both of its sides must match as well
+    // see https://gamedevelopment.tutsplus.com/how-to-use-tile-bitmasking-to-auto-tile-your-level-layouts--cms-25673t
+    const weight = [
+      isMatch(topLeft) && isMatch(top) && isMatch(left),
+      isMatch(top),
+      isMatch(topRight) && isMatch(top) && isMatch(right),
+      isMatch(left),
+      isMatch(center),
+      isMatch(right),
+      isMatch(bottomLeft) && isMatch(bottom) && isMatch(left),
+      isMatch(bottom),
+      isMatch(bottomRight) && isMatch(bottom) && isMatch(right)
+    ].reduce((weight, match, index) => {
+      return match ? weight + weights[index] : weight;
+    }, 0);
+
+    return weight;
+  };
+
+  const makeRows = () => {
+    const rows: Omit<MapCell, 'dijakstra' | 'bitMask'>[][] = [];
     for (let y = 0; y < height; y++) {
-      const row: MapCell[] = [];
+      const row: Omit<MapCell, 'dijakstra' | 'bitMask'>[] = [];
       rows.push(row);
       for (let x = 0; x < width; x++) {
         const cell = cells[pointToIndex({ x, y }, width)];
         row.push({
           x,
           y,
-          type: cell.type,
-          bitMask: getBitMask({ x, y }, cell.type)
+          type: cell.type
         });
       }
     }
@@ -135,9 +144,44 @@ export const createGameMap = ({
 
   const rows = makeRows();
 
+  const entranceCoords = getRandomWalkableCell(rows, width, height);
+  const entrance = rows[entranceCoords.y][entranceCoords.x]!;
+  const now = performance.now();
+  const dijakstraRows = makeDijakstraMap(
+    {
+      rows,
+      sentry: entrance,
+      isWalkable: cell => cell.type === CELL_TYPES.GROUND
+    },
+    (cell, distance) => {
+      if (distance === null && cell.type === CELL_TYPES.GROUND) {
+        return { ...cell, type: CELL_TYPES.WALL, dijakstra: distance };
+      }
+
+      return { ...cell, dijakstra: distance };
+    }
+  );
+
+  const finalRows = dijakstraRows.map(row =>
+    row.map(cell => ({
+      ...cell,
+      bitMask: getBitMask({ x: cell.x, y: cell.y }, cell.type, dijakstraRows)
+    }))
+  );
+
+  console.log(`creating row took ${performance.now() - now}ms`);
+
   const map: GameMap = {
     width,
     height,
+    getValidSpawnPoint() {
+      const point = getRandomWalkableCell(finalRows, width, height);
+
+      return {
+        x: point.x + 0.5,
+        y: point.y + 0.5
+      };
+    },
 
     init(state) {
       rows.forEach(row => {
@@ -150,22 +194,7 @@ export const createGameMap = ({
     },
 
     getCellAt({ x, y }) {
-      return rows[y][x];
-    },
-
-    getValidSpawnPoint() {
-      let point = { x: randomInt(width), y: randomInt(height) };
-      let cell = map.getCellAt(point);
-
-      while (cell.type !== CELL_TYPES.GROUND) {
-        point = { x: randomInt(width), y: randomInt(height) };
-        cell = map.getCellAt(point);
-      }
-
-      return {
-        x: point.x + 0.5,
-        y: point.y + 0.5
-      };
+      return finalRows[y][x];
     },
 
     getNearby({ x, y }, radius) {
@@ -173,11 +202,15 @@ export const createGameMap = ({
       const minY = Math.floor(y - radius);
       const maxX = Math.ceil(x + radius);
       const maxY = Math.ceil(y + radius);
-      return rows
+      return finalRows
         .slice(minY, maxY)
         .map(row => row.slice(minX, maxX))
         .flat()
         .filter(cell => dist(cell, { x, y }) <= radius);
+    },
+
+    getEntrance() {
+      return entrance;
     },
 
     serialize(players) {

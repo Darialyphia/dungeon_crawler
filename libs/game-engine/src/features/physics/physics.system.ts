@@ -99,7 +99,7 @@ export const physicsSystem = ({
         const nearby = getCollidables(e.bbox, newBbox);
 
         nearby.forEach(element => {
-          if (collidable.has(element)) return;
+          if (!collidable.has(element)) return;
           if (element.entity_id === e.entity_id) return;
 
           const closest = getClosestIntersection({

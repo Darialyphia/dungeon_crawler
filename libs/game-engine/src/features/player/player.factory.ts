@@ -33,7 +33,7 @@ export const createPlayer = (
     .createEntity()
     .with(
       bbox.component({
-        ...state.map.getValidSpawnPoint(),
+        ...state.map.getEntrance(),
         width: 1,
         height: 1
       })

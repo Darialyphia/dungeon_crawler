@@ -3,6 +3,7 @@ import { useSafeInject } from './useSafeInject';
 type DebugOptions = {
   mapCoords: boolean;
   mapBitmask: boolean;
+  mapDijakstra: boolean;
   obstacles: boolean;
   obstaclesMinkowski: boolean;
 };
@@ -15,6 +16,7 @@ export const useDebugOptionsProvider = () => {
   const options = useStorage('debug-options', {
     mapCoords: false,
     mapBitmask: false,
+    mapDijakstra: false,
     obstacles: false,
     obstaclesMinkowski: false
   });
