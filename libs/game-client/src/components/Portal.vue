@@ -6,6 +6,7 @@ import { FrameObject, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
 import { useSprite } from '../composables/useAssetCache';
+import { AnimatedSprite } from 'pixi.js';
 
 const props = defineProps<{
   portal: SerializedGameState['portals'][number];
@@ -41,11 +42,19 @@ const distance = computed(() =>
 const isInteractable = computed(
   () => distance.value <= props.portal.interactive.activationRange
 );
+
+const animatedSprite = ref<AnimatedSprite>();
+onBeforeUnmount(() => {
+  if (!animatedSprite.value?.destroyed) {
+    animatedSprite.value?.destroy();
+  }
+});
 </script>
 
 <template>
   <animated-sprite
     v-if="textures?.length"
+    ref="animatedSprite"
     :textures="(textures as unknown as Texture[])"
     :position="screenPosition"
     :anchor="0.5"
