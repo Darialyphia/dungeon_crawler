@@ -1,9 +1,9 @@
 import { Point } from '@dungeon-crawler/shared';
-import { GameState } from '../../gameState';
-import { BBox, Collidable, bbox, collidable } from '../physics/physics.components';
-import { ECSEntity } from '../ecs/ECSEntity';
+import { GameState } from '../../../gameState';
+import { BBox, Collidable, bbox, collidable } from '../../physics/physics.components';
+import { ECSEntity } from '../../ecs/ECSEntity';
 import { CELL_TYPES, CellType } from './map.factory';
-import { obstacle } from './map.components';
+import { obstacle } from '../map.components';
 
 export type CellEntity = ECSEntity & BBox & Collidable;
 

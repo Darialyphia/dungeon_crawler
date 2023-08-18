@@ -1,9 +1,10 @@
 import { Point, dist, pointToIndex, randomInt } from '@dungeon-crawler/shared';
-import type { MapGenerator } from './types';
-import { GameState } from '../../gameState';
+import type { MapGenerator } from '../types';
+import { GameState } from '../../../gameState';
 import { createCell } from './cell.factory';
-import { BBoxProps } from '../physics/physics.components';
-import { makeDijakstraMap } from './dijakstraMap';
+import { BBoxProps } from '../../physics/physics.components';
+import { makeDijakstraMap } from '../dijakstraMap';
+import { createPortal } from './portal.factory';
 
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
@@ -35,6 +36,7 @@ export type GameMap = {
   height: number;
   init(state: GameState): void;
   getEntrance(): Point;
+  getExit(): Point;
   getValidSpawnPoint(): Point;
   getCellAt(pt: Point): MapCell;
   getNearby(pt: Point, radius: number): MapCell[];
@@ -146,7 +148,7 @@ export const createGameMap = ({
 
   const entranceCoords = getRandomWalkableCell(rows, width, height);
   const entrance = rows[entranceCoords.y][entranceCoords.x]!;
-  const now = performance.now();
+
   const dijakstraRows = makeDijakstraMap(
     {
       rows,
@@ -169,7 +171,14 @@ export const createGameMap = ({
     }))
   );
 
-  console.log(`creating row took ${performance.now() - now}ms`);
+  const exitDistance = 10;
+  const exitCandidates = finalRows
+    .flatMap(row => row.flat())
+    .filter(cell => cell.dijakstra === exitDistance);
+  if (exitCandidates.length === 0) {
+    console.warn('no exit candidate !');
+  }
+  const exit = exitCandidates[randomInt(exitCandidates.length - 1)];
 
   const map: GameMap = {
     width,
@@ -184,13 +193,16 @@ export const createGameMap = ({
     },
 
     init(state) {
-      rows.forEach(row => {
+      finalRows.forEach(row => {
         row.forEach(cell => {
           if (cell.type !== CELL_TYPES.GROUND) {
             createCell(state, cell);
           }
         });
       });
+
+      createPortal(state, { ...entrance, isEntrance: true, isExit: false });
+      createPortal(state, { ...exit, isEntrance: false, isExit: true });
     },
 
     getCellAt({ x, y }) {
@@ -211,6 +223,10 @@ export const createGameMap = ({
 
     getEntrance() {
       return entrance;
+    },
+
+    getExit() {
+      return exit;
     },
 
     serialize(players) {

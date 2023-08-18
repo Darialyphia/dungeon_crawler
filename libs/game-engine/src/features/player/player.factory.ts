@@ -1,4 +1,4 @@
-import { randomInt } from '@dungeon-crawler/shared';
+import { addVector, randomInt } from '@dungeon-crawler/shared';
 import { Player, PlayerId, PlayerState, player, playerState } from './player.components';
 import { GameState } from '../../gameState';
 import {
@@ -33,7 +33,7 @@ export const createPlayer = (
     .createEntity()
     .with(
       bbox.component({
-        ...state.map.getEntrance(),
+        ...addVector(state.map.getEntrance(), { x: 0.5, y: 0.5 }),
         width: 1,
         height: 1
       })

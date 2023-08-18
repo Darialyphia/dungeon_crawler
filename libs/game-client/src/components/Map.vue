@@ -101,21 +101,20 @@ watch(
 );
 
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
-const render = (graphics: Graphics) => {
+const render = (graphics: Graphics, cell: MapCell) => {
   graphics.clear();
-  visibleCells.value.forEach(cell => {
-    const { x, y } = toScreenCoords(cell);
 
-    const texture = textureBuilder.getBitmapTexture(cell);
+  const { x, y } = toScreenCoords(cell);
 
-    graphics.beginTextureFill({
-      texture
-    });
-    graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
+  const texture = textureBuilder.getBitmapTexture(cell);
 
-    renderFogOfWar(cell, graphics);
-    graphics.endFill();
+  graphics.beginTextureFill({
+    texture
   });
+  graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
+
+  renderFogOfWar(cell, graphics);
+  graphics.endFill();
 };
 
 const textures = computed(() => Object.values(props.spritesheet.textures));
@@ -179,7 +178,11 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
       }
     "
   />
-  <graphics @render="render" />
+  <graphics
+    v-for="cell in visibleCells"
+    :key="`${cell.x}:${cell.y}`"
+    @render="(graphics: Graphics) => render(graphics, cell)"
+  />
   <template v-if="debugOptions.mapCoords">
     <container
       v-for="cell in visibleCells"
@@ -228,7 +231,7 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
         :scale="0.5"
         :style="{ fill: 'white', fontSize: 12 }"
       >
-        {{ cell.dijakstra ?? 'X' }}
+        {{ cell.dijakstra }}
       </text>
     </container>
   </template>

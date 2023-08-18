@@ -45,7 +45,7 @@ const gameState = useGameStateProvider(parsedState);
 const dispatch = useDispatchProvider(arg => emit('game:event', arg));
 const options = useDebugOptionsProvider();
 useCurrentPlayerProvider(props.playerId);
-useControls(dispatch, props.playerId);
+useControls(dispatch, props.playerId, gameState);
 
 const canvas = ref<HTMLCanvasElement>();
 onMounted(() => {

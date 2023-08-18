@@ -15,9 +15,11 @@ import {
   player,
   playerState
 } from './features/player/player.components';
-import { SerializedMap } from './features/map/map.factory';
+import { SerializedMap } from './features/map/factories/map.factory';
 import { stringify } from 'zipson';
-import { Obstacle, obstacle } from './features/map/map.components';
+import { Obstacle, obstacle, portal } from './features/map/map.components';
+import { PortalEntity } from './features/map/factories/portal.factory';
+import { Interactive, interactive } from './features/interaction/interaction.components';
 
 export type { EventMap };
 export {
@@ -25,11 +27,12 @@ export {
   type Tileset,
   type MapCell,
   CELL_TYPES
-} from './features/map/map.factory';
+} from './features/map/factories/map.factory';
 
 export type SerializedGameState = {
   map: SerializedMap;
   players: Record<ECSEntityId, ECSEntity & BBox & Orientation & Player & PlayerState>;
+  portals: Record<ECSEntityId, PortalEntity>;
   obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
   timestamp: number;
 };
@@ -97,22 +100,26 @@ export const createGame: GameFactory = ({ debug = false }) => {
     const bboxes = players
       .map(p =>
         state.tree.search({
-          minX: p.bbox.x - 8,
-          minY: p.bbox.y - 8,
-          maxX: p.bbox.x + 8,
-          maxY: p.bbox.y + 8
+          minX: p.bbox.x - 10,
+          minY: p.bbox.y - 10,
+          maxX: p.bbox.x + 10,
+          maxY: p.bbox.y + 10
         })
       )
       .flat();
     const obstacles = obstacle
       .findAll<[BBox]>(state.world, [bbox.brand])
       .filter(obstacle => bboxes.includes(obstacle));
+    const portals = portal
+      .findAll<[BBox, Interactive]>(state.world, [bbox.brand, interactive.brand])
+      .filter(obstacle => bboxes.includes(obstacle));
 
     const serialized: SerializedGameState = {
       timestamp: Date.now(),
       map: state.map.serialize(players),
       players: Object.fromEntries(players.map(e => [e.entity_id, e])),
-      obstacles: Object.fromEntries(obstacles.map(e => [e.entity_id, e]))
+      obstacles: Object.fromEntries(obstacles.map(e => [e.entity_id, e])),
+      portals: Object.fromEntries(portals.map(e => [e.entity_id, e]))
     };
 
     return stringify(serialized) as unknown as SerializedGameState;

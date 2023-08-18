@@ -1,6 +1,6 @@
 { "frames": [
    {
-    "filename": "portal-in:idle:0",
+    "filename": "portal-out:idle:0",
     "frame": { "x": 0, "y": 0, "w": 32, "h": 48 },
     "rotated": false,
     "trimmed": false,
@@ -9,7 +9,7 @@
     "duration": 200
    },
    {
-    "filename": "portal-in:idle:1",
+    "filename": "portal-out:idle:1",
     "frame": { "x": 32, "y": 0, "w": 32, "h": 48 },
     "rotated": false,
     "trimmed": false,
@@ -18,7 +18,7 @@
     "duration": 200
    },
    {
-    "filename": "portal-in:idle:2",
+    "filename": "portal-out:idle:2",
     "frame": { "x": 64, "y": 0, "w": 32, "h": 48 },
     "rotated": false,
     "trimmed": false,
@@ -27,7 +27,7 @@
     "duration": 200
    },
    {
-    "filename": "portal-in:idle:3",
+    "filename": "portal-out:idle:3",
     "frame": { "x": 96, "y": 0, "w": 32, "h": 48 },
     "rotated": false,
     "trimmed": false,
@@ -39,7 +39,7 @@
  "meta": {
   "app": "https://www.aseprite.org/",
   "version": "1.3-rc6-x64",
-  "image": "portal-in.png",
+  "image": "portal-out.png",
   "format": "RGBA8888",
   "size": { "w": 128, "h": 48 },
   "scale": "1",

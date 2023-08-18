@@ -3,7 +3,6 @@ import { SerializedGameState } from '@dungeon-crawler/game-engine';
 import { useGameState } from '../composables/useGameState';
 import { onTick } from 'vue3-pixi';
 import { interpolatePosition } from '../utils/interpolate';
-import { CELL_SIZE } from '../utils/constants';
 import { useCamera } from '../composables/useCamera';
 import { useCurrentPlayerId } from '../composables/useCurrentPlayer';
 import { toScreenCoords } from '../utils/helpers';
@@ -52,7 +51,6 @@ const interpolatePlayerPosition = () => {
   position.value = interpolated;
 };
 
-const color = computed(() => (isCurrentPlayer.value ? 'red' : 'blue'));
 onTick(interpolatePlayerPosition);
 onTick(followPlayer);
 
@@ -83,18 +81,18 @@ onMounted(async () => {
     :scale-x="player.orientation === 'left' ? -1 : 1"
     :anchor="0.5"
     playing
+    :z-index="props.player.bbox.y + 0.0000001"
   />
-  <graphics
-    v-else
+  <!-- <graphics
     :position="screenPosition"
     @render="
       graphics => {
         graphics.clear();
-        graphics.beginFill(color);
+        graphics.beginFill('red');
         graphics.drawCircle(0, 0, CELL_SIZE / 2);
         graphics.endFill();
         graphics.lineStyle({
-          color: color,
+          color: 'red',
           width: 1
         });
         graphics.drawRect(
@@ -105,12 +103,5 @@ onMounted(async () => {
         );
       }
     "
-  />
-
-  <!-- <sprite
-      v-if="sheet"
-      :texture="sheet.textures[0]"
-      :anchor="0.5"
-      :scale="2"
-    /> -->
+  /> -->
 </template>

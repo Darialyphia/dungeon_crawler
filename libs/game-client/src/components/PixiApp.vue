@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useGameState } from '../composables/useGameState';
 import Player from './Player.vue';
+import Portal from './Portal.vue';
 import Camera from './Camera.vue';
 import GameMap from './Map.vue';
 import { Assets } from 'pixi.js';
@@ -93,6 +94,11 @@ const debugOptions = useDebugOptions();
       v-for="player in state.snapshot.players"
       :key="player.entity_id"
       :player="player"
+    />
+    <Portal
+      v-for="portal in state.snapshot.portals"
+      :key="portal.entity_id"
+      :portal="portal"
     />
   </Camera>
 </template>

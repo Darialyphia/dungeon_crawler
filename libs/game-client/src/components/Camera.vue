@@ -8,7 +8,13 @@ const { position, scale, pivot } = useCameraProvider(container);
 </script>
 
 <template>
-  <container ref="container" :position="position" :scale="scale" :pivot="pivot">
+  <container
+    ref="container"
+    :position="position"
+    :scale="scale"
+    :pivot="pivot"
+    :sortable-children="true"
+  >
     <slot />
   </container>
   <Debug />

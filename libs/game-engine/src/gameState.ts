@@ -2,11 +2,12 @@ import { mapRange } from '@dungeon-crawler/shared';
 import { HEIGHT, SEED, WIDTH } from './constants';
 import { ECSWorld, createWorld } from './features/ecs/ECSWorld';
 import { createNoiseGenerator } from './features/map/generators/noise';
-import { CELL_TYPES, GameMap, createGameMap } from './features/map/map.factory';
+import { CELL_TYPES, GameMap, createGameMap } from './features/map/factories/map.factory';
 import { physicsSystem } from './features/physics/physics.system';
 import RBush from 'rbush';
 import { BBox, BBoxProps } from './features/physics/physics.components';
 import { ECSEntity } from './features/ecs/ECSEntity';
+import { portalsSystem } from './features/map/portal.system';
 
 export type GameState = {
   isRunning: boolean;
@@ -54,6 +55,7 @@ export const createGameState = (): GameState => {
 
   state.map.init(state);
   state.world.addSystem('physics', physicsSystem(state));
+  state.world.addSystem('portals', portalsSystem());
 
   return state;
 };
