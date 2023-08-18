@@ -210,8 +210,8 @@ export const createGameMap = ({
     },
 
     getNearby({ x, y }, radius) {
-      const minX = Math.floor(x - radius);
-      const minY = Math.floor(y - radius);
+      const minX = Math.max(0, Math.floor(x - radius));
+      const minY = Math.max(0, Math.floor(y - radius));
       const maxX = Math.ceil(x + radius);
       const maxY = Math.ceil(y + radius);
       return finalRows
