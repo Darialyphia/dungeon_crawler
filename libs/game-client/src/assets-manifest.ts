@@ -1,29 +1,29 @@
 import { assetsUrls } from '@dungeon-crawler/resources/src/browser';
 import { ResolverManifest } from 'pixi.js';
-import { Values } from '@dungeon-crawler/shared';
+import { Values, objectEntries } from '@dungeon-crawler/shared';
 
-export const BUNDLES = {
+export const ASSET_BUNDLES = {
   TILESETS: 'tilesets',
   SPRITES: 'sprites'
 } as const;
 
-export type AssetBundle = Values<typeof BUNDLES>;
+export type AssetBundle = Values<typeof ASSET_BUNDLES>;
 
-export const assetsManifest: ResolverManifest = {
+export const assetsManifest = {
   bundles: [
     {
-      name: BUNDLES.TILESETS,
-      assets: Object.entries(assetsUrls.tilesets).map(([name, srcs]) => ({
+      name: ASSET_BUNDLES.TILESETS,
+      assets: objectEntries(assetsUrls.tilesets).map(([name, srcs]) => ({
         name,
         srcs
       }))
     },
     {
-      name: BUNDLES.SPRITES,
-      assets: Object.entries(assetsUrls.sprites).map(([name, srcs]) => ({
+      name: ASSET_BUNDLES.SPRITES,
+      assets: objectEntries(assetsUrls.sprites).map(([name, srcs]) => ({
         name,
         srcs
       }))
     }
   ]
-};
+} satisfies ResolverManifest;

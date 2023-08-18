@@ -1,5 +1,5 @@
-import baseTileset from './base/base-v2.json?url';
+import base from './base/base-v2.json?url';
 
 export const tilesetUrls = {
-  baseTileset
+  base
 };

@@ -10,6 +10,7 @@ import { toScreenCoords } from '../utils/helpers';
 import { Point } from '@dungeon-crawler/shared';
 import { Assets, FrameObject, Spritesheet, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
+import { ASSET_BUNDLES } from '../assets-manifest';
 
 const props = defineProps<{
   player: SerializedGameState['players'][number];
@@ -69,8 +70,8 @@ watch(
 );
 
 onMounted(async () => {
-  const assets = await Assets.loadBundle('sprites');
-  sheet.value = assets['test-sprite'];
+  const assets = await Assets.loadBundle(ASSET_BUNDLES.SPRITES);
+  sheet.value = assets['orc'];
 });
 </script>
 

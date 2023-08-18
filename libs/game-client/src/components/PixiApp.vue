@@ -10,24 +10,19 @@ import { toScreenCoords } from '../utils/helpers';
 import { CELL_SIZE } from '../utils/constants';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
 import { useDebugOptions } from '../composables/useDebugOptions';
+import { ASSET_BUNDLES } from '../assets-manifest';
 
 const { state } = useGameState();
 const screen = useScreen();
 
-const assetNames = {
-  bundle: `${state.value.snapshot.map.tileset}-map`,
-  tileset: `${state.value.snapshot.map.tileset}-tileset`
-};
-
-const bundleIds = [assetNames.bundle, 'sprites'];
+const bundleIds = [ASSET_BUNDLES.TILESETS, ASSET_BUNDLES.SPRITES];
 
 const spritesheet = ref<Spritesheet>();
 
 onMounted(async () => {
   const assets = await Assets.loadBundle(bundleIds);
-  Assets.loadBundle('sprites');
 
-  spritesheet.value = assets[assetNames.bundle][assetNames.tileset];
+  spritesheet.value = assets[ASSET_BUNDLES.TILESETS]['base'];
 });
 
 const currentPlayer = useCurrentPlayer();
