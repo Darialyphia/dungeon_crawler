@@ -1,0 +1,13 @@
+name: Bug Report
+description: Request a new feature for this project
+title: "[FEATURE]: "
+labels:
+  - "feature-request"
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear description of the feature, and why it would be good to implement.
+    validations:
+      required: true
