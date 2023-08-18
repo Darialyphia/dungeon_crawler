@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { useApplication, onTick } from "vue3-pixi";
-import { useGameState } from "../composables/useGameState";
-import { useCamera } from "../composables/useCamera";
-import { useCurrentPlayer } from "../composables/useCurrentPlayer";
-import { toScreenCoords } from "../utils/helpers";
+import { useApplication, onTick } from 'vue3-pixi';
+import { useGameState } from '../composables/useGameState';
+import { useCamera } from '../composables/useCamera';
+import { useCurrentPlayer } from '../composables/useCurrentPlayer';
+import { toScreenCoords } from '../utils/helpers';
 
 const fps = ref(0);
 const app = useApplication();
@@ -11,15 +11,12 @@ const { state } = useGameState();
 const { viewport } = useCamera();
 const player = useCurrentPlayer();
 
-const ping = computed(
-  () => state.value.timestamp - state.value.snapshot.timestamp
-);
+const ping = computed(() => state.value.timestamp - state.value.snapshot.timestamp);
 
 const { history } = useRefHistory(ping, { capacity: 20 });
 const averagePing = computed(() =>
   (
-    history.value.reduce((total, curr) => total + curr.snapshot, 0) /
-    history.value.length
+    history.value.reduce((total, curr) => total + curr.snapshot, 0) / history.value.length
   ).toFixed(0)
 );
 const WARNING_THRESHOLD = 18;
@@ -27,10 +24,7 @@ onTick(() => {
   fps.value = app.value.ticker.FPS;
 
   if (app.value.ticker.elapsedMS > WARNING_THRESHOLD) {
-    console.warn(
-      "elapsed time over frame budget : ",
-      app.value.ticker.elapsedMS
-    );
+    console.warn('elapsed time over frame budget : ', app.value.ticker.elapsedMS);
   }
 });
 
@@ -38,11 +32,11 @@ const roundedViewport = computed(() => ({
   x: Math.round(viewport.value.x),
   y: Math.round(viewport.value.y),
   width: Math.round(viewport.value.width),
-  height: Math.round(viewport.value.height),
+  height: Math.round(viewport.value.height)
 }));
 const roundedPlayerCoords = computed(() => ({
   x: Math.round(toScreenCoords(player.value!.bbox).x),
-  y: Math.round(toScreenCoords(player.value!.bbox).y),
+  y: Math.round(toScreenCoords(player.value!.bbox).y)
 }));
 </script>
 
@@ -51,7 +45,7 @@ const roundedPlayerCoords = computed(() => ({
     :x="0"
     :y="0"
     @render="
-      (graphics) => {
+      graphics => {
         graphics.clear();
 
         graphics.beginFill(0x000000, 0.5);

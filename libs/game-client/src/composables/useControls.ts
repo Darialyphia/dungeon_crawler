@@ -1,19 +1,19 @@
-import { Dispatcher } from "./useDispatch";
-import { useKeydownOnce } from "./useKeydownOnce";
+import { Dispatcher } from './useDispatch';
+import { useKeydownOnce } from './useKeydownOnce';
 
 export const useControls = (dispatch: Dispatcher, playerId: string) => {
   const pressedKeys = {
     up: false,
     down: false,
     left: false,
-    right: false,
+    right: false
   };
 
   const keyMap = {
-    KeyD: "right",
-    KeyA: "left",
-    KeyW: "up",
-    KeyS: "down",
+    KeyD: 'right',
+    KeyA: 'left',
+    KeyW: 'up',
+    KeyS: 'down'
   } satisfies Record<string, keyof typeof pressedKeys>;
 
   const keyboardHandler = (isOn: boolean) => (e: KeyboardEvent) => {
@@ -26,13 +26,13 @@ export const useControls = (dispatch: Dispatcher, playerId: string) => {
     pressedKeys[control] = isOn;
 
     switch (code) {
-      case "KeyD":
-      case "KeyA":
-      case "KeyW":
-      case "KeyS":
+      case 'KeyD':
+      case 'KeyA':
+      case 'KeyW':
+      case 'KeyS':
         return dispatch({
-          type: "move",
-          payload: { ...pressedKeys, playerId },
+          type: 'move',
+          payload: { ...pressedKeys, playerId }
         });
       default:
         return;
@@ -43,5 +43,5 @@ export const useControls = (dispatch: Dispatcher, playerId: string) => {
   const onKeyup = keyboardHandler(false);
 
   useKeydownOnce(onKeydown);
-  useEventListener(window, "keyup", onKeyup);
+  useEventListener(window, 'keyup', onKeyup);
 };

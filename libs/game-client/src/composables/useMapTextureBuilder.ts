@@ -1,5 +1,5 @@
-import { Spritesheet } from "pixi.js";
-import type { MapCell } from "@dungeon-crawler/game-engine";
+import { Spritesheet } from 'pixi.js';
+import type { MapCell } from '@dungeon-crawler/game-engine';
 
 // see http://www.cr31.co.uk/stagecast/wang/blob.html
 const BITMASK_TO_INDEX_DICT = {
@@ -51,7 +51,7 @@ const BITMASK_TO_INDEX_DICT = {
   197: 45,
   69: 46,
   68: 47,
-  65: 48,
+  65: 48
 } as const;
 
 const TEXTURES_PER_CELL_TYPE = 49;
@@ -63,9 +63,7 @@ export const useMapTextureBuilder = (spritesheet: Spritesheet) => {
     // getTextureFor,
     getBitmapTexture(cell: MapCell) {
       const bitMaskIndex =
-        BITMASK_TO_INDEX_DICT[
-          cell.bitMask as keyof typeof BITMASK_TO_INDEX_DICT
-        ];
+        BITMASK_TO_INDEX_DICT[cell.bitMask as keyof typeof BITMASK_TO_INDEX_DICT];
 
       const index = cell.type * TEXTURES_PER_CELL_TYPE + bitMaskIndex;
 
@@ -74,6 +72,6 @@ export const useMapTextureBuilder = (spritesheet: Spritesheet) => {
         console.log(cell, index, textures.length);
       }
       return texture;
-    },
+    }
   };
 };

@@ -1,4 +1,4 @@
-import { Nullable } from "@dungeon-crawler/shared";
+import { Nullable } from '@dungeon-crawler/shared';
 
 export const useKeydownOnce = (
   cb: (e: KeyboardEvent) => void,
@@ -7,7 +7,7 @@ export const useKeydownOnce = (
   let hasFired = false;
   let code: Nullable<string>;
 
-  target.addEventListener("keydown", (e: Event) => {
+  target.addEventListener('keydown', (e: Event) => {
     const evt = e as KeyboardEvent;
     if (hasFired && evt.code === code) return;
     hasFired = true;
@@ -16,7 +16,7 @@ export const useKeydownOnce = (
     cb(evt);
   });
 
-  target.addEventListener("keyup", (e: Event) => {
+  target.addEventListener('keyup', (e: Event) => {
     const evt = e as KeyboardEvent;
     if (evt.code === code) {
       code = undefined;

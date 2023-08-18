@@ -1,31 +1,31 @@
 <script setup lang="ts">
-import { useGameState } from "../composables/useGameState";
-import Player from "./Player.vue";
-import Camera from "./Camera.vue";
-import GameMap from "./Map.vue";
-import { Assets } from "pixi.js";
-import { useScreen } from "vue3-pixi";
-import { Spritesheet } from "pixi.js";
-import { toScreenCoords } from "../utils/helpers";
-import { CELL_SIZE } from "../utils/constants";
-import { useCurrentPlayer } from "../composables/useCurrentPlayer";
-import { useDebugOptions } from "../composables/useDebugOptions";
+import { useGameState } from '../composables/useGameState';
+import Player from './Player.vue';
+import Camera from './Camera.vue';
+import GameMap from './Map.vue';
+import { Assets } from 'pixi.js';
+import { useScreen } from 'vue3-pixi';
+import { Spritesheet } from 'pixi.js';
+import { toScreenCoords } from '../utils/helpers';
+import { CELL_SIZE } from '../utils/constants';
+import { useCurrentPlayer } from '../composables/useCurrentPlayer';
+import { useDebugOptions } from '../composables/useDebugOptions';
 
 const { state } = useGameState();
 const screen = useScreen();
 
 const assetNames = {
   bundle: `${state.value.snapshot.map.tileset}-map`,
-  tileset: `${state.value.snapshot.map.tileset}-tileset`,
+  tileset: `${state.value.snapshot.map.tileset}-tileset`
 };
 
-const bundleIds = [assetNames.bundle, "sprites"];
+const bundleIds = [assetNames.bundle, 'sprites'];
 
 const spritesheet = ref<Spritesheet>();
 
 onMounted(async () => {
   const assets = await Assets.loadBundle(bundleIds);
-  Assets.loadBundle("sprites");
+  Assets.loadBundle('sprites');
 
   spritesheet.value = assets[assetNames.bundle][assetNames.tileset];
 });
@@ -53,14 +53,14 @@ const debugOptions = useDebugOptions();
       :key="obstacle.entity_id"
       :position="toScreenCoords(obstacle.bbox)"
       @render="
-        (graphics) => {
+        graphics => {
           graphics.clear();
 
           if (debugOptions.obstacles) {
             graphics.beginFill('yellow', 0.25);
             graphics.lineStyle({
               color: 'yellow',
-              width: 1,
+              width: 1
             });
             graphics.drawRect(
               (-obstacle.bbox.width * CELL_SIZE) / 2,
@@ -77,24 +77,15 @@ const debugOptions = useDebugOptions();
             graphics.lineStyle({
               color: 'blue',
               alpha: 0.6,
-              width: 1,
+              width: 1
             });
             if (currentPlayer) {
               graphics.drawRect(
-                (-(obstacle.bbox.width + currentPlayer.bbox.width) *
-                  CELL_SIZE *
-                  0.9) /
+                (-(obstacle.bbox.width + currentPlayer.bbox.width) * CELL_SIZE * 0.9) / 2,
+                (-(obstacle.bbox.height + currentPlayer.bbox.height) * CELL_SIZE * 0.9) /
                   2,
-                (-(obstacle.bbox.height + currentPlayer.bbox.height) *
-                  CELL_SIZE *
-                  0.9) /
-                  2,
-                (obstacle.bbox.width + currentPlayer.bbox.width) *
-                  CELL_SIZE *
-                  0.9,
-                (obstacle.bbox.height + currentPlayer.bbox.height) *
-                  CELL_SIZE *
-                  0.9
+                (obstacle.bbox.width + currentPlayer.bbox.width) * CELL_SIZE * 0.9,
+                (obstacle.bbox.height + currentPlayer.bbox.height) * CELL_SIZE * 0.9
               );
             }
             graphics.endFill();

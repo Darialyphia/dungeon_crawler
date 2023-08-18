@@ -1,10 +1,10 @@
-import { AnyObject } from "@dungeon-crawler/shared";
+import { AnyObject } from '@dungeon-crawler/shared';
 
 // return a ref that only triggers when one the specified properties change
-export function useStableRef<
-  TObj extends AnyObject,
-  TProps extends (keyof TObj)[]
->(value: TObj, props: TProps) {
+export function useStableRef<TObj extends AnyObject, TProps extends (keyof TObj)[]>(
+  value: TObj,
+  props: TProps
+) {
   return customRef((track, trigger) => {
     return {
       get() {
@@ -14,11 +14,11 @@ export function useStableRef<
       set(newValue) {
         const oldValue = value;
         value = newValue;
-        const shouldTrigger = props.some((p) => oldValue[p] !== value[p]);
+        const shouldTrigger = props.some(p => oldValue[p] !== value[p]);
         if (shouldTrigger) {
           trigger();
         }
-      },
+      }
     };
   });
 }

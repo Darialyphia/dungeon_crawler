@@ -1,27 +1,29 @@
-import baseTileset from "@dungeon-crawler/resources/src/tilesets/base/base-v2.json?url";
-import testSprite from "@dungeon-crawler/resources/src/sprites/orc.json?url";
+import { assetsUrls } from '@dungeon-crawler/resources/src/browser';
+import { ResolverManifest } from 'pixi.js';
+import { Values } from '@dungeon-crawler/shared';
 
-import { ResolverManifest } from "pixi.js";
+export const BUNDLES = {
+  TILESETS: 'tilesets',
+  SPRITES: 'sprites'
+} as const;
+
+export type AssetBundle = Values<typeof BUNDLES>;
 
 export const assetsManifest: ResolverManifest = {
   bundles: [
     {
-      name: "base-map",
-      assets: [
-        {
-          name: "base-tileset",
-          srcs: baseTileset,
-        },
-      ],
+      name: BUNDLES.TILESETS,
+      assets: Object.entries(assetsUrls.tilesets).map(([name, srcs]) => ({
+        name,
+        srcs
+      }))
     },
     {
-      name: "sprites",
-      assets: [
-        {
-          name: "test-sprite",
-          srcs: testSprite,
-        },
-      ],
-    },
-  ],
+      name: BUNDLES.SPRITES,
+      assets: Object.entries(assetsUrls.sprites).map(([name, srcs]) => ({
+        name,
+        srcs
+      }))
+    }
+  ]
 };

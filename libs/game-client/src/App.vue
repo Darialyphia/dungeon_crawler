@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { createEngineWorkerConsumer } from "./engine-worker-consumer";
-import GameClient from "./GameClient.vue";
+import { createEngineWorkerConsumer } from './engine-worker-consumer';
+import GameClient from './GameClient.vue';
 
 const root = ref();
 const { width, height } = useElementBounding(root);

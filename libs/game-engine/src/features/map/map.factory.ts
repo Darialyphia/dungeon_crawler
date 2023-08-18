@@ -1,9 +1,8 @@
-import { Nullable, Point, dist, pointToIndex, randomInt } from '@dungeon-crawler/shared';
+import { Point, dist, pointToIndex, randomInt } from '@dungeon-crawler/shared';
 import type { MapGenerator } from './types';
 import { GameState } from '../../gameState';
 import { createCell } from './cell.factory';
-import { player } from '../player/player.components';
-import { BBox, BBoxProps } from '../physics/physics.components';
+import { BBoxProps } from '../physics/physics.components';
 
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
@@ -182,7 +181,7 @@ export const createGameMap = ({
     },
 
     serialize(players) {
-      const visible = players.map(player => map.getNearby(player.bbox, 10));
+      const visible = players.map(player => map.getNearby(player.bbox, 8));
 
       return {
         id: 1,

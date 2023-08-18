@@ -1,37 +1,31 @@
 <script setup lang="ts">
-import { parse } from "zipson";
-import {
-  Application,
-  Assets,
-  BaseTexture,
-  SCALE_MODES,
-  extensions,
-} from "pixi.js";
-import { appInjectKey, createApp } from "vue3-pixi";
-import { SerializedGameState } from "@dungeon-crawler/game-engine";
+import { parse } from 'zipson';
+import { Application, Assets, BaseTexture, SCALE_MODES, extensions } from 'pixi.js';
+import { appInjectKey, createApp } from 'vue3-pixi';
+import { SerializedGameState } from '@dungeon-crawler/game-engine';
 import {
   GAME_STATE_INJECTION_KEY,
-  useGameStateProvider,
-} from "./composables/useGameState";
+  useGameStateProvider
+} from './composables/useGameState';
 import {
   useDispatchProvider,
   DispatcherArg,
-  DISPATCHER_INJECTION_KEY,
-} from "./composables/useDispatch";
-import { useControls } from "./composables/useControls";
-import { throttle } from "lodash-es";
-import PixiApp from "./components/PixiApp.vue";
+  DISPATCHER_INJECTION_KEY
+} from './composables/useDispatch';
+import { useControls } from './composables/useControls';
+import { throttle } from 'lodash-es';
+import PixiApp from './components/PixiApp.vue';
 import {
   CURRENT_PLAYER_INJECTION_KEY,
-  useCurrentPlayerProvider,
-} from "./composables/useCurrentPlayer";
-import { assetsManifest } from "./assets-manifest";
-import { spriteSheetParser } from "./utils/spritesheet-parser";
-import { WRAP_MODES } from "pixi.js";
+  useCurrentPlayerProvider
+} from './composables/useCurrentPlayer';
+import { assetsManifest } from './assets-manifest';
+import { spriteSheetParser } from './utils/spritesheet-parser';
+import { WRAP_MODES } from 'pixi.js';
 import {
   DEBUG_OPTIONS_INJECTION_KEY,
-  useDebugOptionsProvider,
-} from "./composables/useDebugOptions";
+  useDebugOptionsProvider
+} from './composables/useDebugOptions';
 
 const props = defineProps<{
   width: number;
@@ -41,29 +35,29 @@ const props = defineProps<{
 }>();
 
 const emit = defineEmits<{
-  "game:event": [DispatcherArg];
+  'game:event': [DispatcherArg];
 }>();
 
 const parsedState = computed<SerializedGameState>(() =>
   parse(props.state as unknown as string)
 );
 const gameState = useGameStateProvider(parsedState);
-const dispatch = useDispatchProvider((arg) => emit("game:event", arg));
+const dispatch = useDispatchProvider(arg => emit('game:event', arg));
 const options = useDebugOptionsProvider();
 useCurrentPlayerProvider(props.playerId);
 useControls(dispatch, props.playerId);
 
 const canvas = ref<HTMLCanvasElement>();
 onMounted(() => {
-  // We create the pixi app manually instead ofusing vue3-pixi's <Application /> component
-  // because we want to be able to provide a bunch of stuff so we need access to the underlying vue app
+  // We create the pixi app manually instead of using vue3-pixi's <Application /> component
+  // because we want to be able to provide a bunch of stuff so we need access to the underlying vue-pixi app
   // and we can forward the providers to it
   const pixiApp = new Application({
     view: canvas.value,
     width: props.width,
     height: props.height,
     autoDensity: true,
-    antialias: false,
+    antialias: false
   });
 
   if (import.meta.env.DEV) {
@@ -75,6 +69,7 @@ onMounted(() => {
   BaseTexture.defaultOptions.scaleMode = SCALE_MODES.NEAREST;
   extensions.add(spriteSheetParser);
   Assets.init({ manifest: assetsManifest });
+
   const app = createApp(PixiApp);
   app.provide(appInjectKey, pixiApp);
   app.provide(GAME_STATE_INJECTION_KEY, gameState);
@@ -89,7 +84,7 @@ onMounted(() => {
       const width = props.width || pixiApp.renderer.width;
       const height = props.height || pixiApp.renderer.height;
       pixiApp.renderer.resize(width, height);
-    }, 50)
+    }, 16)
   );
 });
 </script>
@@ -98,22 +93,22 @@ onMounted(() => {
   <div class="container">
     <canvas ref="canvas" />
     <div class="debug-options">
-      <label
-        ><input v-model="options.mapCoords" type="checkbox" />Display map
-        coordinates
-      </label>
-      <label
-        ><input v-model="options.mapBitmask" type="checkbox" />Display map
-        bitmask
+      <label>
+        <input v-model="options.mapCoords" type="checkbox" />
+        Display map coordinates
       </label>
       <label>
-        <input v-model="options.obstacles" type="checkbox" />Display nearby
-        obstacles</label
-      >
-      <label
-        ><input v-model="options.obstaclesMinkowski" type="checkbox" />Display
-        nearby obstacles Minkowski sum</label
-      >
+        <input v-model="options.mapBitmask" type="checkbox" />
+        Display map bitmask
+      </label>
+      <label>
+        <input v-model="options.obstacles" type="checkbox" />
+        Display nearby obstacles
+      </label>
+      <label>
+        <input v-model="options.obstaclesMinkowski" type="checkbox" />
+        Display nearby obstacles Minkowski sum
+      </label>
     </div>
   </div>
 </template>

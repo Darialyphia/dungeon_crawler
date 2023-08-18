@@ -1,11 +1,7 @@
 import { ExtensionType, LoaderParserPriority, Texture } from "pixi.js";
 import { z } from "zod";
 import { trimExtension } from "./helpers";
-
-import baseTileset from "@dungeon-crawler/resources/src/tilesets/base/base-v2.json?url";
-
-import testSprite from "@dungeon-crawler/resources/src/sprites/test.json?url";
-import orcSprite from "@dungeon-crawler/resources/src/sprites/orc.json?url";
+import { assetsUrls } from "@dungeon-crawler/resources/src/browser";
 
 const asepriteSizeSchema = z.object({
   w: z.number(),
@@ -41,13 +37,10 @@ const asepriteJsonSchema = z.object({
 });
 type AsepriteJson = z.infer<typeof asepriteJsonSchema>;
 
-const tilesetsUrls = [baseTileset];
-const spritesUrls = [testSprite, orcSprite];
-
 const isTileset = (url: string) =>
-  !!tilesetsUrls.find((path) => url.includes(path));
+  !!Object.values(assetsUrls.tilesets).find((path) => url.includes(path));
 const isSprite = (url: string) =>
-  !!spritesUrls.find((path) => url.includes(path));
+  !!Object.values(assetsUrls.sprites).find((path) => url.includes(path));
 
 const parseTileset = ({ frames, meta }: AsepriteJson) => ({
   frames: Object.fromEntries(

@@ -1,27 +1,25 @@
 <script setup lang="ts">
-import { SerializedGameState } from "@dungeon-crawler/game-engine";
-import { useGameState } from "../composables/useGameState";
-import { onTick } from "vue3-pixi";
-import { interpolatePosition } from "../utils/interpolate";
-import { CELL_SIZE } from "../utils/constants";
-import { useCamera } from "../composables/useCamera";
-import { useCurrentPlayerId } from "../composables/useCurrentPlayer";
-import { toScreenCoords } from "../utils/helpers";
-import { Point } from "@dungeon-crawler/shared";
-import { Assets, FrameObject, Spritesheet, Texture } from "pixi.js";
-import { createSpritesheetFrameObject } from "../utils/frame-object";
+import { SerializedGameState } from '@dungeon-crawler/game-engine';
+import { useGameState } from '../composables/useGameState';
+import { onTick } from 'vue3-pixi';
+import { interpolatePosition } from '../utils/interpolate';
+import { CELL_SIZE } from '../utils/constants';
+import { useCamera } from '../composables/useCamera';
+import { useCurrentPlayerId } from '../composables/useCurrentPlayer';
+import { toScreenCoords } from '../utils/helpers';
+import { Point } from '@dungeon-crawler/shared';
+import { Assets, FrameObject, Spritesheet, Texture } from 'pixi.js';
+import { createSpritesheetFrameObject } from '../utils/frame-object';
 
 const props = defineProps<{
-  player: SerializedGameState["players"][number];
+  player: SerializedGameState['players'][number];
 }>();
 
 const { state, prevState } = useGameState();
 const camera = useCamera();
 
 const currentPlayerId = useCurrentPlayerId();
-const isCurrentPlayer = computed(
-  () => currentPlayerId === props.player.player.id
-);
+const isCurrentPlayer = computed(() => currentPlayerId === props.player.player.id);
 
 const position = ref<Point>(props.player.bbox);
 const screenPosition = computed(() => {
@@ -42,18 +40,18 @@ const interpolatePlayerPosition = () => {
   const interpolated = interpolatePosition(
     {
       position: props.player.bbox,
-      t: state.value.timestamp,
+      t: state.value.timestamp
     },
     {
       position: prevState.value.snapshot.players[props.player.entity_id].bbox,
-      t: prevState.value.timestamp,
+      t: prevState.value.timestamp
     }
   );
 
   position.value = interpolated;
 };
 
-const color = computed(() => (isCurrentPlayer.value ? "red" : "blue"));
+const color = computed(() => (isCurrentPlayer.value ? 'red' : 'blue'));
 onTick(interpolatePlayerPosition);
 onTick(followPlayer);
 
@@ -71,8 +69,8 @@ watch(
 );
 
 onMounted(async () => {
-  const assets = await Assets.loadBundle("sprites");
-  sheet.value = assets["test-sprite"];
+  const assets = await Assets.loadBundle('sprites');
+  sheet.value = assets['test-sprite'];
 });
 </script>
 
@@ -89,14 +87,14 @@ onMounted(async () => {
     v-else
     :position="screenPosition"
     @render="
-      (graphics) => {
+      graphics => {
         graphics.clear();
         graphics.beginFill(color);
         graphics.drawCircle(0, 0, CELL_SIZE / 2);
         graphics.endFill();
         graphics.lineStyle({
           color: color,
-          width: 1,
+          width: 1
         });
         graphics.drawRect(
           (-player.bbox.width * CELL_SIZE) / 2,
