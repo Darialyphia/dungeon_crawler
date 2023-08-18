@@ -7,9 +7,9 @@ import { useCamera } from '../composables/useCamera';
 import { useCurrentPlayerId } from '../composables/useCurrentPlayer';
 import { toScreenCoords } from '../utils/helpers';
 import { Point } from '@dungeon-crawler/shared';
-import { Assets, FrameObject, Spritesheet, Texture } from 'pixi.js';
+import { FrameObject, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
-import { ASSET_BUNDLES } from '../assets-manifest';
+import { useSprite } from '../composables/useAssetCache';
 
 const props = defineProps<{
   player: SerializedGameState['players'][number];
@@ -54,7 +54,7 @@ const interpolatePlayerPosition = () => {
 onTick(interpolatePlayerPosition);
 onTick(followPlayer);
 
-const sheet = ref<Spritesheet>();
+const { sheet } = useSprite('orc');
 const textures = ref<FrameObject[]>([]);
 
 watch(
@@ -66,11 +66,6 @@ watch(
   },
   { immediate: true }
 );
-
-onMounted(async () => {
-  const assets = await Assets.loadBundle(ASSET_BUNDLES.SPRITES);
-  sheet.value = assets['orc'];
-});
 </script>
 
 <template>

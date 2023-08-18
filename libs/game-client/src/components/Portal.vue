@@ -2,10 +2,10 @@
 import { SerializedGameState } from '@dungeon-crawler/game-engine';
 import { toScreenCoords } from '../utils/helpers';
 import { Point, dist } from '@dungeon-crawler/shared';
-import { Assets, FrameObject, Spritesheet, Texture } from 'pixi.js';
+import { FrameObject, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
-import { ASSET_BUNDLES } from '../assets-manifest';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
+import { useSprite } from '../composables/useAssetCache';
 
 const props = defineProps<{
   portal: SerializedGameState['portals'][number];
@@ -16,7 +16,10 @@ const screenPosition = computed(() => {
   return toScreenCoords(position.value);
 });
 
-const sheet = ref<Spritesheet>();
+const spriteName = computed(() =>
+  props.portal.portal.isEntrance ? 'portalIn' : 'portalOut'
+);
+const { sheet } = useSprite(spriteName);
 const textures = ref<FrameObject[]>([]);
 
 watch(
@@ -28,16 +31,6 @@ watch(
   },
   { immediate: true }
 );
-
-const spriteName = computed(() =>
-  props.portal.portal.isEntrance ? 'portalIn' : 'portalOut'
-);
-
-onMounted(async () => {
-  const assets = await Assets.loadBundle(ASSET_BUNDLES.SPRITES);
-
-  sheet.value = assets[spriteName.value];
-});
 
 const player = useCurrentPlayer();
 

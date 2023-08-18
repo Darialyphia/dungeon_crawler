@@ -4,7 +4,6 @@ import Player from './Player.vue';
 import Portal from './Portal.vue';
 import Camera from './Camera.vue';
 import GameMap from './Map.vue';
-import { Assets } from 'pixi.js';
 import { useScreen } from 'vue3-pixi';
 import { Spritesheet } from 'pixi.js';
 import { toScreenCoords } from '../utils/helpers';
@@ -12,18 +11,22 @@ import { CELL_SIZE } from '../utils/constants';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
 import { useDebugOptions } from '../composables/useDebugOptions';
 import { ASSET_BUNDLES } from '../assets-manifest';
+import { useAssetCacheProvider } from '../composables/useAssetCache';
 
 const { state } = useGameState();
 const screen = useScreen();
 
-const bundleIds = [ASSET_BUNDLES.TILESETS, ASSET_BUNDLES.SPRITES];
-
 const spritesheet = ref<Spritesheet>();
 
-onMounted(async () => {
-  const assets = await Assets.loadBundle(bundleIds);
+const { bundles, loadBundle } = useAssetCacheProvider();
 
-  spritesheet.value = assets[ASSET_BUNDLES.TILESETS]['base'];
+onMounted(async () => {
+  await Promise.all([
+    loadBundle(ASSET_BUNDLES.TILESETS),
+    loadBundle(ASSET_BUNDLES.SPRITES)
+  ]);
+
+  spritesheet.value = bundles.value[ASSET_BUNDLES.TILESETS]['base'];
 });
 
 const currentPlayer = useCurrentPlayer();
