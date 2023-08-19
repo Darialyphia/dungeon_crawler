@@ -1,4 +1,4 @@
-import { GameState, SerializedGameZoneState, createGameState } from './gameState';
+import { GameState, createGameState } from './gameState';
 import { createEmitter } from './emitter';
 import { EventMap, inferEventInput } from './events';
 import { TICK_RATE } from './constants';
@@ -9,6 +9,7 @@ import { SerializedMap } from './features/map/factories/map.factory';
 import { stringify } from 'zipson';
 import { Obstacle } from './features/map/map.components';
 import { PortalEntity } from './features/map/factories/portal.factory';
+import { SerializedGameZoneState } from './gameZone';
 
 export type { EventMap };
 export {

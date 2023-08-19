@@ -37,13 +37,19 @@ const interpolatePlayerPosition = () => {
     position.value = props.player.bbox;
     return;
   }
+  const prevPosition = prevState.value.snapshot.players[props.player.entity_id]?.bbox;
+  if (!prevPosition) {
+    position.value = props.player.bbox;
+    return;
+  }
+
   const interpolated = interpolatePosition(
     {
       position: props.player.bbox,
       t: state.value.timestamp
     },
     {
-      position: prevState.value.snapshot.players[props.player.entity_id].bbox,
+      position: prevPosition,
       t: prevState.value.timestamp
     }
   );

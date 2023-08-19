@@ -31,6 +31,13 @@ watchEffect(() => {
   });
 });
 
+watch(
+  () => state.value.snapshot.map.id,
+  () => {
+    allCells.value.clear();
+  }
+);
+
 const textureBuilder = useMapTextureBuilder(props.spritesheet);
 
 // the camera viewport in game units instead of pixel units

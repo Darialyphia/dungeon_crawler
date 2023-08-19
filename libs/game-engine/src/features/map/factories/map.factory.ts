@@ -1,10 +1,11 @@
 import { Point, dist, pointToIndex, randomInt } from '@dungeon-crawler/shared';
 import type { MapGenerator } from '../types';
-import { GameZoneState, GameState } from '../../../gameState';
 import { createCell } from './cell.factory';
 import { BBoxProps } from '../../physics/physics.components';
 import { makeDijakstraMap } from '../dijakstraMap';
 import { createPortal } from './portal.factory';
+import { MAX_ZONES } from '../../../constants';
+import { GameZoneState, ZoneId } from '../../../gameZone';
 
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
@@ -25,6 +26,7 @@ export type MapCell = GeneratedCell & {
 };
 
 export type MapFactoryOptions = {
+  id: ZoneId;
   width: number;
   height: number;
   tileset: Tileset;
@@ -83,6 +85,7 @@ const getRandomWalkableCell = (
 };
 
 export const createGameMap = ({
+  id,
   width,
   height,
   tileset,
@@ -171,7 +174,7 @@ export const createGameMap = ({
     }))
   );
 
-  const exitDistance = 50;
+  const exitDistance = 10;
   const exitCandidates = finalRows
     .flatMap(row => row.flat())
     .filter(cell => cell.dijakstra === exitDistance);
@@ -201,8 +204,12 @@ export const createGameMap = ({
         });
       });
 
-      createPortal(state, { ...entrance, isEntrance: true, isExit: false });
-      createPortal(state, { ...exit, isEntrance: false, isExit: true });
+      if (state.id > 1) {
+        createPortal(state, { ...entrance, isEntrance: true, isExit: false });
+      }
+      if (state.id < MAX_ZONES) {
+        createPortal(state, { ...exit, isEntrance: false, isExit: true });
+      }
     },
 
     getCellAt({ x, y }) {
@@ -233,7 +240,7 @@ export const createGameMap = ({
       const visible = players.map(player => map.getNearby(player.bbox, 8));
 
       return {
-        id: 1,
+        id,
         width,
         height,
         tileset,
