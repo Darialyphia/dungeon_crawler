@@ -1,6 +1,5 @@
-import { Rectangle, addVector, randomInt } from '@dungeon-crawler/shared';
+import { Point, addVector } from '@dungeon-crawler/shared';
 import { Player, PlayerId, PlayerState, player, playerState } from './player.components';
-import { GameState, GameZoneState } from '../../gameState';
 import {
   BBox,
   Orientation,
@@ -9,12 +8,15 @@ import {
   orientation,
   Velocity,
   collidable,
-  Collidable
+  Collidable,
+  updatePosition
 } from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
+import { GameZoneState } from '../../gameZone';
 
 export type CreatePlayerOptions = {
   id: PlayerId;
+  position?: Point;
 };
 
 export type PlayerEntity = ECSEntity &
@@ -52,6 +54,9 @@ export const createPlayer = (
     .build();
 
   state.tree.insert(entity);
+  if (options.position) {
+    entity.bbox = updatePosition(entity.bbox, options.position);
+  }
 
   return entity;
 };

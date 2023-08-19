@@ -1,3 +1,4 @@
+import { addVector } from '@dungeon-crawler/shared';
 import { PlayerId } from './features/player/player.components';
 import { GameZoneState, ZoneId, createZone } from './gameZone';
 
@@ -29,7 +30,14 @@ export const createGameState = (): GameState => {
 
     player.currentZoneId = destinationZone.id;
     currentZone.removePlayer(playerId);
-    destinationZone.addPlayer(playerId);
+    destinationZone.addPlayer(playerId, {
+      position: addVector(
+        currentZone.id < destinationZone.id
+          ? destinationZone.map.getEntrance()
+          : destinationZone.map.getExit(),
+        { x: 0.501, y: 0.501 } // @FIXME generalize the position hacj somewhere
+      )
+    });
 
     if (destinationZone === state.zones.at(-1)) {
       zones.push(createZone(getZoneId(), changePlayerZone));

@@ -237,7 +237,7 @@ export const createGameMap = ({
     },
 
     serialize(players) {
-      const visible = players.map(player => map.getNearby(player.bbox, 8));
+      const visible = players.map(player => map.getNearby(player.bbox, 12));
 
       return {
         id,

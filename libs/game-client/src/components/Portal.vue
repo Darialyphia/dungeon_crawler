@@ -43,6 +43,9 @@ const isInteractable = computed(
   () => distance.value <= props.portal.interactive.activationRange
 );
 
+const text = computed(() =>
+  props.portal.portal.isEntrance ? 'F: previous zone' : 'F: next zone'
+);
 const { autoDestroyRef } = useAutoDestroy();
 </script>
 
@@ -68,7 +71,7 @@ const { autoDestroyRef } = useAutoDestroy();
           graphics.clear();
 
           graphics.beginFill(0x000000, 0.5);
-          graphics.drawRoundedRect(0, 0, 80, 20, 3);
+          graphics.drawRoundedRect(0, 0, 60, 20, 3);
           graphics.endFill();
         }
       "
@@ -76,11 +79,11 @@ const { autoDestroyRef } = useAutoDestroy();
       <text
         :anchor="0.5"
         :scale="0.5"
-        :x="40"
+        :x="30"
         :y="10"
         :style="{ fill: 'white', fontSize: 12, fontFamily: 'monospace' }"
       >
-        press F to enter
+        {{ text }}
       </text>
     </graphics>
   </container>

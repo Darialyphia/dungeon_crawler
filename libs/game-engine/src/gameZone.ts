@@ -18,7 +18,7 @@ import {
 } from './features/physics/physics.components';
 import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
 import { portalsSystem } from './features/map/portal.system';
-import { createPlayer } from './features/player/player.factory';
+import { CreatePlayerOptions, createPlayer } from './features/player/player.factory';
 import { PortalEntity } from './features/map/factories/portal.factory';
 import {
   Player,
@@ -37,7 +37,7 @@ export type GameZoneState = {
   world: ECSWorld;
   map: GameMap;
   tree: RBush<ECSEntity & BBox>;
-  addPlayer(id: PlayerId): void;
+  addPlayer(id: PlayerId, options?: Omit<CreatePlayerOptions, 'id'>): void;
   removePlayer(id: PlayerId): void;
   changePlayerZone(playerId: PlayerId, zoneId: ZoneId): void;
   run(timestamp: number): void;
@@ -68,7 +68,6 @@ export const createZone = (
   id: number,
   changePlayerZone: (playerId: PlayerId, zoneId: ZoneId) => void
 ): GameZoneState => {
-  console.log(id);
   let isRunning = false;
 
   const state: GameZoneState = {
@@ -95,8 +94,8 @@ export const createZone = (
       })
     }),
     world: createWorld(),
-    addPlayer(playerId) {
-      createPlayer(state, { id: playerId });
+    addPlayer(playerId, options = {}) {
+      createPlayer(state, { id: playerId, ...options });
 
       isRunning = true;
     },
