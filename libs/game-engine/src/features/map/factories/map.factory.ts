@@ -1,6 +1,6 @@
 import { Point, dist, pointToIndex, randomInt } from '@dungeon-crawler/shared';
 import type { MapGenerator } from '../types';
-import { GameState } from '../../../gameState';
+import { GameZoneState, GameState } from '../../../gameState';
 import { createCell } from './cell.factory';
 import { BBoxProps } from '../../physics/physics.components';
 import { makeDijakstraMap } from '../dijakstraMap';
@@ -34,7 +34,7 @@ export type MapFactoryOptions = {
 export type GameMap = {
   width: number;
   height: number;
-  init(state: GameState): void;
+  init(state: GameZoneState): void;
   getEntrance(): Point;
   getExit(): Point;
   getValidSpawnPoint(): Point;

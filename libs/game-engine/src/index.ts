@@ -1,25 +1,14 @@
-import { GameState, createGameState } from './gameState';
+import { GameState, SerializedGameZoneState, createGameState } from './gameState';
 import { createEmitter } from './emitter';
 import { EventMap, inferEventInput } from './events';
 import { TICK_RATE } from './constants';
-import {
-  BBox,
-  bbox,
-  Orientation,
-  orientation
-} from './features/physics/physics.components';
+import { BBox, Orientation } from './features/physics/physics.components';
 import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
-import {
-  Player,
-  PlayerState,
-  player,
-  playerState
-} from './features/player/player.components';
+import { Player, PlayerState } from './features/player/player.components';
 import { SerializedMap } from './features/map/factories/map.factory';
 import { stringify } from 'zipson';
-import { Obstacle, obstacle, portal } from './features/map/map.components';
+import { Obstacle } from './features/map/map.components';
 import { PortalEntity } from './features/map/factories/portal.factory';
-import { Interactive, interactive } from './features/interaction/interaction.components';
 
 export type { EventMap };
 export {
@@ -28,14 +17,18 @@ export {
   type MapCell,
   CELL_TYPES
 } from './features/map/factories/map.factory';
+export type { SerializedGameZoneState };
 
-export type SerializedGameState = {
+export type SerializedPlayerState = {
   map: SerializedMap;
   players: Record<ECSEntityId, ECSEntity & BBox & Orientation & Player & PlayerState>;
   portals: Record<ECSEntityId, PortalEntity>;
   obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
   timestamp: number;
 };
+
+export type SerializedGameState = Record<string, SerializedPlayerState>;
+
 export type DispatchFunction = <T extends keyof EventMap>(
   type: T,
   payload: inferEventInput<T>
@@ -80,9 +73,12 @@ export const createGame: GameFactory = ({ debug = false }) => {
     });
     eventQueue.clear();
 
-    state.world.runSystems({ delta });
+    state.zones.forEach(zone => {
+      zone.run(delta);
+    });
 
     lastTick = now;
+
     emitter.emit('tick', state);
 
     const elapsed = performance.now() - now;
@@ -91,38 +87,24 @@ export const createGame: GameFactory = ({ debug = false }) => {
     }
   };
 
-  const serializeState = (state: GameState): SerializedGameState => {
-    const players = player.findAll<[BBox, PlayerState, Orientation]>(state.world, [
-      bbox.brand,
-      playerState.brand,
-      orientation.brand
-    ]);
-    const bboxes = players
-      .map(p =>
-        state.tree.search({
-          minX: p.bbox.x - 15,
-          minY: p.bbox.y - 15,
-          maxX: p.bbox.x + 15,
-          maxY: p.bbox.y + 15
-        })
-      )
-      .flat();
-    const obstacles = obstacle
-      .findAll<[BBox]>(state.world, [bbox.brand])
-      .filter(obstacle => bboxes.includes(obstacle));
-    const portals = portal
-      .findAll<[BBox, Interactive]>(state.world, [bbox.brand, interactive.brand])
-      .filter(obstacle => bboxes.includes(obstacle));
+  const serializeState = (state: GameState, timestamp: number): SerializedGameState => {
+    const serialized: SerializedGameState = Object.fromEntries(
+      state.players.map(player => {
+        const zone = state.zones.find(z => z.id === player.currentZoneId);
+        if (!zone) {
+          throw new Error(
+            `Could not find zone for player ${player.id}: ${player.currentZoneId}`
+          );
+        }
 
-    const serialized: SerializedGameState = {
-      timestamp: Date.now(),
-      map: state.map.serialize(players),
-      players: Object.fromEntries(players.map(e => [e.entity_id, e])),
-      obstacles: Object.fromEntries(obstacles.map(e => [e.entity_id, e])),
-      portals: Object.fromEntries(portals.map(e => [e.entity_id, e]))
-    };
+        return [
+          player.id,
+          stringify(zone.serialize(timestamp)) as unknown as SerializedGameZoneState
+        ];
+      })
+    );
 
-    return stringify(serialized) as unknown as SerializedGameState;
+    return serialized;
   };
 
   return {
@@ -132,7 +114,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
     subscribe(cb) {
       const _cb = (state: GameState) => {
-        cb(serializeState(state));
+        cb(serializeState(state, performance.now()));
       };
       emitter.on('tick', _cb);
 
@@ -142,7 +124,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
     },
 
     start() {
-      if (state.isRunning) return;
+      if (interval) return;
       interval = setInterval(tick, tickDuration);
     },
 
@@ -150,7 +132,6 @@ export const createGame: GameFactory = ({ debug = false }) => {
       if (!interval) return;
       clearInterval(interval);
       interval = null;
-      state.isRunning = false;
     }
   };
 };

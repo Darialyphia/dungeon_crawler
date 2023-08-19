@@ -1,6 +1,6 @@
 import { addVector, randomInt } from '@dungeon-crawler/shared';
 import { Player, PlayerId, PlayerState, player, playerState } from './player.components';
-import { GameState } from '../../gameState';
+import { GameState, GameZoneState } from '../../gameState';
 import {
   BBox,
   Orientation,
@@ -26,7 +26,7 @@ export type PlayerEntity = ECSEntity &
   Collidable;
 
 export const createPlayer = (
-  state: GameState,
+  state: GameZoneState,
   { id }: CreatePlayerOptions
 ): PlayerEntity => {
   const entity = state.world

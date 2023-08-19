@@ -9,8 +9,14 @@ import { dist } from '@dungeon-crawler/shared';
 export const interactEvent = defineEventHandler({
   input: z.object({ entityId: z.number(), playerId: z.string() }),
   handler: ({ input, state }) => {
-    const maybeEntity = state.world.getEntity(input.entityId);
-    const maybePlayer = getPlayerById(input.playerId)(state.world);
+    const leavingPlayer = state.players.find(p => p.id === input.playerId);
+    if (!leavingPlayer) return;
+
+    const zone = state.zones.find(z => z.id === leavingPlayer?.currentZoneId);
+    if (!zone) return;
+
+    const maybeEntity = zone.world.getEntity(input.entityId);
+    const maybePlayer = getPlayerById(input.playerId)(zone.world);
 
     if (isNone(maybeEntity) || isNone(maybePlayer)) return;
 

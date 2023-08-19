@@ -5,6 +5,12 @@ import { createPlayer } from '../features/player/player.factory';
 export const playerJoinEvent = defineEventHandler({
   input: z.object({ id: z.string() }),
   handler: ({ input, state }) => {
-    createPlayer(state, input);
+    const startingZone = state.zones[0];
+    startingZone.addPlayer(input.id);
+
+    state.players.push({
+      id: input.id,
+      currentZoneId: startingZone.id
+    });
   }
 });

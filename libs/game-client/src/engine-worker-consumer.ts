@@ -5,12 +5,14 @@ export const createEngineWorkerConsumer = () => {
   const worker = new Worker(new URL('./engine-worker.ts', import.meta.url), {
     type: 'module'
   });
+  const PLAYERID = 'player';
+
   worker.addEventListener('message', ({ data }) => {
-    state.value = data;
+    state.value = data[PLAYERID];
   });
   worker.postMessage({
     type: 'join',
-    payload: { id: 'player' }
+    payload: { id: PLAYERID }
   });
   worker.postMessage({ type: 'start' });
 

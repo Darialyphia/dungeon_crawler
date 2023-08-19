@@ -19,13 +19,13 @@ import {
   velocity
 } from './physics.components';
 import * as O from 'fp-ts/Option';
-import { GameState } from '../../gameState';
+import { GameZoneState, GameState } from '../../gameState';
 import {} from '../ecs/ECSEntity';
 
 export const physicsSystem = ({
   map,
   tree
-}: GameState): ECSSystem<[Collidable, BBox, Velocity]> => {
+}: GameZoneState): ECSSystem<[Collidable, BBox, Velocity]> => {
   const computeNewPosition = (e: BBox & Velocity, delta: number) =>
     addVector(e.bbox, setMagnitude(e.velocity.target, (e.velocity.speed * delta) / 1000));
 

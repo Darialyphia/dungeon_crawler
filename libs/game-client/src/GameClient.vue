@@ -2,7 +2,7 @@
 import { parse } from 'zipson';
 import { Application, Assets, BaseTexture, SCALE_MODES, extensions } from 'pixi.js';
 import { appInjectKey, createApp } from 'vue3-pixi';
-import { SerializedGameState } from '@dungeon-crawler/game-engine';
+import { SerializedPlayerState } from '@dungeon-crawler/game-engine';
 import {
   GAME_STATE_INJECTION_KEY,
   useGameStateProvider
@@ -38,7 +38,7 @@ const emit = defineEmits<{
   'game:event': [DispatcherArg];
 }>();
 
-const parsedState = computed<SerializedGameState>(() =>
+const parsedState = computed<SerializedPlayerState>(() =>
   parse(props.state as unknown as string)
 );
 const gameState = useGameStateProvider(parsedState);

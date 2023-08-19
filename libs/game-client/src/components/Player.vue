@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SerializedGameState } from '@dungeon-crawler/game-engine';
+import { SerializedPlayerState } from '@dungeon-crawler/game-engine';
 import { useGameState } from '../composables/useGameState';
 import { onTick } from 'vue3-pixi';
 import { interpolatePosition } from '../utils/interpolate';
@@ -13,7 +13,7 @@ import { useSprite } from '../composables/useAssetCache';
 import { useAutoDestroy } from '../composables/useAutoDestroy';
 
 const props = defineProps<{
-  player: SerializedGameState['players'][number];
+  player: SerializedPlayerState['players'][number];
 }>();
 
 const { state, prevState } = useGameState();
@@ -37,7 +37,6 @@ const interpolatePlayerPosition = () => {
     position.value = props.player.bbox;
     return;
   }
-
   const interpolated = interpolatePosition(
     {
       position: props.player.bbox,

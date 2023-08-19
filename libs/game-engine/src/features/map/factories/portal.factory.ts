@@ -1,5 +1,5 @@
 import { Point } from '@dungeon-crawler/shared';
-import { GameState } from '../../../gameState';
+import { GameState, GameZoneState } from '../../../gameState';
 import { BBox, bbox } from '../../physics/physics.components';
 import { ECSEntity } from '../../ecs/ECSEntity';
 import { Portal, portal } from '../map.components';
@@ -8,7 +8,7 @@ import { Interactive, interactive } from '../../interaction/interaction.componen
 export type PortalEntity = ECSEntity & BBox & Portal & Interactive;
 
 export const createPortal = (
-  state: GameState,
+  state: GameZoneState,
   { x, y, isEntrance, isExit }: Point & { isEntrance: boolean; isExit: boolean }
 ): PortalEntity => {
   const entity = state.world

@@ -2,10 +2,7 @@ import { AnyZodObject } from 'zod';
 import { GameEventHandler } from './emitter';
 import { Intersect } from '@dungeon-crawler/shared';
 import * as O from 'fp-ts/Option';
-import type {
-  ECSComponent,
-  ECSComponentBuilder
-} from './features/ecs/ECSComponent';
+import type { ECSComponent } from './features/ecs/ECSComponent';
 
 import { ecsComponent, has } from './features/ecs/ECSComponent';
 import {
@@ -34,11 +31,7 @@ type ComponentFindResult<
   ? ECSEntity & ECSComponent<TName, TType>
   : ECSEntity & ECSComponent<TName, TType> & Intersect<TBrands>;
 
-type Component<
-  TType extends {},
-  TName extends string,
-  TInit extends {} = TType
-> = {
+type Component<TType extends {}, TName extends string, TInit extends {} = TType> = {
   readonly _type: ECSComponent<TName, TType>;
 
   brand: BrandFromComponent<ECSComponent<TName, TType>>;
@@ -93,9 +86,7 @@ export const defineECSComponent = <
     },
     findBy(predicate) {
       return (world, otherBrands) =>
-        world
-          .entitiesByComponent([brand, ...(otherBrands ?? [])])
-          .filter(predicate);
+        world.entitiesByComponent([brand, ...(otherBrands ?? [])]).filter(predicate);
     },
     findFirst(predicate) {
       return (world, otherBrands) => {

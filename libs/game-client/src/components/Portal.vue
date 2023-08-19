@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { SerializedGameState } from '@dungeon-crawler/game-engine';
+import { SerializedPlayerState } from '@dungeon-crawler/game-engine';
 import { toScreenCoords } from '../utils/helpers';
 import { Point, dist } from '@dungeon-crawler/shared';
 import { FrameObject, Texture } from 'pixi.js';
@@ -9,7 +9,7 @@ import { useSprite } from '../composables/useAssetCache';
 import { useAutoDestroy } from '../composables/useAutoDestroy';
 
 const props = defineProps<{
-  portal: SerializedGameState['portals'][number];
+  portal: SerializedPlayerState['portals'][number];
 }>();
 
 const position = ref<Point>(props.portal.bbox);

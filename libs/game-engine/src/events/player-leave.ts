@@ -5,10 +5,16 @@ import { player } from '../features/player/player.components';
 export const playerLeaveEvent = defineEventHandler({
   input: z.object({ id: z.string() }),
   handler: ({ input, state }) => {
-    player.findAll<[]>(state.world).forEach(player => {
-      if (player.player.id === input.id) {
-        state.world.deleteEntity(player.entity_id);
-      }
-    });
+    const leavingPlayer = state.players.find(p => p.id === input.id);
+    if (!leavingPlayer) return;
+
+    const zone = state.zones.find(z => z.id === leavingPlayer?.currentZoneId);
+    if (!zone) return;
+
+    // cleanup from world
+    zone.removePlayer(input.id);
+
+    // cleanup from global state
+    state.players.splice(state.players.indexOf(leavingPlayer), 1);
   }
 });

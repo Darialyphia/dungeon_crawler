@@ -1,6 +1,6 @@
 import type { UserResponse } from '../user/user.schemas';
 import type { UUID } from './core.types';
-import type { SerializedGameState, GameEngine } from '@dungeon-crawler/game-engine';
+import type { SerializedPlayerState, GameEngine } from '@dungeon-crawler/game-engine';
 
 export type IoEvents = {
   CLIENT: {

@@ -1,14 +1,14 @@
 import { Point } from '@dungeon-crawler/shared';
-import { GameState } from '../../../gameState';
+import { GameState, GameZoneState } from '../../../gameState';
 import { BBox, Collidable, bbox, collidable } from '../../physics/physics.components';
 import { ECSEntity } from '../../ecs/ECSEntity';
 import { CELL_TYPES, CellType } from './map.factory';
-import { obstacle } from '../map.components';
+import { Obstacle, obstacle } from '../map.components';
 
-export type CellEntity = ECSEntity & BBox & Collidable;
+export type CellEntity = ECSEntity & BBox & Obstacle & Collidable;
 
 export const createCell = (
-  state: GameState,
+  state: GameZoneState,
   { x, y, type }: Point & { type: CellType }
 ): CellEntity => {
   const entity = state.world
