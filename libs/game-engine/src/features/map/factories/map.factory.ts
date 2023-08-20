@@ -4,8 +4,10 @@ import { createCell } from './cell.factory';
 import { BBoxProps } from '../../physics/physics.components';
 import { makeDijakstraMap } from '../dijakstraMap';
 import { createPortal } from './portal.factory';
-import { MAX_ZONES } from '../../../constants';
+import { MAX_ZONES, PREFAB_DENSITY } from '../../../constants';
 import { GameZoneState, ZoneId } from '../../../gameZone';
+import { createPrefab } from './prefab.factory';
+import { prefabs } from '@dungeon-crawler/resources/src/prefabs';
 
 export const CELL_TYPES = {
   GROUND: 0, // walkable, doesn't block vision and projectiles
@@ -75,9 +77,8 @@ const getRandomWalkableCell = (
 ) => {
   let point = { x: randomInt(width - 1), y: randomInt(height - 1) };
   let cell = rows[point.y][point.x];
-
   while (cell.type !== CELL_TYPES.GROUND) {
-    point = { x: randomInt(width), y: randomInt(height) };
+    point = { x: randomInt(width - 1), y: randomInt(height - 1) };
     cell = rows[point.y][point.x];
   }
 
@@ -102,7 +103,6 @@ export const createGameMap = ({
 
     const getCellWithDiff = (neighborIndex: number): GeneratedCell => {
       const [[diffX, diffY], fallback] = neighborCoords[neighborIndex];
-      const index = pointToIndex({ x: x + diffX, y: y + diffY }, width);
 
       return rows[y + diffY]?.[x + diffX] ?? getCellWithDiff(fallback);
     };
@@ -174,7 +174,7 @@ export const createGameMap = ({
     }))
   );
 
-  const exitDistance = 10;
+  const exitDistance = 20;
   const exitCandidates = finalRows
     .flatMap(row => row.flat())
     .filter(cell => cell.dijakstra === exitDistance);
@@ -210,6 +210,18 @@ export const createGameMap = ({
       if (state.id < MAX_ZONES) {
         createPortal(state, { ...exit, isEntrance: false, isExit: true });
       }
+
+      const prefabsForTileset = Object.values(prefabs[tileset]);
+      const prefabCount = width * height * PREFAB_DENSITY;
+      for (let i = 0; i < prefabCount; i++) {
+        const index = randomInt(prefabsForTileset.length - 1);
+        const prefab = prefabsForTileset[index];
+
+        createPrefab(state, {
+          ...getRandomWalkableCell(finalRows, width, height),
+          ...prefab
+        });
+      }
     },
 
     getCellAt({ x, y }) {
@@ -237,7 +249,7 @@ export const createGameMap = ({
     },
 
     serialize(players) {
-      const visible = players.map(player => map.getNearby(player.bbox, 12));
+      const visible = players.map(player => map.getNearby(player.bbox, 15));
 
       return {
         id,

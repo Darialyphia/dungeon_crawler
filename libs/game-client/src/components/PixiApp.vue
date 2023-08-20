@@ -4,6 +4,7 @@ import Player from './Player.vue';
 import Portal from './Portal.vue';
 import Camera from './Camera.vue';
 import GameMap from './Map.vue';
+import Obstacles from './Obstacles.vue';
 import { useScreen } from 'vue3-pixi';
 import { Spritesheet } from 'pixi.js';
 import { toScreenCoords } from '../utils/helpers';
@@ -23,7 +24,8 @@ const { bundles, loadBundle } = useAssetCacheProvider();
 onMounted(async () => {
   await Promise.all([
     loadBundle(ASSET_BUNDLES.TILESETS),
-    loadBundle(ASSET_BUNDLES.SPRITES)
+    loadBundle(ASSET_BUNDLES.SPRITES),
+    loadBundle(ASSET_BUNDLES.PREFABS)
   ]);
 
   spritesheet.value = bundles[ASSET_BUNDLES.TILESETS]['base'];
@@ -35,7 +37,7 @@ const debugOptions = useDebugOptions();
 
 <template>
   <text
-    v-if="!spritesheet"
+    v-if="!spritesheet || !currentPlayer"
     :anchor="0.5"
     :x="screen.width / 2"
     :y="screen.height / 2"
@@ -49,7 +51,7 @@ const debugOptions = useDebugOptions();
 
     <template v-if="debugOptions.obstacles || debugOptions.obstaclesMinkowski">
       <graphics
-        v-for="obstacle in state.snapshot.obstacles"
+        v-for="obstacle in state.snapshot.debugObstacles"
         :key="obstacle.entity_id"
         :position="toScreenCoords(obstacle.bbox)"
         @render="
@@ -108,5 +110,6 @@ const debugOptions = useDebugOptions();
       :key="portal.entity_id"
       :portal="portal"
     />
+    <Obstacles />
   </Camera>
 </template>

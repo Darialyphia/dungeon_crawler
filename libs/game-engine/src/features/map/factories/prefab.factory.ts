@@ -1,34 +1,35 @@
-import { Point } from '@dungeon-crawler/shared';
+import { Point, Rectangle } from '@dungeon-crawler/shared';
 import { BBox, Collidable, bbox, collidable } from '../../physics/physics.components';
 import { ECSEntity } from '../../ecs/ECSEntity';
-import { CELL_TYPES, CellType } from './map.factory';
 import { Obstacle, obstacle } from '../map.components';
 import { GameZoneState } from '../../../gameZone';
+import { Spritable, spritable } from '../../render/render.components';
 
-export type CellEntity = ECSEntity & BBox & Obstacle & Collidable;
+export type PrefabEntity = ECSEntity & BBox & Obstacle & Collidable & Spritable;
 
-export const createCell = (
+export const createPrefab = (
   state: GameZoneState,
-  { x, y, type }: Point & { type: CellType }
-): CellEntity => {
+  { x, y, width, height, sprite }: Rectangle & { sprite: string }
+): PrefabEntity => {
   const entity = state.world
     .createEntity()
     .with(
       bbox.component({
-        x: x + 0.5,
-        y: y + 0.5,
-        width: 1,
-        height: 1
+        x: x + 0.501,
+        y: y + 0.501,
+        width,
+        height
       })
     )
     .with(
       obstacle.component({
-        isWall: type === CELL_TYPES.WATER,
-        isWater: type === CELL_TYPES.WATER,
-        isRendered: false
+        isWall: true,
+        isWater: false,
+        isRendered: true
       })
     )
     .with(collidable.component(true))
+    .with(spritable.component({ sprite }))
     .build();
 
   state.tree.insert(entity);

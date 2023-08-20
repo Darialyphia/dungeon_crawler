@@ -19,8 +19,8 @@ import {
   velocity
 } from './physics.components';
 import * as O from 'fp-ts/Option';
-import { GameZoneState, GameState } from '../../gameState';
 import {} from '../ecs/ECSEntity';
+import { GameZoneState } from '../../gameZone';
 
 export const physicsSystem = ({
   map,
@@ -114,10 +114,10 @@ export const physicsSystem = ({
           const withOffset = (a: number, b: number) =>
             a + (a < b ? 1 / 100 : a > b ? -1 / 100 : 0);
 
-          newBbox = clampToMapEdges(e.bbox, {
-            x: withOffset(closest.value.x, e.bbox.x),
-            y: withOffset(closest.value.y, e.bbox.y)
-          });
+          // newBbox = clampToMapEdges(e.bbox, {
+          //   x: withOffset(closest.value.x, e.bbox.x),
+          //   y: withOffset(closest.value.y, e.bbox.y)
+          // });
         });
 
         e.bbox = newBbox;

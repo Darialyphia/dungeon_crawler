@@ -15,7 +15,8 @@ export const ASSET_CACHE_INJECTION_KEY = Symbol('asset_cache') as InjectionKey<{
 export const useAssetCacheProvider = () => {
   const bundles: BundlesCache = {
     [ASSET_BUNDLES.SPRITES]: null,
-    [ASSET_BUNDLES.TILESETS]: null
+    [ASSET_BUNDLES.TILESETS]: null,
+    [ASSET_BUNDLES.PREFABS]: null
   };
 
   const api = {
@@ -41,6 +42,18 @@ export const useSprite = (spriteName: MaybeRef<string>) => {
 
   const sheet = computed(() => {
     return bundles[ASSET_BUNDLES.SPRITES]?.[unref(spriteName)];
+  });
+
+  return { sheet };
+};
+
+export const usePrefab = (spriteName: MaybeRef<string>) => {
+  const { bundles, loadBundle } = useAssetCache();
+
+  loadBundle(ASSET_BUNDLES.PREFABS);
+
+  const sheet = computed(() => {
+    return bundles[ASSET_BUNDLES.PREFABS]?.[unref(spriteName)];
   });
 
   return { sheet };

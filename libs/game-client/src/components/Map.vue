@@ -19,22 +19,15 @@ const { state } = useGameState();
 const { viewport } = useCamera();
 const debugOptions = useDebugOptions();
 
-const allCells = ref<Map<string, MapCell>>(new Map());
-const getKey = ({ x, y }: Point) => `${x}:${y}`;
-
-watchEffect(() => {
-  state.value.snapshot.map.cells.forEach(cell => {
-    const key = getKey(cell);
-    if (!allCells.value.has(key)) {
-      allCells.value.set(key, cell);
-    }
-  });
-});
+const allCells: Record<string, MapCell> = {};
+const getKey = (x: number, y: number) => `${x}:${y}` as keyof (typeof allCells)['value'];
 
 watch(
   () => state.value.snapshot.map.id,
   () => {
-    allCells.value.clear();
+    Object.keys(allCells).forEach(k => {
+      delete allCells[k];
+    });
   }
 );
 
@@ -88,7 +81,7 @@ const getVisibleCells = () => {
 
   for (let x = minX; x <= maxX; x++) {
     for (let y = minY; y <= maxY; y++) {
-      const cell = allCells.value.get(getKey({ x, y }));
+      const cell = allCells[getKey(x, y)];
       if (cell) {
         visible.push(cell);
       }
@@ -100,12 +93,27 @@ const getVisibleCells = () => {
 
 const visibleCells = ref<MapCell[]>([]);
 watch(
-  [chunkRect, allCells],
+  chunkRect,
   () => {
     visibleCells.value = getVisibleCells();
   },
-  { immediate: true, deep: true }
+  { immediate: true }
 );
+
+watchEffect(() => {
+  let hasNewCell = false;
+  state.value.snapshot.map.cells.forEach(cell => {
+    const key = getKey(cell.x, cell.y);
+    if (!allCells[key]) {
+      allCells[key] = cell;
+      hasNewCell = true;
+    }
+  });
+
+  if (hasNewCell) {
+    visibleCells.value = getVisibleCells();
+  }
+});
 
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
 const render = (graphics: Graphics) => {
@@ -115,6 +123,10 @@ const render = (graphics: Graphics) => {
 
     const texture = textureBuilder.getBitmaskTexture(cell);
 
+    // graphics.lineStyle({
+    //   color: 'black',
+    //   width: 0.5
+    // });
     graphics.beginTextureFill({
       texture
     });
@@ -128,15 +140,14 @@ const render = (graphics: Graphics) => {
 const textures = computed(() => Object.values(props.spritesheet.textures));
 
 const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
-  const left = allCells.value.get(getKey({ x: cell.x - 1, y: cell.y }));
-  const right = allCells.value.get(getKey({ x: cell.x + 1, y: cell.y }));
-  const top = allCells.value.get(getKey({ x: cell.x, y: cell.y - 1 }));
-  const bottom = allCells.value.get(getKey({ x: cell.x, y: cell.y + 1 }));
-
-  const topLeft = allCells.value.get(getKey({ x: cell.x - 1, y: cell.y - 1 }));
-  const topRight = allCells.value.get(getKey({ x: cell.x + 1, y: cell.y - 1 }));
-  const bottomLeft = allCells.value.get(getKey({ x: cell.x - 1, y: cell.y + 1 }));
-  const bottomRight = allCells.value.get(getKey({ x: cell.x + 1, y: cell.y + 1 }));
+  const left = allCells[getKey(cell.x - 1, cell.y)];
+  const right = allCells[getKey(cell.x + 1, cell.y)];
+  const top = allCells[getKey(cell.x, cell.y - 1)];
+  const bottom = allCells[getKey(cell.x, cell.y + 1)];
+  const topLeft = allCells[getKey(cell.x - 1, cell.y - 1)];
+  const topRight = allCells[getKey(cell.x + 1, cell.y - 1)];
+  const bottomLeft = allCells[getKey(cell.x - 1, cell.y + 1)];
+  const bottomRight = allCells[getKey(cell.x + 1, cell.y + 1)];
 
   let texture: Nullable<Texture> = null;
   if (!left && !bottom) {
@@ -164,10 +175,8 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
   } else if (!topRight) {
     texture = textures.value.at(-3);
   }
-
   if (texture) {
     const { x, y } = toScreenCoords(cell);
-
     graphics.beginTextureFill({
       texture
     });

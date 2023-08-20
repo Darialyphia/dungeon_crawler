@@ -5,7 +5,7 @@ import { defineECSComponent, inferComponent } from '../../utils';
  */
 export const obstacle = defineECSComponent<
   'obstacle',
-  { isWall: boolean; isWater: boolean }
+  { isWall: boolean; isWater: boolean; isRendered: boolean }
 >('obstacle', x => x);
 export type Obstacle = inferComponent<typeof obstacle>;
 

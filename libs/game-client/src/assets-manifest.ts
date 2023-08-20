@@ -4,7 +4,8 @@ import { Values, objectEntries } from '@dungeon-crawler/shared';
 
 export const ASSET_BUNDLES = {
   TILESETS: 'tilesets',
-  SPRITES: 'sprites'
+  SPRITES: 'sprites',
+  PREFABS: 'prefabs'
 } as const;
 
 export type AssetBundle = Values<typeof ASSET_BUNDLES>;
@@ -21,6 +22,13 @@ export const assetsManifest = {
     {
       name: ASSET_BUNDLES.SPRITES,
       assets: objectEntries(assetsUrls.sprites).map(([name, srcs]) => ({
+        name,
+        srcs
+      }))
+    },
+    {
+      name: ASSET_BUNDLES.PREFABS,
+      assets: objectEntries(assetsUrls.prefabs).map(([name, srcs]) => ({
         name,
         srcs
       }))

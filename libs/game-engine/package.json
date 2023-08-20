@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@dungeon-crawler/shared": "*",
+    "@dungeon-crawler/resources": "*",
     "fp-ts": "^2.16.1",
     "mitt": "^3.0.1",
     "nanoid": "^4.0.2",

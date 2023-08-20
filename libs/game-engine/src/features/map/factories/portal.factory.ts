@@ -1,9 +1,9 @@
 import { Point } from '@dungeon-crawler/shared';
-import { GameState, GameZoneState } from '../../../gameState';
 import { BBox, bbox } from '../../physics/physics.components';
 import { ECSEntity } from '../../ecs/ECSEntity';
 import { Portal, portal } from '../map.components';
 import { Interactive, interactive } from '../../interaction/interaction.components';
+import { GameZoneState } from '../../../gameZone';
 
 export type PortalEntity = ECSEntity & BBox & Portal & Interactive;
 
@@ -17,7 +17,7 @@ export const createPortal = (
       bbox.component({
         //fixes artifact on map tiles
         x: x + 0.501,
-        y: y + 0.501,
+        y: y + 0.251,
         width: 1,
         height: 1.5
       })

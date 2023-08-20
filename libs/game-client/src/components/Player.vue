@@ -84,8 +84,9 @@ const { autoDestroyRef } = useAutoDestroy();
     :position="screenPosition"
     :scale-x="player.orientation === 'left' ? -1 : 1"
     :anchor="0.5"
-    playing
     :z-index="props.player.bbox.y + 0.0000001"
+    playing
+    cullable
   />
   <!-- <graphics
     :position="screenPosition"

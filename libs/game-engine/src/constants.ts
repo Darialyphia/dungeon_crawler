@@ -3,3 +3,4 @@ export const WIDTH = 80;
 export const HEIGHT = 80;
 
 export const MAX_ZONES = 5;
+export const PREFAB_DENSITY = 0.02;

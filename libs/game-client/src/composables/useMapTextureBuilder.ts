@@ -69,7 +69,7 @@ export const useMapTextureBuilder = (spritesheet: Spritesheet) => {
 
       const texture = textures[index];
       if (!texture) {
-        console.log(cell, index, textures.length);
+        console.warn('Missing tile texture', cell, index, textures.length);
       }
       return texture;
     }

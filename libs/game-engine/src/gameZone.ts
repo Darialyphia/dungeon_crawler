@@ -29,6 +29,7 @@ import {
 } from './features/player/player.components';
 import { Interactive, interactive } from './features/interaction/interaction.components';
 import { Obstacle, obstacle, portal } from './features/map/map.components';
+import { Spritable, spritable } from './features/render/render.components';
 
 export type ZoneId = number;
 
@@ -49,7 +50,8 @@ export type SerializedGameZoneState = {
   map: SerializedMap;
   players: Record<ECSEntityId, ECSEntity & BBox & Orientation & Player & PlayerState>;
   portals: Record<ECSEntityId, PortalEntity>;
-  obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
+  obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle & Spritable>;
+  debugObstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
 };
 
 class ZoneTree extends RBush<ECSEntity & BBox> {
@@ -135,8 +137,12 @@ export const createZone = (
         .flat();
 
       const obstacles = obstacle
-        .findAll<[BBox]>(state.world, [bbox.brand])
+        .findAll<[BBox, Spritable]>(state.world, [bbox.brand, spritable.brand])
         .filter(obstacle => bboxes.includes(obstacle));
+
+      const debugObstacles = obstacle
+        .findAll<[BBox]>(state.world, [bbox.brand])
+        .filter(obstacle => bboxes.includes(obstacle) && !obstacle.obstacle.isRendered);
       const portals = portal
         .findAll<[BBox, Interactive]>(state.world, [bbox.brand, interactive.brand])
         .filter(obstacle => bboxes.includes(obstacle));
@@ -145,6 +151,7 @@ export const createZone = (
         timestamp,
         map: state.map.serialize(players),
         players: Object.fromEntries(players.map(e => [e.entity_id, e])),
+        debugObstacles: Object.fromEntries(debugObstacles.map(e => [e.entity_id, e])),
         obstacles: Object.fromEntries(obstacles.map(e => [e.entity_id, e])),
         portals: Object.fromEntries(portals.map(e => [e.entity_id, e]))
       };

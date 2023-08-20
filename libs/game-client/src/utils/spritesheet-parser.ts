@@ -1,15 +1,15 @@
-import { ExtensionType, LoaderParserPriority, Texture } from "pixi.js";
-import { z } from "zod";
-import { trimExtension } from "./helpers";
-import { assetsUrls } from "@dungeon-crawler/resources/src/browser";
+import { ExtensionType, LoaderParserPriority, Texture } from 'pixi.js';
+import { z } from 'zod';
+import { trimExtension } from './helpers';
+import { assetsUrls } from '@dungeon-crawler/resources/src/browser';
 
 const asepriteSizeSchema = z.object({
   w: z.number(),
-  h: z.number(),
+  h: z.number()
 });
 const asepriteRectSchema = asepriteSizeSchema.extend({
   x: z.number(),
-  y: z.number(),
+  y: z.number()
 });
 
 const asepriteJsonSchema = z.object({
@@ -18,7 +18,7 @@ const asepriteJsonSchema = z.object({
       filename: z.string(),
       frame: asepriteRectSchema,
       spriteSourceSize: asepriteRectSchema,
-      duration: z.number().optional(),
+      duration: z.number().optional()
     })
     .array(),
   meta: z.object({
@@ -30,17 +30,20 @@ const asepriteJsonSchema = z.object({
         name: z.string(),
         from: z.number(),
         to: z.number(),
-        direction: z.string(),
+        direction: z.string()
       })
-      .array(),
-  }),
+      .array()
+  })
 });
 type AsepriteJson = z.infer<typeof asepriteJsonSchema>;
 
-const isTileset = (url: string) =>
-  !!Object.values(assetsUrls.tilesets).find((path) => url.includes(path));
-const isSprite = (url: string) =>
-  !!Object.values(assetsUrls.sprites).find((path) => url.includes(path));
+const tilesetUrls = Object.values(assetsUrls.tilesets);
+const spriteUrls = [
+  ...Object.values(assetsUrls.sprites),
+  ...Object.values(assetsUrls.prefabs)
+];
+const isTileset = (url: string) => !!tilesetUrls.find(path => url.includes(path));
+const isSprite = (url: string) => !!spriteUrls.find(path => url.includes(path));
 
 const parseTileset = ({ frames, meta }: AsepriteJson) => ({
   frames: Object.fromEntries(
@@ -54,13 +57,13 @@ const parseTileset = ({ frames, meta }: AsepriteJson) => ({
       return [frameName, frame];
     })
   ),
-  meta,
+  meta
 });
 
 const parseSprite = ({ frames, meta }: AsepriteJson) => {
   return {
     frames: Object.fromEntries(
-      frames.map((frame) => {
+      frames.map(frame => {
         const { filename } = frame;
         // avoids console warnings with HMR
         if (import.meta.env.DEV) {
@@ -70,23 +73,23 @@ const parseSprite = ({ frames, meta }: AsepriteJson) => {
       })
     ),
     animations: Object.fromEntries(
-      meta.frameTags.map((tag) => [
+      meta.frameTags.map(tag => [
         tag.name,
-        frames.slice(tag.from, tag.to + 1).map((frame) => frame.filename),
+        frames.slice(tag.from, tag.to + 1).map(frame => frame.filename)
       ])
     ),
     meta: {
       ...meta,
-      scale: "1",
-    },
+      scale: '1'
+    }
   };
 };
 
 export const spriteSheetParser = {
   extension: {
-    name: "Howler Loader Parser",
+    name: 'Howler Loader Parser',
     priority: LoaderParserPriority.Normal,
-    type: ExtensionType.LoadParser,
+    type: ExtensionType.LoadParser
   },
   test(url: string): boolean {
     return isTileset(url) || isSprite(url);
@@ -99,5 +102,5 @@ export const spriteSheetParser = {
 
     if (isTileset(url)) return parseTileset(parsed);
     if (isSprite(url)) return parseSprite(parsed);
-  },
+  }
 };

@@ -20,13 +20,7 @@ export {
 } from './features/map/factories/map.factory';
 export type { SerializedGameZoneState };
 
-export type SerializedPlayerState = {
-  map: SerializedMap;
-  players: Record<ECSEntityId, ECSEntity & BBox & Orientation & Player & PlayerState>;
-  portals: Record<ECSEntityId, PortalEntity>;
-  obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
-  timestamp: number;
-};
+export type SerializedPlayerState = SerializedGameZoneState;
 
 export type SerializedGameState = Record<string, SerializedPlayerState>;
 
@@ -88,7 +82,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
     }
   };
 
-  const serializeState = (state: GameState, timestamp: number): SerializedGameState => {
+  const serializeState = (state: GameState): SerializedGameState => {
     const serialized: SerializedGameState = Object.fromEntries(
       state.players.map(player => {
         const zone = state.zones.find(z => z.id === player.currentZoneId);
@@ -100,7 +94,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
         return [
           player.id,
-          stringify(zone.serialize(timestamp)) as unknown as SerializedGameZoneState
+          stringify(zone.serialize(Date.now())) as unknown as SerializedGameZoneState
         ];
       })
     );
@@ -115,7 +109,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
 
     subscribe(cb) {
       const _cb = (state: GameState) => {
-        cb(serializeState(state, performance.now()));
+        cb(serializeState(state));
       };
       emitter.on('tick', _cb);
 

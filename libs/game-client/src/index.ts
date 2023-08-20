@@ -1,3 +1,3 @@
-import GameClient from "./GameClient.vue";
+import GameClient from './GameClient.vue';
 
 export { GameClient };
