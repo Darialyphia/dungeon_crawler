@@ -38,7 +38,7 @@ export type GameZoneState = {
   world: ECSWorld;
   map: GameMap;
   tree: RBush<ECSEntity & BBox>;
-  addPlayer(id: PlayerId, options?: Omit<CreatePlayerOptions, 'id'>): void;
+  addPlayer(id: PlayerId, options?: Omit<CreatePlayerOptions, 'id'>): ECSEntityId;
   removePlayer(id: PlayerId): void;
   changePlayerZone(playerId: PlayerId, zoneId: ZoneId): void;
   run(timestamp: number): void;
@@ -48,7 +48,10 @@ export type GameZoneState = {
 export type SerializedGameZoneState = {
   timestamp: number;
   map: SerializedMap;
-  players: Record<ECSEntityId, ECSEntity & BBox & Orientation & Player & PlayerState>;
+  players: Record<
+    ECSEntityId,
+    ECSEntity & BBox & Orientation & Player & PlayerState & Spritable
+  >;
   portals: Record<ECSEntityId, PortalEntity>;
   obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle & Spritable>;
   debugObstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
@@ -96,10 +99,12 @@ export const createZone = (
       })
     }),
     world: createWorld(),
-    addPlayer(playerId, options = {}) {
-      createPlayer(state, { id: playerId, ...options });
+    addPlayer(playerId, options = { sprite: 'orc' }) {
+      const entity = createPlayer(state, { id: playerId, ...options });
 
       isRunning = true;
+
+      return entity.entity_id;
     },
     removePlayer(playerId) {
       player.findAll(state.world).forEach(player => {
@@ -120,11 +125,10 @@ export const createZone = (
       state.world.runSystems({ delta });
     },
     serialize(timestamp) {
-      const players = player.findAll<[BBox, PlayerState, Orientation]>(state.world, [
-        bbox.brand,
-        playerState.brand,
-        orientation.brand
-      ]);
+      const players = player.findAll<[BBox, PlayerState, Orientation, Spritable]>(
+        state.world,
+        [bbox.brand, playerState.brand, orientation.brand, spritable.brand]
+      );
       const bboxes = players
         .map(p =>
           state.tree.search({

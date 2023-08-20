@@ -60,7 +60,7 @@ const interpolatePlayerPosition = () => {
 onTick(interpolatePlayerPosition);
 onTick(followPlayer);
 
-const { sheet } = useSprite('orc');
+const { sheet } = useSprite(props.player.spritable.sprite);
 const textures = ref<FrameObject[]>([]);
 
 watch(

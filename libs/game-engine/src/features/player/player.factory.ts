@@ -13,9 +13,11 @@ import {
 } from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
 import { GameZoneState } from '../../gameZone';
+import { Spritable, spritable } from '../render/render.components';
 
 export type CreatePlayerOptions = {
   id: PlayerId;
+  sprite: string;
   position?: Point;
 };
 
@@ -25,7 +27,8 @@ export type PlayerEntity = ECSEntity &
   BBox &
   Velocity &
   Orientation &
-  Collidable;
+  Collidable &
+  Spritable;
 
 export const createPlayer = (
   state: GameZoneState,
@@ -51,6 +54,7 @@ export const createPlayer = (
     .with(player.component({ id: options.id }))
     .with(playerState.component('idle'))
     .with(collidable.component(true))
+    .with(spritable.component({ sprite: options.sprite }))
     .build();
 
   state.tree.insert(entity);

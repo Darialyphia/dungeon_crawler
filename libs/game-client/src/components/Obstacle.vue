@@ -34,12 +34,15 @@ const { autoDestroyRef } = useAutoDestroy();
 </script>
 
 <template>
-  <container :ref="autoDestroyRef" :position="screenPosition">
+  <container
+    :ref="autoDestroyRef"
+    :position="screenPosition"
+    :z-index="props.obstacle.bbox.y"
+  >
     <animated-sprite
       v-if="textures?.length"
       :textures="(textures as unknown as Texture[])"
       :anchor="0.5"
-      :z-index="props.obstacle.bbox.y"
       cullable
       playing
     />
