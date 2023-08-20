@@ -1,5 +1,5 @@
 import { mapRange } from '@dungeon-crawler/shared';
-import { HEIGHT, WIDTH } from './constants';
+import { HEIGHT, MONSTER_DENSITY, WIDTH } from './constants';
 import { ECSWorld, createWorld } from './features/ecs/ECSWorld';
 import { createNoiseGenerator } from './features/map/generators/noise';
 import {
@@ -30,6 +30,8 @@ import {
 import { Interactive, interactive } from './features/interaction/interaction.components';
 import { Obstacle, obstacle, portal } from './features/map/map.components';
 import { Spritable, spritable } from './features/render/render.components';
+import { createMonster } from './features/monster/monster.factory';
+import { MonsterState, monsterState } from './features/monster/monster.components';
 
 export type ZoneId = number;
 
@@ -51,6 +53,10 @@ export type SerializedGameZoneState = {
   players: Record<
     ECSEntityId,
     ECSEntity & BBox & Orientation & Player & PlayerState & Spritable
+  >;
+  monsters: Record<
+    ECSEntityId,
+    ECSEntity & BBox & Orientation & MonsterState & Spritable
   >;
   portals: Record<ECSEntityId, PortalEntity>;
   obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle & Spritable>;
@@ -150,11 +156,19 @@ export const createZone = (
       const portals = portal
         .findAll<[BBox, Interactive]>(state.world, [bbox.brand, interactive.brand])
         .filter(obstacle => bboxes.includes(obstacle));
+      const monsters = monsterState
+        .findAll<[BBox, Orientation, Spritable]>(state.world, [
+          bbox.brand,
+          orientation.brand,
+          spritable.brand
+        ])
+        .filter(obstacle => bboxes.includes(obstacle));
 
       return {
         timestamp,
         map: state.map.serialize(players),
         players: Object.fromEntries(players.map(e => [e.entity_id, e])),
+        monsters: Object.fromEntries(monsters.map(e => [e.entity_id, e])),
         debugObstacles: Object.fromEntries(debugObstacles.map(e => [e.entity_id, e])),
         obstacles: Object.fromEntries(obstacles.map(e => [e.entity_id, e])),
         portals: Object.fromEntries(portals.map(e => [e.entity_id, e]))
@@ -165,6 +179,13 @@ export const createZone = (
   state.map.init(state);
   state.world.addSystem('physics', physicsSystem(state));
   state.world.addSystem('portals', portalsSystem(state));
+
+  const monsterCount = state.map.width * state.map.height * MONSTER_DENSITY;
+  for (let i = 0; i < monsterCount; i++) {
+    createMonster(state, {
+      sprite: 'orc'
+    });
+  }
 
   return state;
 };

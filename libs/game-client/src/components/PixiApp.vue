@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useGameState } from '../composables/useGameState';
 import Player from './Player.vue';
+import Monster from './Monster.vue';
 import Portal from './Portal.vue';
 import Camera from './Camera.vue';
 import GameMap from './Map.vue';
@@ -104,6 +105,11 @@ const debugOptions = useDebugOptions();
       v-for="player in state.snapshot.players"
       :key="player.entity_id"
       :player="player"
+    />
+    <Monster
+      v-for="monster in state.snapshot.monsters"
+      :key="monster.entity_id"
+      :monster="monster"
     />
     <Portal
       v-for="portal in state.snapshot.portals"
