@@ -28,6 +28,11 @@ export const prefabs = {
       width: 0.5,
       height: 0.5,
       sprite: 'rock03'
+    },
+    rock04: {
+      width: 1,
+      height: 1,
+      sprite: 'rock04'
     }
   }
 } satisfies Record<string, Record<string, Prefab>>;

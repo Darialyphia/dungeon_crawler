@@ -63,7 +63,7 @@ export const createNoiseGenerator = <T>({
   frequency = 0.1,
   octaves = 3,
   amplitude = 4,
-  persistence = 0.5
+  persistence = 0.2
 }: NoiseGeneratorOptions<T>): MapGenerator<T> => {
   return {
     getChunk({ width, height, startsAt }) {

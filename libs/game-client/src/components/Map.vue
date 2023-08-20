@@ -2,7 +2,7 @@
 import { useGameState } from '../composables/useGameState';
 import { useCamera } from '../composables/useCamera';
 import { CELL_SIZE } from '../utils/constants';
-import { BBox, Nullable, Point, rectToBBox } from '@dungeon-crawler/shared';
+import { BBox, Nullable, Point, dist, rectToBBox } from '@dungeon-crawler/shared';
 import { Graphics, Texture } from 'pixi.js';
 import { toScreenCoords } from '../utils/helpers';
 import { Spritesheet } from 'pixi.js';
@@ -10,6 +10,7 @@ import { useMapTextureBuilder } from '../composables/useMapTextureBuilder';
 import { useDebugOptions } from '../composables/useDebugOptions';
 import { Container } from 'pixi.js';
 import { MapCell } from '@dungeon-crawler/game-engine';
+import { useCurrentPlayer } from '../composables/useCurrentPlayer';
 
 const props = defineProps<{
   spritesheet: Spritesheet;
@@ -115,6 +116,17 @@ watchEffect(() => {
   }
 });
 
+const currentPlayer = useCurrentPlayer();
+const playerBbox = ref(currentPlayer.value?.bbox);
+watch(
+  [
+    computed(() => currentPlayer.value?.bbox.x),
+    computed(() => currentPlayer.value?.bbox.y)
+  ],
+  () => {
+    playerBbox.value = currentPlayer.value?.bbox;
+  }
+);
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
 const render = (graphics: Graphics) => {
   graphics.clear();
@@ -131,9 +143,19 @@ const render = (graphics: Graphics) => {
       texture
     });
     graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
+    graphics.endFill();
+    const distanceToPlayer = dist(
+      { x: cell.x, y: cell.y },
+      { x: playerBbox.value!.x, y: playerBbox.value!.y }
+    );
+
+    if (distanceToPlayer > 10.5) {
+      graphics.beginFill('black', 0.5);
+      graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
+      graphics.endFill();
+    }
 
     renderFogOfWar(cell, graphics);
-    graphics.endFill();
   });
 };
 

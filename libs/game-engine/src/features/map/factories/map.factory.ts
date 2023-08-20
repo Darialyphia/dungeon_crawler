@@ -4,7 +4,7 @@ import { createCell } from './cell.factory';
 import { BBoxProps } from '../../physics/physics.components';
 import { makeDijakstraMap } from '../dijakstraMap';
 import { createPortal } from './portal.factory';
-import { MAX_ZONES, PREFAB_DENSITY } from '../../../constants';
+import { MAX_ZONES, PORTAL_DISTANCE, PREFAB_DENSITY } from '../../../constants';
 import { GameZoneState, ZoneId } from '../../../gameZone';
 import { createPrefab } from './prefab.factory';
 import { prefabs } from '@dungeon-crawler/resources/src/prefabs';
@@ -174,10 +174,9 @@ export const createGameMap = ({
     }))
   );
 
-  const exitDistance = 20;
   const exitCandidates = finalRows
     .flatMap(row => row.flat())
-    .filter(cell => cell.dijakstra === exitDistance);
+    .filter(cell => cell.dijakstra === PORTAL_DISTANCE);
   if (exitCandidates.length === 0) {
     console.warn('no exit candidate !');
   }

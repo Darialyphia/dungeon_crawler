@@ -88,7 +88,7 @@ export const createZone = (
           if (normalized < 0.005) {
             return { x, y, type: CELL_TYPES.WATER };
           }
-          if (normalized > 0.7) {
+          if (normalized > 0.8) {
             return { x, y, type: CELL_TYPES.WALL };
           }
           return { x, y, type: CELL_TYPES.GROUND };
@@ -128,10 +128,10 @@ export const createZone = (
       const bboxes = players
         .map(p =>
           state.tree.search({
-            minX: p.bbox.x - 15,
-            minY: p.bbox.y - 15,
-            maxX: p.bbox.x + 15,
-            maxY: p.bbox.y + 15
+            minX: p.bbox.x - 10,
+            minY: p.bbox.y - 10,
+            maxX: p.bbox.x + 10,
+            maxY: p.bbox.y + 10
           })
         )
         .flat();
