@@ -14,6 +14,11 @@ export const prefabs = {
       height: 0.75,
       sprite: 'bush02'
     },
+    bush03: {
+      width: 1,
+      height: 1,
+      sprite: 'bush03'
+    },
     rock01: {
       width: 0.5,
       height: 0.5,
