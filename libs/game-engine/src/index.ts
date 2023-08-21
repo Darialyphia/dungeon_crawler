@@ -2,13 +2,7 @@ import { GameState, createGameState } from './gameState';
 import { createEmitter } from './emitter';
 import { EventMap, inferEventInput } from './events';
 import { TICK_RATE } from './constants';
-import { BBox, Orientation } from './features/physics/physics.components';
-import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
-import { Player, PlayerState } from './features/player/player.components';
-import { SerializedMap } from './features/map/factories/map.factory';
 import { stringify } from 'zipson';
-import { Obstacle } from './features/map/map.components';
-import { PortalEntity } from './features/map/factories/portal.factory';
 import { SerializedGameZoneState } from './gameZone';
 
 export type { EventMap };

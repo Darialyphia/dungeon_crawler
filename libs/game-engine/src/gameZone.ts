@@ -20,19 +20,18 @@ import { ECSEntity, ECSEntityId } from './features/ecs/ECSEntity';
 import { portalsSystem } from './features/map/portal.system';
 import { CreatePlayerOptions, createPlayer } from './features/player/player.factory';
 import { PortalEntity } from './features/map/factories/portal.factory';
-import {
-  Player,
-  PlayerId,
-  PlayerState,
-  player,
-  playerState
-} from './features/player/player.components';
+import { Player, PlayerId, player } from './features/player/player.components';
 import { Interactive, interactive } from './features/interaction/interaction.components';
 import { Obstacle, obstacle, portal } from './features/map/map.components';
-import { Spritable, spritable } from './features/render/render.components';
+import {
+  Spritable,
+  Animatable,
+  animatable,
+  spritable
+} from './features/render/render.components';
 import { createMonster } from './features/monster/monster.factory';
-import { MonsterState, monsterState } from './features/monster/monster.components';
 import { attackSystem } from './features/combat/attack.system';
+import { monster } from './features/monster/monster.components';
 
 export type ZoneId = number;
 
@@ -53,12 +52,9 @@ export type SerializedGameZoneState = {
   map: SerializedMap;
   players: Record<
     ECSEntityId,
-    ECSEntity & BBox & Orientation & Player & PlayerState & Spritable
+    ECSEntity & BBox & Orientation & Player & Animatable & Spritable
   >;
-  monsters: Record<
-    ECSEntityId,
-    ECSEntity & BBox & Orientation & MonsterState & Spritable
-  >;
+  monsters: Record<ECSEntityId, ECSEntity & BBox & Orientation & Animatable & Spritable>;
   portals: Record<ECSEntityId, PortalEntity>;
   obstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle & Spritable>;
   debugObstacles: Record<ECSEntityId, ECSEntity & BBox & Obstacle>;
@@ -132,9 +128,9 @@ export const createZone = (
       state.world.runSystems({ delta, totalTime });
     },
     serialize(timestamp) {
-      const players = player.findAll<[BBox, PlayerState, Orientation, Spritable]>(
+      const players = player.findAll<[BBox, Animatable, Orientation, Spritable]>(
         state.world,
-        [bbox.brand, playerState.brand, orientation.brand, spritable.brand]
+        [bbox.brand, animatable.brand, orientation.brand, spritable.brand]
       );
       const bboxes = players
         .map(p =>
@@ -157,10 +153,11 @@ export const createZone = (
       const portals = portal
         .findAll<[BBox, Interactive]>(state.world, [bbox.brand, interactive.brand])
         .filter(obstacle => bboxes.includes(obstacle));
-      const monsters = monsterState
-        .findAll<[BBox, Orientation, Spritable]>(state.world, [
+      const monsters = monster
+        .findAll<[BBox, Orientation, Animatable, Spritable]>(state.world, [
           bbox.brand,
           orientation.brand,
+          animatable.brand,
           spritable.brand
         ])
         .filter(obstacle => bboxes.includes(obstacle));
@@ -178,9 +175,9 @@ export const createZone = (
   };
 
   state.map.init(state);
+  state.world.addSystem('attack', attackSystem(state));
   state.world.addSystem('physics', physicsSystem(state));
   state.world.addSystem('portals', portalsSystem(state));
-  state.world.addSystem('attack', attackSystem(state));
 
   const monsterCount = state.map.width * state.map.height * MONSTER_DENSITY;
   for (let i = 0; i < monsterCount; i++) {

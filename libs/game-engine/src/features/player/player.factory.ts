@@ -1,5 +1,5 @@
 import { Point, addVector } from '@dungeon-crawler/shared';
-import { Player, PlayerId, PlayerState, player, playerState } from './player.components';
+import { Player, PlayerId, player } from './player.components';
 import {
   BBox,
   Orientation,
@@ -13,7 +13,12 @@ import {
 } from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
 import { GameZoneState } from '../../gameZone';
-import { Spritable, spritable } from '../render/render.components';
+import {
+  Animatable,
+  Spritable,
+  animatable,
+  spritable
+} from '../render/render.components';
 import { attacker } from '../combat/combat.components';
 
 export type CreatePlayerOptions = {
@@ -24,12 +29,12 @@ export type CreatePlayerOptions = {
 
 export type PlayerEntity = ECSEntity &
   Player &
-  PlayerState &
   BBox &
   Velocity &
   Orientation &
   Collidable &
-  Spritable;
+  Spritable &
+  Animatable;
 
 export const createPlayer = (
   state: GameZoneState,
@@ -53,7 +58,7 @@ export const createPlayer = (
     )
     .with(orientation.component('right'))
     .with(player.component({ id: options.id }))
-    .with(playerState.component({ state: 'idle' }))
+    .with(animatable.component({ state: 'idle' }))
     .with(collidable.component(true))
     .with(spritable.component({ sprite: options.sprite }))
     .with(attacker.component(true))

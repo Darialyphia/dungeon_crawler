@@ -15,16 +15,3 @@ export type Player = inferComponent<typeof player>;
 
 export const getPlayerById = <T extends ECSComponent<string>[] = []>(id: PlayerId) =>
   player.findFirst<T>(entity => entity.player.id === id);
-
-/**
- * PlayerState component
- */
-
-type PlayeStateType = 'idle' | 'walking' | 'attacking';
-
-export const playerState = defineECSComponent<'playerState', { state: PlayeStateType }>(
-  'playerState',
-  state => state
-);
-
-export type PlayerState = inferComponent<typeof playerState>;

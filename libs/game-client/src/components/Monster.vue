@@ -54,10 +54,10 @@ const { sheet } = useSprite(props.monster.spritable.sprite);
 const textures = ref<FrameObject[]>([]);
 
 watch(
-  [() => props.monster.monsterState.state, sheet],
-  ([playerState, sheet]) => {
+  [() => props.monster.animatable.state, sheet],
+  ([monsterState, sheet]) => {
     if (sheet) {
-      textures.value = createSpritesheetFrameObject(playerState, sheet);
+      textures.value = createSpritesheetFrameObject(monsterState, sheet);
     }
   },
   { immediate: true }

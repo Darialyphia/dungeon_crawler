@@ -66,7 +66,7 @@ const textures = ref<FrameObject[]>([]);
 
 const sprite = ref<AnimatedSprite>();
 watch(
-  [() => props.player.playerState.state, sheet],
+  [() => props.player.animatable.state, sheet],
   ([playerState, sheet]) => {
     if (sheet) {
       textures.value = createSpritesheetFrameObject(playerState, sheet);
@@ -80,7 +80,7 @@ watch(
 
 const { autoDestroyRef } = useAutoDestroy();
 
-const loop = computed(() => ['idle', 'walking'].includes(props.player.playerState.state));
+const loop = computed(() => ['idle', 'walking'].includes(props.player.animatable.state));
 </script>
 
 <template>

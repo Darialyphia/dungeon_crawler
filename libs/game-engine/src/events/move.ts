@@ -2,11 +2,7 @@ import { z } from 'zod';
 import { defineEventHandler } from '../utils';
 import { Point, addVector, setMagnitude } from '@dungeon-crawler/shared';
 import { isNone } from 'fp-ts/Option';
-import {
-  PlayerState,
-  getPlayerById,
-  playerState
-} from '../features/player/player.components';
+import { getPlayerById } from '../features/player/player.components';
 import {
   type BBox,
   type Velocity,
@@ -15,6 +11,7 @@ import {
   velocity,
   orientation
 } from '../features/physics/physics.components';
+import { Animatable, animatable } from '../features/render/render.components';
 
 type Directions = {
   up: boolean;
@@ -55,19 +52,19 @@ export const moveEvent = defineEventHandler({
     const zone = state.zones.find(z => z.id === movingPlayer?.currentZoneId);
     if (!zone) return;
 
-    const maybePlayer = getPlayerById<[BBox, Velocity, Orientation, PlayerState]>(
+    const maybePlayer = getPlayerById<[BBox, Velocity, Orientation, Animatable]>(
       input.playerId
-    )(zone.world, [bbox.brand, velocity.brand, orientation.brand, playerState.brand]);
+    )(zone.world, [bbox.brand, velocity.brand, orientation.brand, animatable.brand]);
 
     if (isNone(maybePlayer)) return;
 
     const player = maybePlayer.value;
-    if (player.playerState.state === 'attacking') return;
+    if (player.animatable.state === 'attacking') return;
 
     const newVelocity = computeVelocity(input);
 
     const isMoving = newVelocity.x !== 0 || newVelocity.y !== 0;
-    player.playerState.state = isMoving ? 'walking' : 'idle';
+    player.animatable.state = isMoving ? 'walking' : 'idle';
 
     if (newVelocity.x) {
       player.orientation = newVelocity.x < 0 ? 'left' : 'right';

@@ -11,15 +11,21 @@ import {
 } from '../physics/physics.components';
 import { ECSEntity } from '../ecs/ECSEntity';
 import { GameZoneState } from '../../gameZone';
-import { Spritable, spritable } from '../render/render.components';
-import { MonsterState, monsterState } from './monster.components';
+import {
+  Spritable,
+  spritable,
+  Animatable,
+  animatable
+} from '../render/render.components';
+import { Monster, monster } from './monster.components';
 
 export type CreateMonsterOptions = {
   sprite: string;
 };
 
 export type MonsterEntity = ECSEntity &
-  MonsterState &
+  Monster &
+  Animatable &
   BBox &
   Velocity &
   Orientation &
@@ -47,9 +53,10 @@ export const createMonster = (
       })
     )
     .with(orientation.component('right'))
-    .with(monsterState.component('idle'))
+    .with(monster.component(true))
     .with(collidable.component(true))
     .with(spritable.component({ sprite: options.sprite }))
+    .with(animatable.component({ state: 'idle' }))
     .build();
 
   state.tree.insert(entity);
