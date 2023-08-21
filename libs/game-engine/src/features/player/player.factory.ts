@@ -14,6 +14,7 @@ import {
 import { ECSEntity } from '../ecs/ECSEntity';
 import { GameZoneState } from '../../gameZone';
 import { Spritable, spritable } from '../render/render.components';
+import { attacker } from '../combat/combat.components';
 
 export type CreatePlayerOptions = {
   id: PlayerId;
@@ -52,9 +53,10 @@ export const createPlayer = (
     )
     .with(orientation.component('right'))
     .with(player.component({ id: options.id }))
-    .with(playerState.component('idle'))
+    .with(playerState.component({ state: 'idle' }))
     .with(collidable.component(true))
     .with(spritable.component({ sprite: options.sprite }))
+    .with(attacker.component(true))
     .build();
 
   state.tree.insert(entity);

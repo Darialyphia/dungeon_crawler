@@ -1,4 +1,4 @@
-export const TICK_RATE = 20;
+export const TICK_RATE = 25;
 export const WIDTH = 80;
 export const HEIGHT = 80;
 

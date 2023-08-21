@@ -69,7 +69,7 @@ export const createGame: GameFactory = ({ debug = false }) => {
     eventQueue.clear();
 
     state.zones.forEach(zone => {
-      zone.run(delta);
+      zone.run(delta, now);
     });
 
     lastTick = now;

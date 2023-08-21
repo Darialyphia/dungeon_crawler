@@ -11,6 +11,7 @@ import { FrameObject, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
 import { useSprite } from '../composables/useAssetCache';
 import { useAutoDestroy } from '../composables/useAutoDestroy';
+import { AnimatedSprite } from 'pixi.js';
 
 const props = defineProps<{
   player: SerializedPlayerState['players'][number];
@@ -63,50 +64,37 @@ onTick(followPlayer);
 const { sheet } = useSprite(props.player.spritable.sprite);
 const textures = ref<FrameObject[]>([]);
 
+const sprite = ref<AnimatedSprite>();
 watch(
   [() => props.player.playerState.state, sheet],
   ([playerState, sheet]) => {
     if (sheet) {
       textures.value = createSpritesheetFrameObject(playerState, sheet);
+      nextTick(() => {
+        sprite.value?.gotoAndPlay(0);
+      });
     }
   },
   { immediate: true }
 );
 
 const { autoDestroyRef } = useAutoDestroy();
+
+const loop = computed(() => ['idle', 'walking'].includes(props.player.playerState.state));
 </script>
 
 <template>
-  <animated-sprite
-    v-if="textures?.length"
-    :ref="autoDestroyRef"
-    :textures="(textures as unknown as Texture[])"
-    :position="screenPosition"
-    :scale-x="player.orientation === 'left' ? -1 : 1"
-    :anchor="0.5"
-    :z-index="props.player.bbox.y + 0.0000001"
-    playing
-    cullable
-  />
-  <!-- <graphics
-    :position="screenPosition"
-    @render="
-      graphics => {
-        graphics.clear();
-        graphics.beginFill('red');
-        graphics.drawCircle(0, 0, CELL_SIZE / 2);
-        graphics.endFill();
-        graphics.lineStyle({
-          color: 'red',
-          width: 1
-        });
-        graphics.drawRect(
-          (-player.bbox.width * CELL_SIZE) / 2,
-          (-player.bbox.height * CELL_SIZE) / 2,
-          CELL_SIZE,
-          CELL_SIZE
-        );
-      }
-    "
-  /> -->
+  <container :ref="autoDestroyRef" :z-index="props.player.bbox.y + 0.0000001">
+    <animated-sprite
+      v-if="textures?.length"
+      ref="sprite"
+      :textures="(textures as unknown as Texture[])"
+      :position="screenPosition"
+      :scale-x="player.orientation === 'left' ? -1 : 1"
+      :anchor="0.5"
+      playing
+      cullable
+      :loop="loop"
+    />
+  </container>
 </template>

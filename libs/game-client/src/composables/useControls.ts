@@ -2,7 +2,7 @@ import { Nullable, dist } from '@dungeon-crawler/shared';
 import { Dispatcher } from './useDispatch';
 import { GameState } from './useGameState';
 import { useKeydownOnce } from './useKeydownOnce';
-import { PortalEntity } from '@dungeon-crawler/game-engine/src/features/map/portal.factory';
+import { PortalEntity } from '@dungeon-crawler/game-engine/src/features/map/factories/portal.factory';
 
 export const useControls = (dispatch: Dispatcher, playerId: string, state: GameState) => {
   const pressedKeys = {
@@ -77,6 +77,12 @@ export const useControls = (dispatch: Dispatcher, playerId: string, state: GameS
   const onKeydown = keyboardHandler(true);
   const onKeyup = keyboardHandler(false);
 
-  useKeydownOnce(onKeydown);
+  useEventListener(window, 'keydown', onKeydown);
   useEventListener(window, 'keyup', onKeyup);
+  useEventListener(document, 'click', () => {
+    dispatch({
+      type: 'attack',
+      payload: { playerId }
+    });
+  });
 };

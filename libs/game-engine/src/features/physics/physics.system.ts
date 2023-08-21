@@ -21,6 +21,7 @@ import {
 import * as O from 'fp-ts/Option';
 import {} from '../ecs/ECSEntity';
 import { GameZoneState } from '../../gameZone';
+import { playerState } from '../player/player.components';
 
 export const physicsSystem = ({
   map,
@@ -91,8 +92,6 @@ export const physicsSystem = ({
     target: [collidable.brand, bbox.brand, velocity.brand],
     run(_, props, entities) {
       entities.forEach(e => {
-        if (!velocity.has(e)) return;
-
         const newPos = computeNewPosition(e, props.delta);
         let newBbox = clampToMapEdges(e.bbox, newPos);
 

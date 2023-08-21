@@ -6,6 +6,7 @@ import type { ECSWorld } from './ECSWorld';
 
 export type ECSSystemProps = {
   readonly delta: number;
+  readonly totalTime: number;
 };
 
 export interface ECSSystem<Cs extends ECSComponent<string>[]> {

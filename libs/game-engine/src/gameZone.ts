@@ -32,6 +32,7 @@ import { Obstacle, obstacle, portal } from './features/map/map.components';
 import { Spritable, spritable } from './features/render/render.components';
 import { createMonster } from './features/monster/monster.factory';
 import { MonsterState, monsterState } from './features/monster/monster.components';
+import { attackSystem } from './features/combat/attack.system';
 
 export type ZoneId = number;
 
@@ -43,7 +44,7 @@ export type GameZoneState = {
   addPlayer(id: PlayerId, options?: Omit<CreatePlayerOptions, 'id'>): ECSEntityId;
   removePlayer(id: PlayerId): void;
   changePlayerZone(playerId: PlayerId, zoneId: ZoneId): void;
-  run(timestamp: number): void;
+  run(timestamp: number, totalTime: number): void;
   serialize(timestamp: number): SerializedGameZoneState;
 };
 
@@ -125,10 +126,10 @@ export const createZone = (
       }
     },
 
-    run(delta: number) {
+    run(delta, totalTime) {
       if (!isRunning) return;
 
-      state.world.runSystems({ delta });
+      state.world.runSystems({ delta, totalTime });
     },
     serialize(timestamp) {
       const players = player.findAll<[BBox, PlayerState, Orientation, Spritable]>(
@@ -179,6 +180,7 @@ export const createZone = (
   state.map.init(state);
   state.world.addSystem('physics', physicsSystem(state));
   state.world.addSystem('portals', portalsSystem(state));
+  state.world.addSystem('attack', attackSystem(state));
 
   const monsterCount = state.map.width * state.map.height * MONSTER_DENSITY;
   for (let i = 0; i < monsterCount; i++) {

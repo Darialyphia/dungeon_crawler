@@ -49,10 +49,10 @@ export const moveEvent = defineEventHandler({
     right: z.boolean()
   }),
   handler: ({ input, state }) => {
-    const leavingPlayer = state.players.find(p => p.id === input.playerId);
-    if (!leavingPlayer) return;
+    const movingPlayer = state.players.find(p => p.id === input.playerId);
+    if (!movingPlayer) return;
 
-    const zone = state.zones.find(z => z.id === leavingPlayer?.currentZoneId);
+    const zone = state.zones.find(z => z.id === movingPlayer?.currentZoneId);
     if (!zone) return;
 
     const maybePlayer = getPlayerById<[BBox, Velocity, Orientation, PlayerState]>(
@@ -62,7 +62,7 @@ export const moveEvent = defineEventHandler({
     if (isNone(maybePlayer)) return;
 
     const player = maybePlayer.value;
-    if (player.player.id !== input.playerId) return;
+    if (player.playerState.state === 'attacking') return;
 
     const newVelocity = computeVelocity(input);
 
