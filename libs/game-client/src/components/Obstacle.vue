@@ -6,6 +6,7 @@ import { FrameObject, Texture } from 'pixi.js';
 import { createSpritesheetFrameObject } from '../utils/frame-object';
 import { usePrefab } from '../composables/useAssetCache';
 import { useAutoDestroy } from '../composables/useAutoDestroy';
+import HitBox from './HitBox.vue';
 
 const props = defineProps<{
   obstacle: SerializedPlayerState['obstacles'][number];
@@ -34,17 +35,19 @@ const { autoDestroyRef } = useAutoDestroy();
 </script>
 
 <template>
-  <container
-    :ref="autoDestroyRef"
-    :position="screenPosition"
-    :z-index="props.obstacle.bbox.y"
-  >
-    <animated-sprite
-      v-if="textures?.length"
-      :textures="(textures as unknown as Texture[])"
-      :anchor="0.5"
-      cullable
-      playing
-    />
-  </container>
+  <HitBox :entity="props.obstacle">
+    <container
+      :ref="autoDestroyRef"
+      :position="screenPosition"
+      :z-index="props.obstacle.bbox.y"
+    >
+      <animated-sprite
+        v-if="textures?.length"
+        :textures="(textures as unknown as Texture[])"
+        :anchor="0.5"
+        cullable
+        playing
+      />
+    </container>
+  </HitBox>
 </template>

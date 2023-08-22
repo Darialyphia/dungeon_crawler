@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { SerializedPlayerState } from '@dungeon-crawler/game-engine';
+import HitBox from './HitBox.vue';
 import { useGameState } from '../composables/useGameState';
 import { onTick } from 'vue3-pixi';
 import { interpolatePosition } from '../utils/interpolate';
@@ -84,17 +85,19 @@ const loop = computed(() => ['idle', 'walking'].includes(props.player.animatable
 </script>
 
 <template>
-  <container :ref="autoDestroyRef" :z-index="props.player.bbox.y + 0.0000001">
-    <animated-sprite
-      v-if="textures?.length"
-      ref="sprite"
-      :textures="(textures as unknown as Texture[])"
-      :position="screenPosition"
-      :scale-x="player.orientation === 'left' ? -1 : 1"
-      :anchor="0.5"
-      playing
-      cullable
-      :loop="loop"
-    />
-  </container>
+  <HitBox :entity="props.player">
+    <container :ref="autoDestroyRef" :z-index="props.player.bbox.y + 0.0000001">
+      <animated-sprite
+        v-if="textures?.length"
+        ref="sprite"
+        :textures="(textures as unknown as Texture[])"
+        :position="screenPosition"
+        :scale-x="player.orientation === 'left' ? -1 : 1"
+        :anchor="0.5"
+        playing
+        cullable
+        :loop="loop"
+      />
+    </container>
+  </HitBox>
 </template>

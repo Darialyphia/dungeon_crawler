@@ -11,6 +11,7 @@ import { useSprite } from '../composables/useAssetCache';
 import { useAutoDestroy } from '../composables/useAutoDestroy';
 import { AnimatedSprite } from 'pixi.js';
 import { OutlineFilter } from '@pixi/filter-outline';
+import HitBox from './HitBox.vue';
 
 const props = defineProps<{
   monster: SerializedPlayerState['monsters'][number];
@@ -80,22 +81,24 @@ watchEffect(() => {
 </script>
 
 <template>
-  <container
-    :ref="autoDestroyRef"
-    :position="screenPosition"
-    :z-index="props.monster.bbox.y + 0.000001"
-  >
-    <animated-sprite
-      v-if="textures?.length"
-      :ref="spriteRef"
-      :textures="(textures as unknown as Texture[])"
-      :scale-x="props.monster.orientation === 'left' ? -1 : 1"
-      :anchor="0.5"
-      playing
-      cullable
-      event-mode="static"
-      @pointerenter="isHovered = true"
-      @pointerout="isHovered = false"
-    />
-  </container>
+  <HitBox :entity="props.monster">
+    <container
+      :ref="autoDestroyRef"
+      :position="screenPosition"
+      :z-index="props.monster.bbox.y + 0.000001"
+    >
+      <animated-sprite
+        v-if="textures?.length"
+        :ref="spriteRef"
+        :textures="(textures as unknown as Texture[])"
+        :scale-x="props.monster.orientation === 'left' ? -1 : 1"
+        :anchor="0.5"
+        playing
+        cullable
+        event-mode="static"
+        @pointerenter="isHovered = true"
+        @pointerout="isHovered = false"
+      />
+    </container>
+  </HitBox>
 </template>

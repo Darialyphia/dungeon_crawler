@@ -8,12 +8,10 @@ import GameMap from './Map.vue';
 import Obstacles from './Obstacles.vue';
 import { useScreen } from 'vue3-pixi';
 import { Spritesheet } from 'pixi.js';
-import { toScreenCoords } from '../utils/helpers';
-import { CELL_SIZE } from '../utils/constants';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
-import { useDebugOptions } from '../composables/useDebugOptions';
 import { ASSET_BUNDLES } from '../assets-manifest';
 import { useAssetCacheProvider } from '../composables/useAssetCache';
+import HitBox from './HitBox.vue';
 
 const { state } = useGameState();
 const screen = useScreen();
@@ -33,7 +31,6 @@ onMounted(async () => {
 });
 
 const currentPlayer = useCurrentPlayer();
-const debugOptions = useDebugOptions();
 </script>
 
 <template>
@@ -50,62 +47,18 @@ const debugOptions = useDebugOptions();
   <Camera v-else>
     <GameMap :spritesheet="spritesheet" />
 
-    <template v-if="debugOptions.obstacles || debugOptions.obstaclesMinkowski">
-      <graphics
-        v-for="obstacle in state.snapshot.debugObstacles"
-        :key="obstacle.entity_id"
-        :position="toScreenCoords(obstacle.bbox)"
-        @render="
-          graphics => {
-            graphics.clear();
-
-            if (debugOptions.obstacles) {
-              graphics.beginFill('yellow', 0.25);
-              graphics.lineStyle({
-                color: 'yellow',
-                width: 1
-              });
-              graphics.drawRect(
-                (-obstacle.bbox.width * CELL_SIZE) / 2,
-                (-obstacle.bbox.height * CELL_SIZE) / 2,
-                CELL_SIZE,
-                CELL_SIZE
-              );
-
-              graphics.endFill();
-            }
-
-            if (debugOptions.obstaclesMinkowski) {
-              graphics.beginFill('yellow', 0.1);
-              graphics.lineStyle({
-                color: 'blue',
-                alpha: 0.6,
-                width: 1
-              });
-              if (currentPlayer) {
-                graphics.drawRect(
-                  (-(obstacle.bbox.width + currentPlayer.bbox.width) * CELL_SIZE * 0.9) /
-                    2,
-                  (-(obstacle.bbox.height + currentPlayer.bbox.height) *
-                    CELL_SIZE *
-                    0.9) /
-                    2,
-                  (obstacle.bbox.width + currentPlayer.bbox.width) * CELL_SIZE * 0.9,
-                  (obstacle.bbox.height + currentPlayer.bbox.height) * CELL_SIZE * 0.9
-                );
-              }
-              graphics.endFill();
-            }
-          }
-        "
-      />
-    </template>
+    <HitBox
+      v-for="obstacle in state.snapshot.debugObstacles"
+      :key="obstacle.entity_id"
+      :entity="obstacle"
+    />
 
     <Player
       v-for="player in state.snapshot.players"
       :key="player.entity_id"
       :player="player"
     />
+
     <Monster
       v-for="monster in state.snapshot.monsters"
       :key="monster.entity_id"

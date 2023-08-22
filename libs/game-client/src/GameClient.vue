@@ -107,11 +107,11 @@ onMounted(() => {
       </label>
       <label>
         <input v-model="options.obstacles" type="checkbox" />
-        Display nearby obstacles
+        Display hitboxes
       </label>
       <label>
         <input v-model="options.obstaclesMinkowski" type="checkbox" />
-        Display nearby obstacles Minkowski sum
+        Display Minkowski hitboxes
       </label>
     </div>
   </div>
