@@ -33,8 +33,11 @@ export const gameInstancePool = ({ gameRepo, io }: Dependencies): GameInstancePo
 
   const createInstance = (id: GameId): GameInstance => {
     const worker = new Worker(resolve(process.cwd(), 'src/engine-worker.ts'), {});
-    worker.on('message', data => {
-      io.in(id).emit('GAME_STATE_UPDATE', { gameId: id, state: data });
+    worker.on('message', async data => {
+      const sockets = await io.in(id).fetchSockets();
+      sockets.forEach(socket => {
+        socket.emit('GAME_STATE_UPDATE', { gameId: id, state: data[socket.data.userId] });
+      });
     });
 
     worker.on('error', async error => {

@@ -90,7 +90,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="container">
+  <div class="game-client-container">
     <canvas ref="canvas" />
     <div class="debug-options">
       <label>
@@ -118,7 +118,7 @@ onMounted(() => {
 </template>
 
 <style scoped>
-.container {
+.game-client-container {
   font-family: monospace;
   width: v-bind(width);
   height: v-bind(height);
