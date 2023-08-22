@@ -6,11 +6,13 @@ import { ECSComponent } from '../ecs/ECSComponent';
  */
 
 export type PlayerId = string;
+import { Character, characters } from '@dungeon-crawler/resources/src/characters';
 
-export const player = defineECSComponent<'player', { id: PlayerId }>(
+export const player = defineECSComponent<
   'player',
-  player => player
-);
+  { id: PlayerId; character: Character },
+  { id: PlayerId; character: keyof typeof characters }
+>('player', player => ({ id: player.id, character: characters[player.character] }));
 export type Player = inferComponent<typeof player>;
 
 export const getPlayerById = <T extends ECSComponent<string>[] = []>(id: PlayerId) =>

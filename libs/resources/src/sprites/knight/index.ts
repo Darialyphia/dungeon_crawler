@@ -1,20 +1,16 @@
+import { getFramesFromState } from '../../utils';
 import json from './knight.json';
-
-const getFramesFromState = (state: string) =>
-  json.frames
-    .filter(frame => frame.filename.startsWith(`knight:${state}`))
-    .reduce((total, frame) => total + frame.duration, 0);
 
 export const knight = {
   states: {
     idle: {
-      animationDuration: getFramesFromState('idle')
+      animationDuration: getFramesFromState(json, 'idle')
     },
     walking: {
-      animationDuration: getFramesFromState('walking')
+      animationDuration: getFramesFromState(json, 'walking')
     },
     attacking: {
-      animationDuration: getFramesFromState('attacking')
+      animationDuration: getFramesFromState(json, 'attacking')
     }
   }
 };

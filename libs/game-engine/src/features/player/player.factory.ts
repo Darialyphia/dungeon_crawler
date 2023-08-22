@@ -20,10 +20,11 @@ import {
   spritable
 } from '../render/render.components';
 import { attacker } from '../combat/combat.components';
+import { characters } from '@dungeon-crawler/resources/src/characters';
 
 export type CreatePlayerOptions = {
   id: PlayerId;
-  sprite: string;
+  character: keyof typeof characters;
   position?: Point;
 };
 
@@ -57,10 +58,10 @@ export const createPlayer = (
       })
     )
     .with(orientation.component('right'))
-    .with(player.component({ id: options.id }))
+    .with(player.component({ id: options.id, character: options.character }))
     .with(animatable.component({ state: 'idle' }))
     .with(collidable.component(true))
-    .with(spritable.component({ sprite: options.sprite }))
+    .with(spritable.component({ sprite: options.character }))
     .with(attacker.component(true))
     .build();
 

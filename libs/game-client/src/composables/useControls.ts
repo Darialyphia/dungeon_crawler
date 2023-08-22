@@ -1,10 +1,19 @@
 import { Nullable, dist } from '@dungeon-crawler/shared';
-import { Dispatcher } from './useDispatch';
-import { GameState } from './useGameState';
-import { useKeydownOnce } from './useKeydownOnce';
 import { PortalEntity } from '@dungeon-crawler/game-engine/src/features/map/factories/portal.factory';
+import { useGameState } from './useGameState';
+import { useCurrentPlayer, useCurrentPlayerId } from './useCurrentPlayer';
+import { useApplication } from 'vue3-pixi';
+import { useDispatch } from './useDispatch';
+import { useCamera } from './useCamera';
 
-export const useControls = (dispatch: Dispatcher, playerId: string, state: GameState) => {
+export const useControls = () => {
+  const state = useGameState();
+  const dispatch = useDispatch();
+  const playerId = useCurrentPlayerId();
+  const player = useCurrentPlayer();
+  const app = useApplication();
+  const camera = useCamera();
+
   const pressedKeys = {
     up: false,
     down: false,
@@ -19,19 +28,17 @@ export const useControls = (dispatch: Dispatcher, playerId: string, state: GameS
     KeyS: 'down'
   } satisfies Record<string, keyof typeof pressedKeys>;
 
-  const players = computed(() => Object.values(state.state.value.snapshot.players));
-
   const onInteract = () => {
-    const player = players.value.find(p => p.player.id === playerId)!;
     const interactables = state.state.value.snapshot.portals;
 
     const closest = Object.values(interactables)
       .filter(
-        entity => dist(entity.bbox, player.bbox) <= entity.interactive.activationRange
+        entity =>
+          dist(entity.bbox, player.value!.bbox) <= entity.interactive.activationRange
       )
       .reduce((acc, current) => {
         if (!acc) return current;
-        return dist(current.bbox, player.bbox) < dist(acc.bbox, player.bbox)
+        return dist(current.bbox, player.value!.bbox) < dist(acc.bbox, player.value!.bbox)
           ? current
           : acc;
       }, null as Nullable<PortalEntity>);
@@ -79,10 +86,26 @@ export const useControls = (dispatch: Dispatcher, playerId: string, state: GameS
 
   useEventListener(window, 'keydown', onKeydown);
   useEventListener(window, 'keyup', onKeyup);
-  useEventListener(document, 'click', () => {
+
+  app.value.view.addEventListener?.('click', e => {
+    const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
+    const { clientX, clientY } = e as MouseEvent;
+    const mousePosition = { x: clientX - rect.left, y: clientY - rect.top };
+    const cameraBbox = camera.gViewport.value;
+
     dispatch({
       type: 'attack',
-      payload: { playerId }
+      payload: {
+        playerId,
+        target: {
+          x:
+            (mousePosition.x * camera.gViewport.value.width) / rect.width +
+            cameraBbox.minX,
+          y:
+            (mousePosition.y * camera.gViewport.value.height) / rect.height +
+            cameraBbox.minY
+        }
+      }
     });
   });
 };

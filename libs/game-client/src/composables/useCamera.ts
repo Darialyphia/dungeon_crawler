@@ -1,4 +1,5 @@
 import {
+  BBox,
   Nullable,
   Point,
   Rectangle,
@@ -21,6 +22,7 @@ export type Camera = {
   scale: Readonly<Ref<number>>;
   pivot: Readonly<Ref<Point>>;
   viewport: ComputedRef<Rectangle>;
+  gViewport: ComputedRef<BBox>;
   centerOn(point: Point): void;
 };
 
@@ -67,6 +69,16 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
     })
   );
 
+  // the camera viewport in game units instead of pixel units
+  const gViewport = computed(() =>
+    rectToBBox({
+      x: viewport.value.x / CELL_SIZE,
+      y: viewport.value.y / CELL_SIZE,
+      width: viewport.value.width / CELL_SIZE,
+      height: viewport.value.height / CELL_SIZE
+    })
+  );
+
   const setPosition = throttle(() => {
     position.value = {
       x: screen.value.width / 2,
@@ -81,7 +93,7 @@ export const useCameraProvider = (container: Ref<Nullable<Container>>) => {
     scale: readonly(scale),
     pivot: readonly(pivot),
     viewport,
-
+    gViewport,
     centerOn({ x, y }) {
       if (!container.value) return;
 

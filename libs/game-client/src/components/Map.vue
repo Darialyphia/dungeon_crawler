@@ -11,14 +11,17 @@ import { useDebugOptions } from '../composables/useDebugOptions';
 import { Container } from 'pixi.js';
 import { MapCell } from '@dungeon-crawler/game-engine';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
+import { useControls } from '../composables/useControls';
 
 const props = defineProps<{
   spritesheet: Spritesheet;
 }>();
 
 const { state } = useGameState();
-const { viewport } = useCamera();
+const { gViewport } = useCamera();
 const debugOptions = useDebugOptions();
+
+useControls();
 
 const allCells: Record<string, MapCell> = {};
 const getKey = (x: number, y: number) => `${x}:${y}` as keyof (typeof allCells)['value'];
@@ -33,16 +36,6 @@ watch(
 );
 
 const textureBuilder = useMapTextureBuilder(props.spritesheet);
-
-// the camera viewport in game units instead of pixel units
-const gViewport = computed(() =>
-  rectToBBox({
-    x: viewport.value.x / CELL_SIZE,
-    y: viewport.value.y / CELL_SIZE,
-    width: viewport.value.width / CELL_SIZE,
-    height: viewport.value.height / CELL_SIZE
-  })
-);
 
 const computeChunkRect = (): BBox => {
   const r = rectToBBox({

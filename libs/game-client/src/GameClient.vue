@@ -12,7 +12,6 @@ import {
   DispatcherArg,
   DISPATCHER_INJECTION_KEY
 } from './composables/useDispatch';
-import { useControls } from './composables/useControls';
 import { throttle } from 'lodash-es';
 import PixiApp from './components/PixiApp.vue';
 import {
@@ -38,6 +37,7 @@ const emit = defineEmits<{
   'game:event': [DispatcherArg];
 }>();
 
+const canvas = ref<HTMLCanvasElement>();
 const parsedState = computed<SerializedPlayerState>(() =>
   parse(props.state as unknown as string)
 );
@@ -45,9 +45,7 @@ const gameState = useGameStateProvider(parsedState);
 const dispatch = useDispatchProvider(arg => emit('game:event', arg));
 const options = useDebugOptionsProvider();
 useCurrentPlayerProvider(props.playerId);
-useControls(dispatch, props.playerId, gameState);
 
-const canvas = ref<HTMLCanvasElement>();
 onMounted(() => {
   // We create the pixi app manually instead of using vue3-pixi's <Application /> component
   // because we want to be able to provide a bunch of stuff so we need access to the underlying vue-pixi app

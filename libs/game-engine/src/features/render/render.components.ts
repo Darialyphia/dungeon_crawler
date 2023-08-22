@@ -1,9 +1,10 @@
+import { sprites } from '@dungeon-crawler/resources/src/sprites';
 import { defineECSComponent, inferComponent } from '../../utils';
 
-export const spritable = defineECSComponent<'spritable', { sprite: string }>(
+export const spritable = defineECSComponent<
   'spritable',
-  x => x
-);
+  { sprite: keyof typeof sprites }
+>('spritable', x => x);
 
 export type Spritable = inferComponent<typeof spritable>;
 

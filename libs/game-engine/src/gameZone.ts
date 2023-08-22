@@ -102,7 +102,7 @@ export const createZone = (
       })
     }),
     world: createWorld(),
-    addPlayer(playerId, options = { sprite: 'knight' }) {
+    addPlayer(playerId, options = { character: 'knight' }) {
       const entity = createPlayer(state, { id: playerId, ...options });
 
       isRunning = true;

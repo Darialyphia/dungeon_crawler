@@ -15,7 +15,8 @@ import { Animatable, animatable } from '../features/render/render.components';
 
 export const attackEvent = defineEventHandler({
   input: z.object({
-    playerId: z.string()
+    playerId: z.string(),
+    target: z.object({ x: z.number(), y: z.number() })
   }),
   handler: ({ input, state }) => {
     const attackingPlayer = state.players.find(p => p.id === input.playerId);
@@ -30,11 +31,13 @@ export const attackEvent = defineEventHandler({
 
     if (isNone(maybePlayer)) return;
     const player = maybePlayer.value;
+
     if (!attacker.has(player)) return;
     if (player.attacker.attackStartedAt) return;
 
     player.animatable.state = 'attacking';
     player.attacker.attackStartedAt = performance.now();
+    player.attacker.target = input.target;
 
     if (velocity.has(player)) {
       player.velocity.target = { x: 0, y: 0 };
