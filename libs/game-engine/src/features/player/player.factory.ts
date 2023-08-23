@@ -19,7 +19,7 @@ import {
   animatable,
   spritable
 } from '../render/render.components';
-import { attacker } from '../combat/combat.components';
+import { Attacker, attacker } from '../combat/combat.components';
 import { characters } from '@dungeon-crawler/resources/src/characters';
 
 export type CreatePlayerOptions = {
@@ -35,7 +35,8 @@ export type PlayerEntity = ECSEntity &
   Orientation &
   Collidable &
   Spritable &
-  Animatable;
+  Animatable &
+  Attacker;
 
 export const createPlayer = (
   state: GameZoneState,

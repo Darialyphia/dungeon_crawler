@@ -1,6 +1,5 @@
-import { AnyObject } from '@dungeon-crawler/shared';
 import { knight } from './knight';
-import { AsepriteSheet } from '../utils';
+import { orc } from './orc';
 
 type SpriteAnimation = {
   animationDuration: number;
@@ -11,10 +10,11 @@ export type DungeonCrawlerSprite = {
     walking: SpriteAnimation;
     idle: SpriteAnimation;
     attacking: SpriteAnimation;
+    hit: SpriteAnimation;
   };
 };
 
-export const sprites = { knight } satisfies Record<
+export const sprites = { knight, orc } satisfies Record<
   string,
   DungeonCrawlerSprite
 >;

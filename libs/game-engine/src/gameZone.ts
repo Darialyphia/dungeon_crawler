@@ -32,6 +32,7 @@ import {
 import { createMonster } from './features/monster/monster.factory';
 import { attackSystem } from './features/combat/attack.system';
 import { monster } from './features/monster/monster.components';
+import { animationStateSystem } from './features/render/animationState.system';
 
 export type ZoneId = number;
 
@@ -175,6 +176,7 @@ export const createZone = (
   };
 
   state.map.init(state);
+  state.world.addSystem('animationState', animationStateSystem(state));
   state.world.addSystem('attack', attackSystem(state));
   state.world.addSystem('physics', physicsSystem(state));
   state.world.addSystem('portals', portalsSystem(state));

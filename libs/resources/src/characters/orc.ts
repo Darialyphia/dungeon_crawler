@@ -1,10 +1,10 @@
 import { Character } from '.';
 
-export const knight: Character = {
+export const orc: Character = {
   attack: {
     kind: 'melee',
     shape: 'arc',
     range: 1.5,
-    angle: 170
+    angle: 130
   }
 };

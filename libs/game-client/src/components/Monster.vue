@@ -52,13 +52,21 @@ const interpolatePlayerPosition = () => {
 onTick(interpolatePlayerPosition);
 
 const { sheet } = useSprite(props.monster.spritable.sprite);
+
 const textures = ref<FrameObject[]>([]);
+const animationState = computed(() => props.monster.animatable.state);
+const sprite = ref<AnimatedSprite>();
 
 watch(
-  [() => props.monster.animatable.state, sheet],
-  ([monsterState, sheet]) => {
+  [animationState, sheet],
+  ([state, sheet]) => {
     if (sheet) {
-      textures.value = createSpritesheetFrameObject(monsterState, sheet);
+      textures.value = createSpritesheetFrameObject(state, sheet);
+      setTimeout(() => {
+        if (!sprite.value?.playing) {
+          sprite.value?.gotoAndPlay(0);
+        }
+      });
     }
   },
   { immediate: true }
@@ -66,18 +74,15 @@ watch(
 
 const { autoDestroyRef } = useAutoDestroy();
 
-const sprite = ref<AnimatedSprite>();
-const spriteRef = (el: AnimatedSprite) => {
-  sprite.value = el;
-};
+const filter = new OutlineFilter(2, 0xff0000);
 
 const isHovered = ref(false);
-
-const filter = new OutlineFilter(2, 0xff0000);
 watchEffect(() => {
   if (!sprite.value) return;
   sprite.value.filters = isHovered.value ? [filter] : [];
 });
+
+const loop = computed(() => ['idle', 'walking'].includes(props.monster.animatable.state));
 </script>
 
 <template>
@@ -85,19 +90,20 @@ watchEffect(() => {
     <container
       :ref="autoDestroyRef"
       :position="screenPosition"
+      event-mode="static"
       :z-index="props.monster.bbox.y + 0.000001"
+      cullable
+      @pointerenter="isHovered = true"
+      @pointerout="isHovered = false"
     >
       <animated-sprite
         v-if="textures?.length"
-        :ref="spriteRef"
+        ref="sprite"
         :textures="(textures as unknown as Texture[])"
         :scale-x="props.monster.orientation === 'left' ? -1 : 1"
         :anchor="0.5"
         playing
-        cullable
-        event-mode="static"
-        @pointerenter="isHovered = true"
-        @pointerout="isHovered = false"
+        :loop="loop"
       />
     </container>
   </HitBox>

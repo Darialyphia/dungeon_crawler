@@ -1,6 +1,9 @@
 import { sprites } from '@dungeon-crawler/resources/src/sprites';
 import { defineECSComponent, inferComponent } from '../../utils';
 
+/**
+ * Spritable component
+ */
 export const spritable = defineECSComponent<
   'spritable',
   { sprite: keyof typeof sprites }
@@ -9,14 +12,14 @@ export const spritable = defineECSComponent<
 export type Spritable = inferComponent<typeof spritable>;
 
 /**
- * PlayerState component
+ * AnimationState component
  */
+type AnimationState = 'idle' | 'walking' | 'attacking' | 'hit';
 
-type AnimationState = 'idle' | 'walking' | 'attacking';
-
-export const animatable = defineECSComponent<'animatable', { state: AnimationState }>(
+export const animatable = defineECSComponent<
   'animatable',
-  state => state
-);
+  { state: AnimationState; lastChangedAt: number },
+  { state: AnimationState }
+>('animatable', ({ state }) => ({ state, lastChangedAt: 0 }));
 
 export type Animatable = inferComponent<typeof animatable>;

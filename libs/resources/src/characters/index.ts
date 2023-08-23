@@ -1,4 +1,5 @@
 import { knight } from './knight';
+import { orc } from './orc';
 
 export type Character = {
   attack: {
@@ -8,4 +9,4 @@ export type Character = {
     angle: number;
   };
 };
-export const characters = { knight } satisfies Record<string, Character>;
+export const characters = { orc, knight } satisfies Record<string, Character>;

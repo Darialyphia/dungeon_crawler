@@ -33,10 +33,10 @@ export const attackEvent = defineEventHandler({
     const player = maybePlayer.value;
 
     if (!attacker.has(player)) return;
-    if (player.attacker.attackStartedAt) return;
+    if (player.attacker.target) return;
 
     player.animatable.state = 'attacking';
-    player.attacker.attackStartedAt = performance.now();
+    player.animatable.lastChangedAt = performance.now();
     player.attacker.target = input.target;
 
     if (velocity.has(player)) {

@@ -21,7 +21,6 @@ import {
 import * as O from 'fp-ts/Option';
 import {} from '../ecs/ECSEntity';
 import { GameZoneState } from '../../gameZone';
-import { playerState } from '../player/player.components';
 
 export const physicsSystem = ({
   map,

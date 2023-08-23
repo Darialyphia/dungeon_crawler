@@ -1,7 +1,7 @@
 import { getFramesFromState } from '../../utils';
-import json from './knight.json';
+import json from './orc.json';
 
-export const knight = {
+export const orc = {
   states: {
     idle: {
       animationDuration: getFramesFromState(json, 'idle'),

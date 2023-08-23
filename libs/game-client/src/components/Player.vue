@@ -66,13 +66,18 @@ const { sheet } = useSprite(props.player.spritable.sprite);
 const textures = ref<FrameObject[]>([]);
 
 const sprite = ref<AnimatedSprite>();
+const animationState = computed(() => props.player.animatable.state);
+
 watch(
-  [() => props.player.animatable.state, sheet],
-  ([playerState, sheet]) => {
+  [animationState, sheet],
+  ([state, sheet]) => {
     if (sheet) {
-      textures.value = createSpritesheetFrameObject(playerState, sheet);
-      nextTick(() => {
-        sprite.value?.gotoAndPlay(0);
+      textures.value = createSpritesheetFrameObject(state, sheet);
+
+      setTimeout(() => {
+        if (!sprite.value?.playing) {
+          sprite.value?.gotoAndPlay(0);
+        }
       });
     }
   },

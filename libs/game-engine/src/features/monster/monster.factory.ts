@@ -18,9 +18,10 @@ import {
   animatable
 } from '../render/render.components';
 import { Monster, monster } from './monster.components';
+import { characters } from '@dungeon-crawler/resources/src/characters';
 
 export type CreateMonsterOptions = {
-  sprite: string;
+  sprite: keyof typeof characters;
 };
 
 export type MonsterEntity = ECSEntity &
@@ -53,8 +54,8 @@ export const createMonster = (
       })
     )
     .with(orientation.component('right'))
-    .with(monster.component(true))
     .with(collidable.component(true))
+    .with(monster.component({ character: options.sprite }))
     .with(spritable.component({ sprite: options.sprite }))
     .with(animatable.component({ state: 'idle' }))
     .build();
