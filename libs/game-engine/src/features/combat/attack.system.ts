@@ -35,7 +35,7 @@ export const attackSystem = (
 
     const attackVector = subVector(player.attacker.target!, player.bbox);
     const attackAngle = Math.atan2(attackVector.y, attackVector.x);
-    const maxAngle = attackAngle + deg2Rad(angle);
+    const angleRad = deg2Rad(angle);
 
     const struckEntities = zone.tree
       .search(attackBbox)
@@ -59,8 +59,18 @@ export const attackSystem = (
               intersectionVector.y,
               intersectionVector.x
             );
+            console.log(
+              intersectionAngle,
+              angleRad / 2,
+              attackAngle,
+              attackAngle - angleRad / 2,
+              attackAngle + angleRad / 2
+            );
 
-            return intersectionAngle >= attackAngle && intersectionAngle <= maxAngle;
+            return (
+              intersectionAngle >= attackAngle - angleRad / 2 &&
+              intersectionAngle <= attackAngle + angleRad / 2
+            );
           });
         }
       );
