@@ -1,7 +1,8 @@
-import { dist, fastDistCheck } from './math';
+import { fastDistCheck } from './math';
 import type { BBox, Circle, Line, Nullable, Point, Rectangle } from '../types';
-import { getRectangleLines, rectToBBox } from './geometry';
+import { circleContains, getRectangleLines, rectToBBox } from './geometry';
 import { isDefined } from './assertions';
+import { addVector, subVector } from './vectors';
 
 export const pointRectCollision = (point: Point, rect: Rectangle) =>
   point.x >= rect.x &&
@@ -10,30 +11,32 @@ export const pointRectCollision = (point: Point, rect: Rectangle) =>
   point.y <= rect.y + rect.height;
 
 export const pointCircleCollision = (point: Point, circle: Circle) =>
-  fastDistCheck(point, circle, circle.r);
+  fastDistCheck(point, circle, circle.radius);
 
 export const circleRectCollision = (circle: Circle, rect: Rectangle) => {
-  const distX = Math.abs(circle.x - rect.x - rect.width / 2);
-  const distY = Math.abs(circle.y - rect.y - rect.height / 2);
+  const halfWidth = rect.width / 2;
+  const halfHeight = rect.height / 2;
 
-  if (distX > rect.width / 2 + circle.r) {
+  const { minX, minY } = rectToBBox(rect);
+  var cx = Math.abs(circle.x - minX - halfWidth);
+  var cy = Math.abs(circle.y - minY - halfHeight);
+
+  var xDist = halfWidth + circle.radius;
+  var yDist = halfHeight + circle.radius;
+
+  if (cx > xDist || cy > yDist) {
     return false;
-  }
-  if (distY > rect.height / 2 + circle.r) {
-    return false;
-  }
-
-  if (distX <= rect.width / 2) {
+  } else if (cx <= halfWidth || cy <= halfHeight) {
     return true;
-  }
-  if (distY <= rect.height / 2) {
-    return true;
-  }
+  } else {
+    const xCornerDist = cx - halfWidth;
+    const yCornerDist = cy - halfHeight;
+    const xCornerDistSq = xCornerDist * xCornerDist;
+    const yCornerDistSq = yCornerDist * yCornerDist;
+    const maxCornerDistSq = circle.radius * circle.radius;
 
-  const dx = distX - rect.width / 2;
-  const dy = distY - rect.height / 2;
-
-  return dx * dx + dy * dy <= circle.r * circle.r;
+    return xCornerDistSq + yCornerDistSq <= maxCornerDistSq;
+  }
 };
 
 export const lineRectCollision = (line: Line, rect: Rectangle) => {
@@ -105,15 +108,6 @@ export const rectRectCollision = (rect1: Rectangle, rect2: Rectangle) => {
   );
 };
 
-export const getIntersectionRect = (r1: Rectangle, r2: Rectangle) => {
-  var x = Math.max(r1.x, r2.x);
-  var y = Math.max(r1.y, r2.y);
-  var xx = Math.min(r1.x + r1.width, r2.x + r2.width);
-  var yy = Math.min(r1.y + r1.height, r2.y + r2.height);
-
-  return { x: x, y: y, width: xx - x, height: yy - y };
-};
-
 export const lineLineIntersection = (
   line1: Line,
   line2: Line
@@ -135,9 +129,6 @@ export const lineLineIntersection = (
 
   const denom = (y4 - y3) * (x2 - x1) - (x4 - x3) * (y2 - y1);
   const isParallel = denom === 0;
-  //  Make sure there is not a division by zero - this also indicates that the lines are parallel.
-  //  If numA and numB were both equal to zero the lines would be on top of each other (coincidental).
-  //  This check is not done because it is not necessary for this implementation (the parallel check accounts for this).
 
   if (isParallel) return null;
 
@@ -167,5 +158,112 @@ export const lineRectIntersection = (line: Line, bbox: BBox): Point[] => {
     lineLineIntersection(line, bottom),
     lineLineIntersection(line, left),
     lineLineIntersection(line, right)
+  ].filter(isDefined);
+};
+
+export const lineCircleCollision = (line: Line, circle: Circle) => {
+  if (circleContains(circle, line.start.x, line.start.y)) {
+    return true;
+  }
+
+  if (circleContains(circle, line.end.x, line.end.y)) {
+    return true;
+  }
+
+  const lineDiff = subVector(line.start, line.end);
+
+  const lcy = circle.y - line.start.y;
+  const lcx = circle.x - line.start.x;
+
+  //  project lc onto diff, resulting in vector projection
+  const dLen2 = lineDiff.x * lineDiff.x + lineDiff.y * lineDiff.y;
+  const projection = {
+    x: lineDiff.x,
+    y: lineDiff.y
+  };
+
+  if (dLen2 > 0) {
+    const dp = (lcx * lineDiff.x + lcy * lineDiff.y) / dLen2;
+
+    projection.x *= dp;
+    projection.y *= dp;
+  }
+
+  const nearest = addVector(line.start, projection);
+
+  //  len2 of p
+  var pLen2 = projection.x * projection.x + projection.y * projection.y;
+
+  return (
+    pLen2 <= dLen2 &&
+    projection.x * lineDiff.x + projection.y * lineDiff.y >= 0 &&
+    circleContains(circle, nearest.x, nearest.y)
+  );
+};
+
+export const lineCircleIntersection = (line: Line, circle: Circle) => {
+  if (!lineCircleCollision(line, circle)) {
+    return [];
+  }
+  const lx1 = line.start.x;
+  const ly1 = line.start.y;
+
+  const lx2 = line.end.x;
+  const ly2 = line.end.y;
+
+  const cx = circle.x;
+  const cy = circle.y;
+  const cr = circle.radius;
+
+  const lDirX = lx2 - lx1;
+  const lDirY = ly2 - ly1;
+  const oDirX = lx1 - cx;
+  const oDirY = ly1 - cy;
+
+  const coefficientA = lDirX * lDirX + lDirY * lDirY;
+  const coefficientB = 2 * (lDirX * oDirX + lDirY * oDirY);
+  const coefficientC = oDirX * oDirX + oDirY * oDirY - cr * cr;
+
+  const lambda = coefficientB * coefficientB - 4 * coefficientA * coefficientC;
+
+  let x, y;
+
+  const intersections: Point[] = [];
+
+  if (lambda === 0) {
+    const root = -coefficientB / (2 * coefficientA);
+    x = lx1 + root * lDirX;
+    y = ly1 + root * lDirY;
+    if (root >= 0 && root <= 1) {
+      intersections.push({ x, y });
+    }
+  } else if (lambda > 0) {
+    const root1 = (-coefficientB - Math.sqrt(lambda)) / (2 * coefficientA);
+    x = lx1 + root1 * lDirX;
+    y = ly1 + root1 * lDirY;
+    if (root1 >= 0 && root1 <= 1) {
+      intersections.push({ x, y });
+    }
+
+    var root2 = (-coefficientB + Math.sqrt(lambda)) / (2 * coefficientA);
+    x = lx1 + root2 * lDirX;
+    y = ly1 + root2 * lDirY;
+    if (root2 >= 0 && root2 <= 1) {
+      intersections.push({ x, y });
+    }
+  }
+
+  return intersections;
+};
+
+export const circleRectIntersection = (circle: Circle, bbox: BBox) => {
+  if (!circleRectCollision(circle, bbox)) return [];
+
+  const { top, bottom, left, right } = getRectangleLines(bbox);
+  return [
+    ...lineCircleIntersection(top, circle),
+    ...lineCircleIntersection(bottom, circle),
+    ...lineCircleIntersection(left, circle),
+    ...lineCircleIntersection(right, circle)
   ].filter(isDefined);
 };

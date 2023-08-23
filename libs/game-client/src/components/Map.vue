@@ -128,10 +128,10 @@ const render = (graphics: Graphics) => {
 
     const texture = textureBuilder.getBitmaskTexture(cell);
 
-    // graphics.lineStyle({
-    //   color: 'black',
-    //   width: 0.5
-    // });
+    graphics.lineStyle({
+      color: 'black',
+      width: 0.5
+    });
     graphics.beginTextureFill({
       texture
     });

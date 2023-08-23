@@ -1,4 +1,4 @@
-import { BBox, Line, Rectangle } from '../types';
+import { BBox, Circle, Line, Rectangle } from '../types';
 
 export const rectToBBox = (rect: Rectangle): BBox => ({
   ...rect,
@@ -31,4 +31,20 @@ export const getRectangleLines = (
       end: { x: bbox.maxX, y: bbox.maxY }
     }
   };
+};
+
+export const circleContains = function (circle: Circle, x: number, y: number) {
+  const isWithinBounds =
+    circle.radius > 0 &&
+    x >= circle.x - circle.radius &&
+    x <= circle.x + circle.radius &&
+    y >= circle.y - circle.radius &&
+    y <= circle.y + circle.radius;
+
+  if (!isWithinBounds) return false;
+
+  const dx = (circle.x - x) * (circle.x - x);
+  const dy = (circle.y - y) * (circle.y - y);
+
+  return dx + dy <= circle.radius * circle.radius;
 };

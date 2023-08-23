@@ -1,4 +1,10 @@
-import { dist } from '@dungeon-crawler/shared';
+import {
+  circleRectIntersection,
+  deg2Rad,
+  dist,
+  rad2Deg,
+  subVector
+} from '@dungeon-crawler/shared';
 import { GameZoneState } from '../../gameZone';
 import { ECSEntity } from '../ecs/ECSEntity';
 import { ECSSystem } from '../ecs/ECSSystem';
@@ -18,7 +24,7 @@ export const attackSystem = (
   zone: GameZoneState
 ): ECSSystem<[Attacker, Spritable, Animatable]> => {
   const handlePlayerAttack = (player: ECSEntity & BBox & Attacker & Player) => {
-    const { range, shape } = player.player.character.attack;
+    const { range, shape, angle } = player.player.character.attack;
 
     const attackBbox = rectToBBox({
       x: player.bbox.x,
@@ -27,14 +33,35 @@ export const attackSystem = (
       height: range
     });
 
+    const attackVector = subVector(player.attacker.target!, player.bbox);
+    const attackAngle = Math.atan2(attackVector.y, attackVector.x);
+    const maxAngle = attackAngle + deg2Rad(angle);
+
     const struckEntities = zone.tree
       .search(attackBbox)
       .filter<ECSEntity & BBox & Monster & Animatable & Spritable>(
         (entity): entity is ECSEntity & BBox & Monster & Animatable & Spritable => {
-          if (shape === 'arc' && dist(entity.bbox, attackBbox) > range) {
+          if (entity.entity_id === player.entity_id) return false;
+
+          if (!monster.has(entity) || !animatable.has(entity) || !spritable.has(entity)) {
             return false;
           }
-          return monster.has(entity) && animatable.has(entity) && spritable.has(entity);
+
+          const intersections = circleRectIntersection(
+            { x: player.bbox.x, y: player.bbox.y, radius: range },
+            entity.bbox
+          );
+          if (!intersections.length) return false;
+
+          return intersections.some(point => {
+            const intersectionVector = subVector(player.attacker.target!, point);
+            const intersectionAngle = Math.atan2(
+              intersectionVector.y,
+              intersectionVector.x
+            );
+
+            return intersectionAngle >= attackAngle && intersectionAngle <= maxAngle;
+          });
         }
       );
 
@@ -43,9 +70,6 @@ export const attackSystem = (
       if (orientation.has(entity)) {
         entity.orientation = player.bbox.x < entity.bbox.x ? 'left' : 'right';
       }
-      setTimeout(() => {
-        entity.animatable.state = 'idle';
-      }, sprites[entity.spritable.sprite].states.hit.animationDuration);
     });
   };
 
