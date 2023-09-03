@@ -87,7 +87,7 @@ export const useControls = () => {
   useEventListener(window, 'keydown', onKeydown);
   useEventListener(window, 'keyup', onKeyup);
 
-  app.value.view.addEventListener?.('click', e => {
+  app.value.view.addEventListener?.('mousedown', e => {
     const rect = (e.target as HTMLCanvasElement).getBoundingClientRect();
     const { clientX, clientY } = e as MouseEvent;
     const mousePosition = { x: clientX - rect.left, y: clientY - rect.top };

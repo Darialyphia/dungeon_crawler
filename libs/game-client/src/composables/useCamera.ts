@@ -21,7 +21,7 @@ export type Camera = {
   position: Readonly<Ref<Point>>;
   scale: Readonly<Ref<number>>;
   pivot: Readonly<Ref<Point>>;
-  viewport: ComputedRef<Rectangle>;
+  viewport: ComputedRef<BBox>;
   gViewport: ComputedRef<BBox>;
   centerOn(point: Point): void;
 };

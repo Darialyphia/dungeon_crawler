@@ -34,14 +34,16 @@ export const attackSystem = (
     });
 
     const attackVector = subVector(player.attacker.target!, player.bbox);
-    const attackAngle = Math.atan2(attackVector.y, attackVector.x);
-    const angleRad = deg2Rad(angle);
+    const attackAngle = rad2Deg(Math.atan2(attackVector.y, attackVector.x));
+    const minAngle = attackAngle - angle / 2;
+    const maxAngle = attackAngle + angle / 2;
 
     const struckEntities = zone.tree
       .search(attackBbox)
       .filter<ECSEntity & BBox & Monster & Animatable & Spritable>(
         (entity): entity is ECSEntity & BBox & Monster & Animatable & Spritable => {
           if (entity.entity_id === player.entity_id) return false;
+          if (player.attacker.struckTargets.includes(entity.entity_id)) return false;
 
           if (!monster.has(entity) || !animatable.has(entity) || !spritable.has(entity)) {
             return false;
@@ -52,25 +54,14 @@ export const attackSystem = (
             entity.bbox
           );
           if (!intersections.length) return false;
-
+          // console.log('==');
           return intersections.some(point => {
-            const intersectionVector = subVector(player.attacker.target!, point);
-            const intersectionAngle = Math.atan2(
-              intersectionVector.y,
-              intersectionVector.x
-            );
-            console.log(
-              intersectionAngle,
-              angleRad / 2,
-              attackAngle,
-              attackAngle - angleRad / 2,
-              attackAngle + angleRad / 2
+            const intersectionVector = subVector(point, player.bbox);
+            const intersectionAngle = rad2Deg(
+              Math.atan2(intersectionVector.y, intersectionVector.x)
             );
 
-            return (
-              intersectionAngle >= attackAngle - angleRad / 2 &&
-              intersectionAngle <= attackAngle + angleRad / 2
-            );
+            return intersectionAngle >= minAngle && intersectionAngle <= maxAngle;
           });
         }
       );
@@ -89,6 +80,7 @@ export const attackSystem = (
       entities.forEach(entity => {
         if (entity.animatable.state !== 'attacking') {
           entity.attacker.target = null;
+          entity.attacker.struckTargets = [];
           return;
         }
 

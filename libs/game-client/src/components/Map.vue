@@ -2,7 +2,14 @@
 import { useGameState } from '../composables/useGameState';
 import { useCamera } from '../composables/useCamera';
 import { CELL_SIZE } from '../utils/constants';
-import { BBox, Nullable, Point, dist, rectToBBox } from '@dungeon-crawler/shared';
+import {
+  BBox,
+  Nullable,
+  Point,
+  dist,
+  pointRectCollision,
+  rectToBBox
+} from '@dungeon-crawler/shared';
 import { Graphics, Texture } from 'pixi.js';
 import { toScreenCoords } from '../utils/helpers';
 import { Spritesheet } from 'pixi.js';
@@ -97,10 +104,19 @@ watch(
 watchEffect(() => {
   let hasNewCell = false;
   state.value.snapshot.map.cells.forEach(cell => {
-    const key = getKey(cell.x, cell.y);
+    const { x, y } = cell;
+    const key = getKey(x, y);
     if (!allCells[key]) {
       allCells[key] = cell;
-      hasNewCell = true;
+
+      if (
+        x >= chunkRect.value.minX ||
+        x <= chunkRect.value.maxX ||
+        y >= chunkRect.value.minY ||
+        y <= chunkRect.value.maxY
+      ) {
+        hasNewCell = true;
+      }
     }
   });
 
@@ -120,35 +136,43 @@ watch(
     playerBbox.value = currentPlayer.value?.bbox;
   }
 );
+const FIELD_OF_VIEW = 10.5;
 // We render a single graphics drawing all tiles instead of multiple graphics in the template
-const render = (graphics: Graphics) => {
+const renderMap = (graphics: Graphics) => {
   graphics.clear();
   visibleCells.value.forEach(cell => {
     const { x, y } = toScreenCoords(cell);
 
     const texture = textureBuilder.getBitmaskTexture(cell);
 
-    graphics.lineStyle({
-      color: 'black',
-      width: 0.5
-    });
+    // graphics.lineStyle({
+    //   color: 'black',
+    //   width: 0.5
+    // });
     graphics.beginTextureFill({
       texture
     });
     graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
     graphics.endFill();
+
+    renderFogOfWar(cell, graphics);
+  });
+};
+
+const renderFieldOfView = (graphics: Graphics) => {
+  graphics.clear();
+  visibleCells.value.forEach(cell => {
+    const { x, y } = toScreenCoords(cell);
     const distanceToPlayer = dist(
       { x: cell.x, y: cell.y },
       { x: playerBbox.value!.x, y: playerBbox.value!.y }
     );
 
-    if (distanceToPlayer > 10.5) {
+    if (distanceToPlayer > FIELD_OF_VIEW) {
       graphics.beginFill('black', 0.5);
       graphics.drawRect(x, y, CELL_SIZE, CELL_SIZE);
       graphics.endFill();
     }
-
-    renderFogOfWar(cell, graphics);
   });
 };
 
@@ -210,7 +234,8 @@ const renderFogOfWar = (cell: MapCell, graphics: Graphics) => {
       }
     "
   />
-  <graphics @render="render" />
+  <graphics @render="renderMap" />
+  <graphics @render="renderFieldOfView" />
   <template v-if="debugOptions.mapCoords">
     <container
       v-for="cell in visibleCells"

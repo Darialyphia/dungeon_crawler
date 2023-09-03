@@ -37,7 +37,7 @@ export const createGameState = (): GameState => {
     player.currentZoneId = destinationZone.id;
     currentZone.removePlayer(playerId);
     const newEntityId = destinationZone.addPlayer(playerId, {
-      sprite: playerEntity.value.spritable.sprite,
+      character: playerEntity.value.spritable.sprite,
       position: addVector(
         currentZone.id < destinationZone.id
           ? destinationZone.map.getEntrance()

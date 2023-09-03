@@ -3,8 +3,6 @@ import type { Nullable } from '@dungeon-crawler/shared';
 
 useAuthGuard();
 
-const error = ref<Nullable<string>>();
-
 const isAuthenticated = useIsAuthenticated();
 const { socket } = useContainer();
 watchEffect(() => {
@@ -17,6 +15,7 @@ watchEffect(() => {
   }
 });
 
+const error = ref<Nullable<string>>();
 onErrorCaptured(err => {
   error.value = err.message;
 });

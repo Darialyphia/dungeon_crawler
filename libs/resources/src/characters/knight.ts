@@ -5,6 +5,6 @@ export const knight: Character = {
     kind: 'melee',
     shape: 'arc',
     range: 1.5,
-    angle: 160
+    angle: 90
   }
 };

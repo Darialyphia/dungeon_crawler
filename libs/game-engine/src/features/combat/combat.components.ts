@@ -1,10 +1,12 @@
 import { Nullable, Point } from '@dungeon-crawler/shared';
 import { defineECSComponent, inferComponent } from '../../utils';
+import { ECSEntityId } from '../ecs/ECSEntity';
 
-export const attacker = defineECSComponent<'attacker', { target: Nullable<Point> }, true>(
+export const attacker = defineECSComponent<
   'attacker',
-  () => ({ attackStartedAt: null, target: null })
-);
+  { target: Nullable<Point>; struckTargets: ECSEntityId[] },
+  true
+>('attacker', () => ({ struckTargets: [], target: null }));
 
 export type Attacker = inferComponent<typeof attacker>;
 

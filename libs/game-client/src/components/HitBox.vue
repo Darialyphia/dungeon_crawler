@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { BBox } from '@dungeon-crawler/shared';
+import { BBox, Point } from '@dungeon-crawler/shared';
 import { useDebugOptions } from '../composables/useDebugOptions';
 import { toScreenCoords } from '../utils/helpers';
 import { useCurrentPlayer } from '../composables/useCurrentPlayer';
@@ -80,7 +80,6 @@ onTick(interpolatePlayerPosition);
           }
 
           if (debugOptions.obstaclesMinkowski) {
-            graphics.beginFill('yellow', 0.1);
             graphics.lineStyle({
               color: 'blue',
               alpha: 0.6,
@@ -100,7 +99,6 @@ onTick(interpolatePlayerPosition);
                 (props.entity.bbox.height + currentPlayer.bbox.height) * CELL_SIZE * 0.9
               );
             }
-            graphics.endFill();
           }
         }
       "
