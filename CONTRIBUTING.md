@@ -93,9 +93,6 @@ yarn dev
 
 ## Working on New Features
 
-If you're new to github and working with open source repositories, Watch this video by Web Dev Cody which will walks you through the process:
-[![How to make a pull request on an open source project](https://img.youtube.com/vi/8A4TsoXJOs8/0.jpg)](https://youtu.be/8A4TsoXJOs8)
-
 If you want to work on a new feature, follow these steps.
 
 1. Fork the repo
