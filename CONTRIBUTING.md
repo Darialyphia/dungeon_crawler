@@ -65,18 +65,14 @@ There are two ways to get started with the project locally
    ```sh
    yarn install
    ```
-4. Run the following command to setup the project. Note: You will need the have Docker running to execute this step.
-   ```sh
-   yarn cli:run setup
-   ```
-5. create a `.env` file at `apps/server` and copy-paste the content of `apps/server/.env.example` into it
-6. create a `.env` file at `apps/client` and copy-paste the content of `apps/client/.env.example` into it
-7. If you are using docker, run the following command
+4. create a `.env` file at `apps/server` and copy-paste the content of `apps/server/.env.example` into it
+5. create a `.env` file at `apps/client` and copy-paste the content of `apps/client/.env.example` into it
+6. If you are using docker, run the following command
    ```sh
    yarn db:start
    ```
    If you are not using Docker, make sure your database is available. You will need to update the `DATABASE_URL` environment variable in the `apps/server/.env` file.
-8. Generate a version of Prisma Client that is tailored to the models.
+7. Generate a version of Prisma Client that is tailored to the models.
 
    ```js
    yarn db:sync
